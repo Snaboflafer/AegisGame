@@ -6,7 +6,7 @@ player = {
 		if (not self.exists or not self.active) then
 			return
 		end
-		
+		--YES
 		self.velocity.x = self.velocity.x + self.acceleration.x
 		self.velocity.y = self.velocity.y + self.acceleration.y
 		self.x = self.x + self.velocity.x
