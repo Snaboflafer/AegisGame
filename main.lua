@@ -1,0 +1,77 @@
+time = 0
+
+snbGame = require("snbGame")
+snbG = require("snbG")
+--snbObject = require("snbObject")
+require("snbObject")
+snbSprite = require("snbSprite")
+snbPlayer = require("snbSprite_Player")
+snbEnemy = require("snbSprite_Enemy")
+snbState = require("snbState")
+snbPoint = require("snbPoint")
+
+function love.load()
+	curGame = snbGame.new()
+	snbG:init()
+	snbG:newCamera(0,0)
+	
+	--testState = snbState:new()	--Custom states not implemented yet
+	testState = {}
+	
+	--obj1 = snbObject:new(4,5)
+	sprite1 = snbSprite:new(32,32,"red16.png")
+	sprite1.acceleration.x = .01
+	sprite2 = snbSprite:new(32, 64,"blue16.png")
+	table.insert(testState, sprite1)
+	table.insert(testState, sprite2)
+	
+	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
+	--table.insert(testState, player)
+	for i=1,9,1 do
+		table.insert(testState, snbSprite:new(snbG.screenW, 128, "red16.png"))
+	end
+	
+	bgmMusic = love.audio.newSource("music/Locust Toybox - 8-Bit Strawberry.mp3")
+    bgmMusic:setLooping(true)
+    bgmMusic:play()
+	bgmMusic:setVolume(.5)
+	
+	--testState:add(sprite1)
+end
+
+function love.update(dt)
+	snbG.elapsed = dt
+	time = time + dt
+	
+	sprite2.velocity.x = 5 * math.sin(time)
+	sprite2.velocity.y = 3 * math.sin(1.23 * time)
+	
+	--testState:update()
+	--sprite1:update()
+	for k,v in ipairs(testState) do
+		v:update()
+	end
+end
+
+function love.draw()
+	for k,v in ipairs(testState) do
+		v:draw()
+	end
+	
+	
+	debugStr = ""
+	debugStr = debugStr .. "Frame time= " .. math.floor(100000 * snbG.elapsed)/100000 .. "s\n"
+	
+	debugStr = debugStr .. "snbObject:\n"
+	for k,v in pairs(snbObject) do
+		debugStr = debugStr .. "\tk = " .. k .. ", v = " .. tostring(v) .. "\n"
+	end
+	--debugStr = debugStr .. tostring(snbObject) .. "\n"
+	
+	
+	debugStr = debugStr .. "sprite1:\n" .. sprite1:getDebug()
+	debugStr = debugStr .. "sprite2:\n" .. sprite2:getDebug()
+
+	love.graphics.print(debugStr)
+
+end
