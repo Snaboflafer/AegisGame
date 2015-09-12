@@ -1,7 +1,7 @@
 --Class for sprites. Should extend Object
 --snbObject_mt = require("snbObject")
 
-snbSprite = {
+sprite = {
 	x = 0,
 	y = 0,
 	velocity = {x=0, y=0},
@@ -21,7 +21,7 @@ snbSprite = {
 	curAnimFinished = false,
 	frameTimer = 0,
 	imageFile = "[NO IMAGE]",
-	image = love.graphics.newImage("img_blank.png"),
+	image = love.graphics.newImage("/images/img_blank.png"),
 	exists = true,
 	active = true,
 	visible = true,
@@ -30,7 +30,7 @@ snbSprite = {
 
 local function new(self, X, Y, ImageFile)
 	self = self or {}
-	self = setmetatable({}, { __index = snbObject})
+	self = setmetatable({}, { __index = object})
 	--setmetatable(self, snbObject_mt)
 	
 	self.x = X
@@ -120,18 +120,6 @@ local function new(self, X, Y, ImageFile)
 		return debugStr
 	end
 	
-	--	local function updateAnimations()
-	--		if ((curAnim ~= nil) and (curAnimLoop or curAnimFinished) then
-	--			frameTimer = frameTimer + snbG.elapsed
-	--		end
-	--	end
-	
-	--	function self.addAnimation(
-	--		local newAnim = {}
-	--		
-	--		table.insert(self.animations)
-	--	end
-
 	return self
 	
 end

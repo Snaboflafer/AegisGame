@@ -1,5 +1,5 @@
 --General class for game data
-snbG = {
+general = {
 	elapsed = 0,
 	camera = {
 		x=0,
@@ -14,7 +14,7 @@ snbG = {
 local function init(self)
 	self = self or {}
 	
-	self = setmetatable({}, { __index = snbG})
+	self = setmetatable({}, { __index = general})
 	
 	self.elapsed = 0
 	self.camera = {}

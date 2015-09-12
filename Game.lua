@@ -1,5 +1,5 @@
 --Basic class for game overview
-snbGame = {
+game = {
 	state = {}
 }
 

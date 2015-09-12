@@ -1,14 +1,13 @@
 time = 0
 
-snbGame = require("snbGame")
-snbG = require("snbG")
+game = require("Game")
+general = require("General")
 --snbObject = require("snbObject")
-require("snbObject")
-snbSprite = require("snbSprite")
-snbPlayer = require("snbSprite_Player")
-snbEnemy = require("snbSprite_Enemy")
-snbState = require("snbState")
-snbPoint = require("snbPoint")
+require("Object")
+sprite = require("Sprite")
+player = require("Player")
+enemy = require("Enemy")
+state = require("State")
 
 function love.load()
 	curGame = snbGame.new()
@@ -19,19 +18,19 @@ function love.load()
 	testState = {}
 	
 	--obj1 = snbObject:new(4,5)
-	sprite1 = snbSprite:new(32,32,"red16.png")
+	sprite1 = snbSprite:new(32,32,"/images/red16.png")
 	sprite1.acceleration.x = .01
-	sprite2 = snbSprite:new(32, 64,"blue16.png")
+	sprite2 = snbSprite:new(32, 64,"images/blue16.png")
 	table.insert(testState, sprite1)
 	table.insert(testState, sprite2)
 	
 	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
 	--table.insert(testState, player)
 	for i=1,9,1 do
-		table.insert(testState, snbSprite:new(snbG.screenW, 128, "red16.png"))
+		table.insert(testState, snbSprite:new(snbG.screenW, 128, "images/red16.png"))
 	end
 	
-	bgmMusic = love.audio.newSource("music/Locust Toybox - 8-Bit Strawberry.mp3")
+	bgmMusic = love.audio.newSource("sounds/Locust Toybox - 8-Bit Strawberry.mp3")
     bgmMusic:setLooping(true)
     bgmMusic:play()
 	bgmMusic:setVolume(.5)

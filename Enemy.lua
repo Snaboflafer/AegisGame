@@ -1,9 +1,9 @@
 --Class for sprites. Should extend Object
-snbSpriteEnemy = {}
+enemy = {}
 
 local function new(self, X, Y, ImageFile)
 	self = self or {}
-	self = setmetatable({}, { __index = snbSprite})
+	self = setmetatable({}, { __index = sprite})
 	
 	self.x = X
 	self.y = Y
@@ -72,8 +72,8 @@ local function new(self, X, Y, ImageFile)
 		end
 		love.graphics.draw(
 			self.image,
-			self.x - snbG.camera.x * self.scrollFactor.x,
-			self.y - snbG.camera.y * self.scrollFactor.y,
+			self.x - General.camera.x * self.scrollFactor.x,
+			self.y - General.camera.y * self.scrollFactor.y,
 			self.rotation,
 			self.scale.x self.scale.y,
 			self.offset.x, self.offset.y
@@ -91,18 +91,6 @@ local function new(self, X, Y, ImageFile)
 		debugStr = debugStr .. "\t height = " .. self.height .. "\n"
 		return debugStr
 	end
-	
-	--	local function updateAnimations()
-	--		if ((curAnim ~= nil) and (curAnimLoop or curAnimFinished) then
-	--			frameTimer = frameTimer + snbG.elapsed
-	--		end
-	--	end
-	
-	--	function self.addAnimation(
-	--		local newAnim = {}
-	--		
-	--		table.insert(self.animations)
-	--	end
 
 	return self
 	

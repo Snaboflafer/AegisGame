@@ -1,5 +1,5 @@
 --Class for sprites. Should extend Object
-snbPlayer = {
+player = {
 }
 
 	function self.update(self)

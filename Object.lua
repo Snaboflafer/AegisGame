@@ -1,6 +1,6 @@
 --Class for Objects.
-snbObject = {
-	__index = snbObject,
+object = {
+	__index = object,
 	x = 0,
 	y = 0,
 	velocity = {x=0, y=0},
@@ -17,7 +17,7 @@ snbObject = {
 local function new(self, X, Y, Width, Height)
 	self = self or {}
 
-	self = setmetatable({}, { __index = snbObject})
+	self = setmetatable({}, { __index = object})
 	--setmetatable( self, snbObject_mt)
 
 	self.x = X
