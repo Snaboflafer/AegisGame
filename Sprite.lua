@@ -100,8 +100,8 @@ local function new(self, X, Y, ImageFile)
 		end
 		love.graphics.draw(
 			self.image,
-			self.x - snbG.camera.x * self.scrollFactor.x,
-			self.y - snbG.camera.y * self.scrollFactor.y,
+			self.x - general.camera.x * self.scrollFactor.x,
+			self.y - general.camera.y * self.scrollFactor.y,
 			self.rotation,
 			self.scale.x, self.scale.y,
 			self.offset.x, self.offset.y

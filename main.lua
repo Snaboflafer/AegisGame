@@ -5,30 +5,29 @@ general = require("General")
 --snbObject = require("snbObject")
 require("Object")
 sprite = require("Sprite")
-player = require("Player")
-enemy = require("Enemy")
-state = require("State")
+--player = require("Player")
+--enemy = require("Enemy")
 
 function love.load()
-	curGame = snbGame.new()
-	snbG:init()
-	snbG:newCamera(0,0)
+	curGame = game.new()
+	general:init()
+	general:newCamera(0,0)
 	
 	--testState = snbState:new()	--Custom states not implemented yet
 	testState = {}
 	
 	--obj1 = snbObject:new(4,5)
-	sprite1 = snbSprite:new(32,32,"/images/red16.png")
+	sprite1 = sprite:new(32,32,"/images/red16.png")
 	sprite1.acceleration.x = .01
-	sprite2 = snbSprite:new(32, 64,"images/blue16.png")
+	sprite2 = sprite:new(32, 64,"images/blue16.png")
 	table.insert(testState, sprite1)
 	table.insert(testState, sprite2)
 	
 	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
 	--table.insert(testState, player)
-	for i=1,9,1 do
-		table.insert(testState, snbSprite:new(snbG.screenW, 128, "images/red16.png"))
-	end
+	--	for i=1,9,1 do
+	--		table.insert(testState, snbSprite:new(snbG.screenW, 128, "images/red16.png"))
+	--	end
 	
 	bgmMusic = love.audio.newSource("sounds/Locust Toybox - 8-Bit Strawberry.mp3")
     bgmMusic:setLooping(true)
@@ -39,7 +38,7 @@ function love.load()
 end
 
 function love.update(dt)
-	snbG.elapsed = dt
+	general.elapsed = dt
 	time = time + dt
 	
 	sprite2.velocity.x = 5 * math.sin(time)
@@ -59,12 +58,12 @@ function love.draw()
 	
 	
 	debugStr = ""
-	debugStr = debugStr .. "Frame time= " .. math.floor(100000 * snbG.elapsed)/100000 .. "s\n"
+	debugStr = debugStr .. "Frame time= " .. math.floor(100000 * general.elapsed)/100000 .. "s\n"
 	
 	debugStr = debugStr .. "snbObject:\n"
-	for k,v in pairs(snbObject) do
-		debugStr = debugStr .. "\tk = " .. k .. ", v = " .. tostring(v) .. "\n"
-	end
+	--	for k,v in pairs(snbObject) do
+	--		debugStr = debugStr .. "\tk = " .. k .. ", v = " .. tostring(v) .. "\n"
+	--	end
 	--debugStr = debugStr .. tostring(snbObject) .. "\n"
 	
 	
