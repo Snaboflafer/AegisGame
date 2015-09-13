@@ -17,9 +17,11 @@ function love.load()
 	testState = {}
 	
 	--obj1 = snbObject:new(4,5)
-	sprite1 = sprite:new(32,32,"/images/red16.png")
-	sprite1.acceleration.x = .01
-	sprite2 = sprite:new(32, 64,"images/blue16.png")
+	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
+	sprite1 = sprite:new(32,256,"images/ship_fly.png")
+	--sprite1.acceleration.x = .01
+	sprite2 = sprite:new(32, 64,"images/enemy_1.png")
+	table.insert(testState, spriteBg)
 	table.insert(testState, sprite1)
 	table.insert(testState, sprite2)
 	
@@ -31,7 +33,7 @@ function love.load()
 	
 	bgmMusic = love.audio.newSource("sounds/Locust Toybox - 8-Bit Strawberry.mp3")
     bgmMusic:setLooping(true)
-    bgmMusic:play()
+    --bgmMusic:play()
 	bgmMusic:setVolume(.5)
 	
 	--testState:add(sprite1)
@@ -43,6 +45,7 @@ function love.update(dt)
 	
 	sprite2.velocity.x = 5 * math.sin(time)
 	sprite2.velocity.y = 3 * math.sin(1.23 * time)
+	sprite1.velocity.y = 4 * math.cos(time)
 	
 	--testState:update()
 	--sprite1:update()
@@ -59,6 +62,7 @@ function love.draw()
 	
 	debugStr = ""
 	debugStr = debugStr .. "Frame time= " .. math.floor(100000 * general.elapsed)/100000 .. "s\n"
+	debugStr = debugStr .. "FPS= " .. math.floor(1/general.elapsed) .. "\n"
 	
 	debugStr = debugStr .. "snbObject:\n"
 	--	for k,v in pairs(snbObject) do
