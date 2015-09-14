@@ -1,25 +1,18 @@
 time = 0
 
-game = require("Game")
 general = require("General")
---snbObject = require("snbObject")
-require("Object")
 sprite = require("Sprite")
 --player = require("Player")
 --enemy = require("Enemy")
 
 function love.load()
-	curGame = game.new()
 	general:init()
 	general:newCamera(0,0)
 	
-	--testState = snbState:new()	--Custom states not implemented yet
 	testState = {}
 	
-	--obj1 = snbObject:new(4,5)
 	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
 	sprite1 = sprite:new(32,256,"images/ship_fly.png")
-	--sprite1.accelerationX = .01
 	sprite2 = sprite:new(32, 64,"images/enemy_1.png")
 	table.insert(testState, spriteBg)
 	table.insert(testState, sprite1)

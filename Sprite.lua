@@ -19,21 +19,6 @@ Sprite = {
 	image = love.graphics.newImage("/images/img_blank.png"),
 }
 
---[[  
--- new function in prototype.lua fashion
-function newSprite(X,Y, ImageFile) {
-	local s = {
-		x = X,
-		y = Y,
-	}
-	if (ImageFile ~= nil) then
-		imageFile = ImageFile
-		image = love.graphics.newImage(imageFile)
-	setmetatable(s, Sprite)
-	return s
-}
---]]
-
 -- new function based on http://www.lua.org/pil/16.1.html
 -- Sprite["new"] = function(self, X, Y, ImageFile)
 -- Sprite.new = function(self, X, Y, ImageFile)
