@@ -19,7 +19,7 @@ function love.load()
 	--obj1 = snbObject:new(4,5)
 	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
 	sprite1 = sprite:new(32,256,"images/ship_fly.png")
-	--sprite1.acceleration.x = .01
+	--sprite1.accelerationX = .01
 	sprite2 = sprite:new(32, 64,"images/enemy_1.png")
 	table.insert(testState, spriteBg)
 	table.insert(testState, sprite1)
@@ -48,9 +48,9 @@ function love.update(dt)
 	general.elapsed = dt
 	time = time + dt
 	
-	sprite2.velocity.x = 5 * math.sin(time)
-	sprite2.velocity.y = 3 * math.sin(1.23 * time)
-	sprite1.velocity.y = 4 * math.cos(time)
+	sprite2.velocityX = 5 * math.sin(time)
+	sprite2.velocityY = 3 * math.sin(1.23 * time)
+	sprite1.velocityY = 4 * math.cos(time)
 	
 	--testState:update()
 	--sprite1:update()
