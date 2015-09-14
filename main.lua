@@ -16,27 +16,19 @@ function love.load()
 	
 	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
 
-<<<<<<< HEAD
-	table.insert(testState, spriteBg)
-=======
 	gameState:add(spriteBg)
 	gameState:add(sprite1)
 	--table.insert(testState, spriteBg)
 	--table.insert(testState, sprite1)
 	gameState:add(sprite2)
->>>>>>> fc286dc47cb3b2d5dbdea2fc5bdfd984e5496c59
 	
 	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
 	--table.insert(testState, player)
 	player = Player:new(100, 100, "images/ship_fly.png")
-<<<<<<< HEAD
-	table.insert(testState, player)
 	
-	for i=1,9,1 do
-=======
 	gameState:add(player)
-	for i=1,500,1 do
->>>>>>> fc286dc47cb3b2d5dbdea2fc5bdfd984e5496c59
+
+	for i=1,20,1 do
 		curEnemy = {}
 		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
 		curEnemy:lockToScreen()
@@ -58,12 +50,10 @@ function love.update(dt)
 	General.elapsed = dt * General.timeScale
 	time = time + dt
 	
-<<<<<<< HEAD
 	for k,v in ipairs(testState) do
 		v:update()
 	end
-=======
-	sprite1.accelerationY = 50 * math.cos(time)
+	--sprite1.accelerationY = 50 * math.cos(time)
 	
 	--testState:update()
 	--sprite1:update()
@@ -71,7 +61,6 @@ function love.update(dt)
 	--	for k,v in ipairs(testState) do
 	--		v:update()
 	--	end
->>>>>>> fc286dc47cb3b2d5dbdea2fc5bdfd984e5496c59
 end
 
 function love.draw()
