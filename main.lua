@@ -35,9 +35,9 @@ function love.load()
 		gameState:add(curEnemy)
 	end
 	
-	bgmMusic = love.audio.newSource("sounds/Locust Toybox - 8-Bit Strawberry.mp3")
+	bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
     bgmMusic:setLooping(true)
-	bgmMusic:setVolume(.5)
+	bgmMusic:setVolume(.2)
 	bgmMusic:play()
 	
 end
