@@ -24,7 +24,7 @@ function love.load()
 	
 	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
 	--table.insert(testState, player)
-	player = Player:new(100, 100, "images/ship_fly.png",128,128)
+	player = Player:new(100, 100, "images/ship_fly.png",128,64)
 	
 	gameState:add(player)
 
