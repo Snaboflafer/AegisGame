@@ -1,20 +1,18 @@
 --General class for game data
-general = {
+General = {
 	elapsed = 0,
-	camera = {
-		x=0,
-		y=0
-	},
+	camera = {x=0, y=0},
 	volume = 1,
 	timeScale = 1,
 	screenW = 0,
 	screenH = 0
 }
 
-local function init(self)
-	self = self or {}
+function General:init()
+	s = {}
 	
-	self = setmetatable({}, { __index = general})
+	setmetatable(s, self)
+	self.__index = self
 	
 	self.elapsed = 0
 	self.camera = {}
@@ -23,10 +21,14 @@ local function init(self)
 	self.screenW = love.window.getWidth()
 	self.screenH = love.window.getHeight()
 	
-	return snbG
+	return s
 end
 
-local function newCamera(self, X, Y)
+function General:getFPS()
+	return 1/General.elapsed
+end
+
+function General:newCamera(X, Y)
 	if (self.camera ~= nil) then
 		--self.camera:destroy()
 	end
@@ -38,7 +40,4 @@ local function newCamera(self, X, Y)
 	}
 end
 
-return {
-	init = init,
-	newCamera = newCamera
-}
+return General

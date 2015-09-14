@@ -1,28 +1,35 @@
 time = 0
 
-general = require("General")
+require("General")
+require("Utility")
 sprite = require("Sprite")
 --player = require("Player")
---enemy = require("Enemy")
+enemy = require("Enemy")
 
 function love.load()
-	general:init()
-	general:newCamera(0,0)
+	General:init()
+	General:newCamera(0,0)
 	
 	testState = {}
 	
 	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
-	sprite1 = sprite:new(32,256,"images/ship_fly.png")
-	sprite2 = sprite:new(32, 64,"images/enemy_1.png")
+	sprite1 = sprite:new(32,256,"images/ship_fly.png",128,128)
+	sprite1:lockToScreen()
+	--sprite1.maxVelocityY = 200
+	sprite2 = enemy:new(32, 64,"images/enemy_1.png",64,64)
+
 	table.insert(testState, spriteBg)
 	table.insert(testState, sprite1)
 	table.insert(testState, sprite2)
 	
 	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
 	--table.insert(testState, player)
-	--	for i=1,9,1 do
-	--		table.insert(testState, snbSprite:new(snbG.screenW, 128, "images/red16.png"))
-	--	end
+	for i=1,9,1 do
+		curEnemy = {}
+		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
+		curEnemy:lockToScreen()
+		table.insert(testState, curEnemy)
+	end
 	
 	bgmMusic = love.audio.newSource("sounds/Locust Toybox - 8-Bit Strawberry.mp3")
     bgmMusic:setLooping(true)
@@ -38,12 +45,10 @@ function love.update(dt)
 		love.event.push('quit')
 	end
 	
-	general.elapsed = dt
+	General.elapsed = dt * General.timeScale
 	time = time + dt
 	
-	sprite2.velocityX = 5 * math.sin(time)
-	sprite2.velocityY = 3 * math.sin(1.23 * time)
-	sprite1.velocityY = 4 * math.cos(time)
+	sprite1.accelerationY = 300 * math.cos(time)
 	
 	--testState:update()
 	--sprite1:update()
@@ -59,16 +64,18 @@ function love.draw()
 	
 	
 	debugStr = ""
-	debugStr = debugStr .. "Frame time= " .. math.floor(100000 * general.elapsed)/100000 .. "s\n"
-	debugStr = debugStr .. "FPS= " .. math.floor(1/general.elapsed) .. "\n"
+	debugStr = debugStr .. "Frame time= " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
+	debugStr = debugStr .. "FPS= " .. math.floor(1/General.elapsed) .. "\n"
 	
-	debugStr = debugStr .. "snbObject:\n"
+	--debugStr = debugStr .. "snbObject:\n"
 	--	for k,v in pairs(snbObject) do
 	--		debugStr = debugStr .. "\tk = " .. k .. ", v = " .. tostring(v) .. "\n"
 	--	end
 	--debugStr = debugStr .. tostring(snbObject) .. "\n"
 	
-	
+	debugStr = debugStr .. "ScreenW = " .. General.screenW .. "\n"
+	debugStr = debugStr .. "ScreenH = " .. General.screenH .. "\n"
+	debugStr = debugStr .. "\n"
 	debugStr = debugStr .. "sprite1:\n" .. sprite1:getDebug()
 	debugStr = debugStr .. "sprite2:\n" .. sprite2:getDebug()
 
