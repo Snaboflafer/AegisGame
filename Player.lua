@@ -2,7 +2,7 @@ Player = Sprite:new(X,Y, ImageFile)
 
 Player.magnitude = 100
 Player.momentArm = math.sqrt(Player.magnitude^2/2)
-
+thump = love.audio.newSource("sounds/thump.mp3")
 -- as of now you must use this method to change the magnitude
 -- otherwise, the momentArm will not be recalculated
 function Player:changeMagnitude(m)
@@ -34,8 +34,26 @@ function Player:update()
 	elseif love.keyboard.isDown('d') then
         	self.velocityX = self.magnitude
 		self.velocityY = 0
+	else
+		self.velocityX = 0;
+		self.velocityY = 0;
     	end
 	Sprite.update(self)
+	if (touchingU) or (touchingD) or (touchingL) or (touchingR) then
+		thump:play()
+		if (touchingU) then
+			self.y = 10
+		end
+		if (touchingD) then
+			self.y = General.screenH - self.height - 10
+		end
+		if (touchingL) then
+			self.x = 10
+		end
+		if (touchingR) then
+			self.x = General.screenW - self.width - 10
+		end
+	end
 end
 
 
