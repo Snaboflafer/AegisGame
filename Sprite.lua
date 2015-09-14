@@ -1,44 +1,37 @@
---Class for Sprites. Should extend Object
-require("Utility")
+--Base class for Sprites. Can create instances, or be extended.
 
+--Default prototype values
 Sprite = {
-	x = 0,
+	x = 0,	--Position
 	y = 0,
-	width = 0,
+	width = 0,	--Size for collisions
 	height = 0,
-	velocityX = 0,
+	velocityX = 0,	--Movement velocity, measured in px/second
 	velocityY = 0,
-	accelerationX = 0,
+	accelerationX = 0,	--Acceleration, measured in px/second/second
 	accelerationY = 0,
-	maxVelocityX = -1,
+	maxVelocityX = -1,	--Maximum speed. Negative values to disable.
 	maxVelocityY = -1,
-	dragX = 0,
+	dragX = 0,	--Drag when no acceleration active
 	dragY = 0,
-	rotation = 0,
-	originX = 0,
-	originY = 0,
-	offsetX = 0,
+	rotation = 0,	--Rotation of sprite, in radians
+	originX = 0,	--Origin for rotation
+	originY = 0,	
+	offsetX = 0,	--Offset from top left of sprite to collision start
 	offsetY = 0,
-	scaleX = 1,
+	scaleX = 1,		--Size multiplier
 	scaleY = 1,
-	rotation = 0,
-	imageFile = "[NO IMAGE]",
-	image = love.graphics.newImage("/images/img_blank.png"),
-	lockToScreen = false
+	imageFile = "[NO IMAGE]",	--Filename for image
+	image = love.graphics.newImage("/images/img_blank.png"), --Image of sprite
+	lockToScreen = false	--Set to true to prevent sprite from moving offscreen
 }
 
 -- new function based on http://www.lua.org/pil/16.1.html
--- Sprite["new"] = function(self, X, Y, ImageFile)
--- Sprite.new = function(self, X, Y, ImageFile)
 function Sprite:new(X,Y, ImageFile, Width, Height)
-	-- make a temp object with either the provided object or a new one
-	-- if none is provided
 	s = {}
-	-- makes object a prototype for Sprite
-	-- setmetatable(s, { __index = object})
 	setmetatable(s, self)
-	-- basically Sprite.__index = Sprite
 	self.__index = self
+
 	s.x = X
 	s.y = Y
 	s.width = Width or 0
@@ -55,7 +48,7 @@ function Sprite:update()
 	if self.accelerationX == 0 then
 		self.velocityX = self.velocityX - self.dragX*Utility:signOf(self.velocityX)
 	else
-		self.velocityX = self.velocityX + self.accelerationX
+		self.velocityX = self.velocityX + self.accelerationX*General.elapsed
 	end
 	if (self.maxVelocityX >= 0) and (math.abs(self.velocityX) > self.maxVelocityX) then
 		self.velocityX = self.maxVelocityX * Utility:signOf(self.velocityX)
@@ -64,14 +57,14 @@ function Sprite:update()
 	if self.accelerationY == 0 then
 		self.velocityY = self.velocityY - self.dragY*Utility:signOf(self.velocityY)
 	else
-		self.velocityY = self.velocityY + self.accelerationY
+		self.velocityY = self.velocityY + self.accelerationY*General.elapsed
 	end
 	if (self.maxVelocityY >= 0) and (math.abs(self.velocityY) > self.maxVelocityY) then
 		self.velocityY = self.maxVelocityY * Utility:signOf(self.velocityY)
 	end
 	
-	self.x = self.x + self.velocityX
-	self.y = self.y + self.velocityY
+	self.x = self.x + self.velocityX*General.elapsed
+	self.y = self.y + self.velocityY*General.elapsed
 	if (lockToScreen) then
 		if self.y < 0 then
 			self.y = 0

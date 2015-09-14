@@ -24,6 +24,10 @@ function General:init()
 	return s
 end
 
+function General:getFPS()
+	return 1/General.elapsed
+end
+
 function General:newCamera(X, Y)
 	if (self.camera ~= nil) then
 		--self.camera:destroy()
