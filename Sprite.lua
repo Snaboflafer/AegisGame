@@ -23,7 +23,7 @@ Sprite = {
 	scaleY = 1,
 	imageFile = "[NO IMAGE]",	--Filename for image
 	image = love.graphics.newImage("/images/img_blank.png"), --Image of sprite
-	lockToScreen = false	--Set to true to prevent sprite from moving offscreen
+	lockToScreen = false,	--Set to true to prevent sprite from moving offscreen
 	touchingU = false,
 	touchingD = false,
 	touchingL = false,
@@ -70,7 +70,11 @@ function Sprite:update()
 	self.x = self.x + self.velocityX*General.elapsed
 	self.y = self.y + self.velocityY*General.elapsed
 	if (lockToScreen) then
-		touchingU = touchingD = touchingL = touchingR = 0
+		touchingU = false
+		touchingD = false
+		touchingL = false
+		touchingR = false
+		
 		if self.y < 0 then
 			self.y = 0
 			touchingU = true
