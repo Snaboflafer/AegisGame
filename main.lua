@@ -19,6 +19,13 @@ function love.load()
 	table.insert(testState, sprite1)
 	table.insert(testState, sprite2)
 	
+	enemy1 = {}
+	for i=1,9,1 do
+		enemy1[i] = enemy:new(32*i, 64*i,"images/enemy_1.png",64,64)
+		enemy1[i].enemyID = i;
+		table.insert(testState, enemy1[i])
+	end
+
 	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
 	--table.insert(testState, player)
 	--	for i=1,9,1 do

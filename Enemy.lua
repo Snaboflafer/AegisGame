@@ -1,10 +1,11 @@
 --Class for sprites. Should extend Object
-Enemy = Sprite:new{time = 1}
+Enemy = Sprite:new()
 
 function Enemy:update()
 	self.x = self.x + self.velocityX
 	self.y = self.y + self.velocityY
-		math.randomseed(os.time())
+		enemyID = enemyID or 1;
+		math.randomseed(os.time()*enemyID)
 		self.velocityX = (math.random() - 0.5)*10
 		self.velocityY = (math.random() - 0.5)*10
 	if (lockToScreen) then
