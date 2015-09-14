@@ -1,32 +1,13 @@
 --Class for sprites. Should extend Object
-Enemy = Sprite:new()
+Enemy = Sprite:new{}
 
 function Enemy:update()
-	self.x = self.x + self.velocityX
-	self.y = self.y + self.velocityY
-	self.enemyID = self.enemyID or 1;
-	math.randomseed(os.time()*self.enemyID*self.x *self.y)
-	self.velocityX = (math.random() - 0.5)*10
-	self.velocityY = (math.random() - 0.5)*10
-	if (lockToScreen) then
-		if self.y < 0 then
-			self.y = 0
-			self.velocityY = 0
-		elseif self.y + self.height > General.screenH then
-			self.y = General.screenH - self.height
-			self.velocityY = 0
-		end
-		if self.x < 0 then
-			self.x = 0
-			self.velocityX = 0
-		elseif self.x + self.width > General.screenW then
-			self.x = General.screenW - self.width
-			self.velocityX = 0
-		end
-	else 
-	end
-	
-	
+	math.randomseed(time*self.y)
+	self.accelerationX = (math.random() - 0.5)*1000
+	self.accelerationY = (math.random() - 0.5)*1000
+	Sprite.update(self)
+	if touchingU or touchingD then self.velocityY = -self.velocityY end
+	if touchingR or touchingL then self.velocityX = -self.velocityX end
 end
 
 return Enemy	
