@@ -38,6 +38,7 @@ function love.load()
 	bgmMusic = love.audio.newSource("sounds/Locust Toybox - 8-Bit Strawberry.mp3")
     bgmMusic:setLooping(true)
 	bgmMusic:setVolume(.5)
+	bgmMusic:play()
 	
 end
 

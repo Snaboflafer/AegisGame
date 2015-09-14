@@ -2,6 +2,7 @@ Steven Austin sausti12@jhu.edu
 Nathaniel Rhodes nrhodes5@jhu.edu
 Jung Yang jyang99@jhu.edu
 
+
 DEVELOPMENT PLAN
 
 ALPHA
@@ -63,3 +64,8 @@ Basic level progression:
 2. After the tutorial level, we will introduce more enemies. New enemies could be either air or land based, although the player can fight from either mode. The majority of enemies would spawn in patterned groups (e.g. Galaga), and fly around screen for a short time until either the player defeats them or camera scrolls past them. Stronger enemies would stay on the screen until defeated.
 
 Stages should take a few minutes each, with a total of ten levels. Since the game is a side-scrolling shooter, levels are less defined by their geometry but the enemies patterns encountered. Early levels would have simple enemies, while later levels would have an increased number with greater capabilities.
+
+
+Credits
+Music: Artist is Locust Toybox, Song 8-Bit Strawberry
+Image: Image Stealth Hawk Alien Landscape
