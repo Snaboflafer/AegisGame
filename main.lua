@@ -49,7 +49,7 @@ function love.update(dt)
 	end
 	
 	General.elapsed = dt * General.timeScale
-	time = time + dt
+	time = time + General.elapsed
 	
 	for k,v in ipairs(testState) do
 		v:update()
