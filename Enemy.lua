@@ -1,5 +1,5 @@
 --Class for sprites. Should extend Object
-Enemy = Sprite:new{time = 0}
+Enemy = Sprite:new{time = 1}
 
 function Enemy:update()
 	self.x = self.x + self.velocityX
