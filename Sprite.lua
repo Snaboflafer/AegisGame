@@ -23,7 +23,11 @@ Sprite = {
 	scaleY = 1,
 	imageFile = "[NO IMAGE]",	--Filename for image
 	image = love.graphics.newImage("/images/img_blank.png"), --Image of sprite
-	lockToScreen = false	--Set to true to prevent sprite from moving offscreen
+	lockToScreen = false,	--Set to true to prevent sprite from moving offscreen
+	touchingU = false,
+	touchingD = false,
+	touchingL = false,
+	touchingR = false
 }
 
 -- new function based on http://www.lua.org/pil/16.1.html
@@ -66,14 +70,23 @@ function Sprite:update()
 	self.x = self.x + self.velocityX*General.elapsed
 	self.y = self.y + self.velocityY*General.elapsed
 	if (lockToScreen) then
+		touchingU = false
+		touchingD = false
+		touchingL = false
+		touchingR = false
+		
 		if self.y < 0 then
 			self.y = 0
+			touchingU = true
 		elseif self.y + self.height > General.screenH then
 			self.y = General.screenH - self.height
+			touchingD = true
 		elseif self.x < 0 then
 			self.x = 0
+			touchingL = true
 		elseif self.x + self.width > General.screenW then
 			self.x = General.screenW - self.width
+			touchingR = true
 		end
 	end
 end	
