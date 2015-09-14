@@ -81,7 +81,8 @@ function Sprite:update()
 		elseif self.y + self.height > General.screenH then
 			self.y = General.screenH - self.height
 			touchingD = true
-		elseif self.x < 0 then
+		end
+		if self.x < 0 then
 			self.x = 0
 			touchingL = true
 		elseif self.x + self.width > General.screenW then
