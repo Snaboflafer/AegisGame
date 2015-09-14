@@ -3,7 +3,7 @@ time = 0
 require("General")
 require("Utility")
 sprite = require("Sprite")
---player = require("Player")
+player = require("Player")
 enemy = require("Enemy")
 
 function love.load()
@@ -22,8 +22,8 @@ function love.load()
 	table.insert(testState, sprite1)
 	table.insert(testState, sprite2)
 	
-	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
-	--table.insert(testState, player)
+	player = Player:new(100, 100, "images/ship_fly.png")
+	table.insert(testState, player)
 	for i=1,9,1 do
 		curEnemy = {}
 		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
@@ -36,7 +36,6 @@ function love.load()
     --bgmMusic:play()
 	bgmMusic:setVolume(.5)
 	
-	--testState:add(sprite1)
 end
 
 function love.update(dt)
@@ -78,6 +77,7 @@ function love.draw()
 	debugStr = debugStr .. "\n"
 	debugStr = debugStr .. "sprite1:\n" .. sprite1:getDebug()
 	debugStr = debugStr .. "sprite2:\n" .. sprite2:getDebug()
+	debugStr = debugStr .. "player:\n" .. player:getDebug()
 
 	love.graphics.print(debugStr)
 

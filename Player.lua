@@ -1,6 +1,6 @@
 Player = Sprite:new(X,Y, ImageFile)
 
-Player.magnitude = 9
+Player.magnitude = 100
 Player.momentArm = math.sqrt(Player.magnitude^2/2)
 
 -- as of now you must use this method to change the magnitude
