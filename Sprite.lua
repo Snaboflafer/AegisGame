@@ -1,4 +1,5 @@
 --Class for Sprites. Should extend Object
+require("Utility")
 
 Sprite = {
 	x = 0,
@@ -9,6 +10,10 @@ Sprite = {
 	velocityY = 0,
 	accelerationX = 0,
 	accelerationY = 0,
+	maxVelocityX = -1,
+	maxVelocityY = -1,
+	dragX = 0,
+	dragY = 0,
 	rotation = 0,
 	originX = 0,
 	originY = 0,
@@ -45,14 +50,26 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	return s
 end
 
-function Sprite:sayHi()
-	love.graphics.print("Hi", 100,100)
-end
-
 -- updates velocity and position of sprite
 function Sprite:update()
-	self.velocityX = self.velocityX + self.accelerationX
-	self.velocityY = self.velocityY + self.accelerationY
+	if self.accelerationX == 0 then
+		self.velocityX = self.velocityX - self.dragX*Utility:signOf(self.velocityX)
+	else
+		self.velocityX = self.velocityX + self.accelerationX
+	end
+	if (self.maxVelocityX >= 0) and (math.abs(self.velocityX) > self.maxVelocityX) then
+		self.velocityX = self.maxVelocityX * Utility:signOf(self.velocityX)
+	end
+
+	if self.accelerationY == 0 then
+		self.velocityY = self.velocityY - self.dragY*Utility:signOf(self.velocityY)
+	else
+		self.velocityY = self.velocityY + self.accelerationY
+	end
+	if (self.maxVelocityY >= 0) and (math.abs(self.velocityY) > self.maxVelocityY) then
+		self.velocityY = self.maxVelocityY * Utility:signOf(self.velocityY)
+	end
+	
 	self.x = self.x + self.velocityX
 	self.y = self.y + self.velocityY
 	if (lockToScreen) then
@@ -90,8 +107,8 @@ function Sprite:getDebug()
 	debugStr = debugStr .. "\t x = " .. math.floor(self.x) .. "\n"
 	debugStr = debugStr .. "\t y = " .. math.floor(self.y) .. "\n"
 	debugStr = debugStr .. "\t width = " .. self.width .. ", height = " .. self.height .. "\n"
-	debugStr = debugStr .. "\t velocity = " .. math.floor(self.velocityX) .. ", " .. math.floor(self.velocityY) .. "\n"
-	debugStr = debugStr .. "\t acceleration = " .. self.accelerationX .. ", " .. self.accelerationY .. "\n"
+	debugStr = debugStr .. "\t velocity = " .. math.floor(10 * self.velocityX)/10 .. ", " .. math.floor(10 * self.velocityY)/10 .. "\n"
+	debugStr = debugStr .. "\t acceleration = " .. math.floor(10 * self.accelerationX)/10 .. ", " .. math.floor(10 * self.accelerationY)/10 .. "\n"
 	return debugStr
 end
 
