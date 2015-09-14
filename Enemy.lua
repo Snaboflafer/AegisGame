@@ -4,8 +4,7 @@ Enemy = Sprite:new{time = 0}
 function Enemy:update()
 	self.x = self.x + self.velocityX
 	self.y = self.y + self.velocityY
-		time = os.time() 
-		math.randomseed(time)
+		math.randomseed(os.time())
 		self.velocityX = (math.random() - 0.5)*10
 		self.velocityY = (math.random() - 0.5)*10
 	if (lockToScreen) then
