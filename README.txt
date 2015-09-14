@@ -1,6 +1,7 @@
 Steven Austin sausti12@jhu.edu
 Nathaniel Rhodes nrhodes5@jhu.edu
 Jung Yang jyang99@jhu.edu
+Andrew Shiau ashiau1@jhu.edu
 
 
 DEVELOPMENT PLAN
@@ -67,5 +68,5 @@ Stages should take a few minutes each, with a total of ten levels. Since the gam
 
 
 Credits
-Music: Artist is Locust Toybox, Song 8-Bit Strawberry
+Music: 	Nighogg soundtrack by Daedelus
 Image: Image Stealth Hawk Alien Landscape
