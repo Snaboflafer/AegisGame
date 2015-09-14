@@ -2,6 +2,7 @@ time = 0
 
 require("General")
 require("Utility")
+require("State")
 sprite = require("Sprite")
 --player = require("Player")
 enemy = require("Enemy")
@@ -10,6 +11,7 @@ function love.load()
 	General:init()
 	General:newCamera(0,0)
 	
+	gameState = State:new()
 	testState = {}
 	
 	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
@@ -18,17 +20,19 @@ function love.load()
 	--sprite1.maxVelocityY = 200
 	sprite2 = enemy:new(32, 64,"images/enemy_1.png",64,64)
 
-	table.insert(testState, spriteBg)
-	table.insert(testState, sprite1)
-	table.insert(testState, sprite2)
+	gameState:add(spriteBg)
+	gameState:add(sprite1)
+	--table.insert(testState, spriteBg)
+	--table.insert(testState, sprite1)
+	gameState:add(sprite2)
 	
 	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
 	--table.insert(testState, player)
-	for i=1,9,1 do
+	for i=1,500,1 do
 		curEnemy = {}
 		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
 		curEnemy:lockToScreen()
-		table.insert(testState, curEnemy)
+		gameState:add(curEnemy)
 	end
 	
 	bgmMusic = love.audio.newSource("sounds/Locust Toybox - 8-Bit Strawberry.mp3")
@@ -48,19 +52,21 @@ function love.update(dt)
 	General.elapsed = dt * General.timeScale
 	time = time + dt
 	
-	sprite1.accelerationY = 300 * math.cos(time)
+	sprite1.accelerationY = 50 * math.cos(time)
 	
 	--testState:update()
 	--sprite1:update()
-	for k,v in ipairs(testState) do
-		v:update()
-	end
+	gameState:update()
+	--	for k,v in ipairs(testState) do
+	--		v:update()
+	--	end
 end
 
 function love.draw()
-	for k,v in ipairs(testState) do
-		v:draw()
-	end
+	gameState:draw()
+	--	for k,v in ipairs(testState) do
+	--		v:draw()
+	--	end
 	
 	
 	debugStr = ""

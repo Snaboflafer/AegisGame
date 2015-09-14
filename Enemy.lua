@@ -5,7 +5,7 @@ function Enemy:update()
 	self.x = self.x + self.velocityX
 	self.y = self.y + self.velocityY
 	self.enemyID = self.enemyID or 1;
-	math.randomseed(os.time()*self.enemyID)
+	math.randomseed(os.time()*self.enemyID*self.x *self.y)
 	self.velocityX = (math.random() - 0.5)*10
 	self.velocityY = (math.random() - 0.5)*10
 	if (lockToScreen) then
