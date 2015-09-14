@@ -16,7 +16,7 @@ function love.load()
 	sprite1:lockToScreen()
 	sprite1.maxVelocityY = 2
 	sprite2 = enemy:new(32, 64,"images/enemy_1.png",64,64)
-	--sprite2 = sprite:new(32, 64,"images/enemy_1.png",64,64)
+	sprite2 = sprite:new(32, 64,"images/enemy_1.png",64,64)
 
 	table.insert(testState, spriteBg)
 	table.insert(testState, sprite1)
@@ -24,10 +24,9 @@ function love.load()
 	
 	--player = snbPlayer:new(64, snbG.screenH/2, "blue16.png")
 	--table.insert(testState, player)
-	math.randomseed(os.time())
 	for i=1,9,1 do
 		curEnemy = {}
-		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
+		curEnemy = sprite:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
 		curEnemy:lockToScreen()
 		table.insert(testState, curEnemy)
 	end
@@ -41,15 +40,13 @@ function love.load()
 end
 
 function love.update(dt)
-	dt = dt * General.timeScale
-	General.elapsed = dt
-	time = time + dt
-	math.randomseed(os.time())
 
 	if love.keyboard.isDown('escape') then
 		love.event.push('quit')
 	end
 	
+	General.elapsed = dt * General.timeScale
+	time = time + dt
 	
 	sprite2.velocityX = 5 * math.sin(time)
 	sprite2.velocityY = 3 * math.sin(1.23 * time)

@@ -2,11 +2,7 @@
 Enemy = Sprite:new()
 
 function Enemy:update()
-	--math.randomseed(os.time())
-	math.randomseed(os.time() * self.x * self.y)
-	--Above line is more random, but jittery.
-	
-	
+	math.randomseed(os.time())
 	--[[self.accelerationX = math.random() - 0.5
 	self.accelerationY = math.random() - 0.5
 	self.velocityX = (self.velocityX + self.accelerationX)
