@@ -1,5 +1,6 @@
 Steven Austin sausti12@jhu.edu
 Andrew Shiau ashiau1@jhu.edu
+Nathaniel Rhodes nrhodes5@jhu.edu
 
 DEVELOPMENT PLAN
 
