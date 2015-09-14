@@ -3,7 +3,7 @@ time = 0
 general = require("General")
 sprite = require("Sprite")
 --player = require("Player")
---enemy = require("Enemy")
+enemy = require("Enemy")
 
 function love.load()
 	general:init()
@@ -14,7 +14,7 @@ function love.load()
 	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
 	sprite1 = sprite:new(32,256,"images/ship_fly.png",128,128)
 	sprite1:lockToScreen()
-	sprite2 = sprite:new(32, 64,"images/enemy_1.png",64,64)
+	sprite2 = enemy:new(32, 64,"images/enemy_1.png",64,64)
 	table.insert(testState, spriteBg)
 	table.insert(testState, sprite1)
 	table.insert(testState, sprite2)
@@ -42,8 +42,6 @@ function love.update(dt)
 	general.elapsed = dt
 	time = time + dt
 	
-	sprite2.velocityX = 5 * math.sin(time)
-	sprite2.velocityY = 3 * math.sin(1.23 * time)
 	sprite1.velocityY = 10 * math.cos(time)
 	
 	--testState:update()
