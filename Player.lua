@@ -1,6 +1,6 @@
 Player = Sprite:new(X,Y, ImageFile)
 
-Player.magnitude = 100
+Player.magnitude = 400
 Player.momentArm = math.sqrt(Player.magnitude^2/2)
 thump = love.audio.newSource("sounds/thump.mp3")
 -- as of now you must use this method to change the magnitude
