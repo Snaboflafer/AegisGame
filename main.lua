@@ -14,12 +14,10 @@ function love.load()
 	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
 	sprite1 = sprite:new(32,256,"images/ship_fly.png",128,128)
 	sprite1:lockToScreen()
-<<<<<<< Updated upstream
-	sprite2 = enemy:new(32, 64,"images/enemy_1.png",64,64)
-=======
 	sprite1.maxVelocityY = 2
+	sprite2 = enemy:new(32, 64,"images/enemy_1.png",64,64)
 	sprite2 = sprite:new(32, 64,"images/enemy_1.png",64,64)
->>>>>>> Stashed changes
+
 	table.insert(testState, spriteBg)
 	table.insert(testState, sprite1)
 	table.insert(testState, sprite2)
@@ -50,13 +48,9 @@ function love.update(dt)
 	General.elapsed = dt * General.timeScale
 	time = time + dt
 	
-<<<<<<< Updated upstream
-	sprite1.velocityY = 10 * math.cos(time)
-=======
 	sprite2.velocityX = 5 * math.sin(time)
 	sprite2.velocityY = 3 * math.sin(1.23 * time)
 	sprite1.velocityY = 5 * math.cos(time)
->>>>>>> Stashed changes
 	
 	--testState:update()
 	--sprite1:update()
