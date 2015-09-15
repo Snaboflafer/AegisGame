@@ -3,6 +3,7 @@ time = 0
 require("General")
 require("Utility")
 require("State")
+require("Group")
 sprite = require("Sprite")
 player = require("Player")
 enemy = require("Enemy")
@@ -20,12 +21,14 @@ function love.load()
 	player = Player:new(100, 100, "images/ship_fly.png",128,64)
 	gameState:add(player)
 
+	enemies = Group:new()
 	for i=1,9,1 do
 		curEnemy = {}
 		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
 		curEnemy:lockToScreen()
-		gameState:add(curEnemy)
+		enemies:add(curEnemy)
 	end
+	gameState:add(enemies)
 	
 	--Do music
 	bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
@@ -55,9 +58,11 @@ function love.draw()
 	debugStr = debugStr .. "FPS= " .. math.floor(1/General.elapsed) .. "\n"	
 	debugStr = debugStr .. "ScreenW = " .. General.screenW .. "\n"
 	debugStr = debugStr .. "ScreenH = " .. General.screenH .. "\n"
+	
 	debugStr = debugStr .. "\n"
 	debugStr = debugStr .. "player:\n" .. player:getDebug()
+	debugStr = debugStr .. "enemyGroup:\n" .. enemies:toString()
 
-	--love.graphics.print(debugStr)
+	love.graphics.print(debugStr)
 
 end

@@ -10,4 +10,8 @@ function Enemy:update()
 	if touchingR or touchingL then self.velocityX = -self.velocityX end
 end
 
+function Enemy:getType()
+	return "Enemy"
+end
+
 return Enemy	

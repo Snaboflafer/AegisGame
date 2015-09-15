@@ -56,5 +56,8 @@ function Player:update()
 	end
 end
 
+function Player:getType()
+	return "Player"
+end
 
 return Player

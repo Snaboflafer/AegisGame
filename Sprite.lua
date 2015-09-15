@@ -107,9 +107,14 @@ end
 function Sprite:lockToScreen(value)
 	lockToScreen = value or true
 end
+
+function Sprite:getType()
+	return "Sprite"
+end
 	
 function Sprite:getDebug()
 	debugStr = ""
+	debugStr = debugStr .. "\t Type = " .. self:getType() .. "\n"
 	debugStr = debugStr .. "\t Image = " .. self.imageFile .. "\n"
 	debugStr = debugStr .. "\t x = " .. math.floor(self.x) .. "\n"
 	debugStr = debugStr .. "\t y = " .. math.floor(self.y) .. "\n"
