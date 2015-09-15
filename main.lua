@@ -37,7 +37,7 @@ end
 
 function love.update(dt)
 	General.elapsed = dt * General.timeScale
-	time = time + dt
+	time = time + General.elapsed
 
 	if love.keyboard.isDown('escape') then
 		love.event.push('quit')

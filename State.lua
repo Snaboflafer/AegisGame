@@ -1,4 +1,4 @@
---State manager
+--State Class
 
 State = {
 	members = {}
