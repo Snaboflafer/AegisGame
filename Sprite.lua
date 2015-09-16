@@ -24,6 +24,14 @@ Sprite = {
 	imageFile = "[NO IMAGE]",	--Filename for image
 	image = love.graphics.newImage("/images/img_blank.png"), --Image of sprite
 	lockToScreen = false,	--Set to true to prevent sprite from moving offscreen
+	animated = false,
+	animations = {},	--List of animations registered for sprite
+	curAnim = nil,		--Table for current animation
+	curAnimFrame = 1,	--Frame index for the currently playing animation
+	curImageIndex = 1,	--Index for the current current graphic in the image file
+	animTimer = 0,		--Timer measuring between animation frames
+	animFinished = false,	--Whether the current animation has finished
+	curFrameImage = nil,
 	touchingU = false,
 	touchingD = false,
 	touchingL = false,
@@ -44,6 +52,7 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 		s.imageFile = ImageFile
 		s.image = love.graphics.newImage(s.imageFile)
 	end
+	animations = {}
 	return s
 end
 
@@ -90,7 +99,63 @@ function Sprite:update()
 			touchingR = true
 		end
 	end
-end	
+
+	if (self.animated) then
+		self:updateAnimation()
+	end
+end
+
+function updateAnimation()
+	if not self.animated or curAnim == nil then
+		return
+	end
+	
+	if (curAnim.loop or not animFinished) then
+		animTimer = animTimer + General.elapsed
+		if animTimer >= frameTime then
+			--Timer reached time for animation frame, reset
+			animTimer = 0
+			
+			if curAnimFrame == table.getn(curAnim.frames) then
+				--Last frame of animation
+				if curAnim.loop then
+					--Restart if looping
+					curAnimFrame = 1
+				end
+				animFinished = true
+			else
+				--Go to next frame
+				curAnimFrame = curAnimFrame + 1
+			end
+			
+			--Set the actual image index for the sheet
+			curImageIndex = curAnim.frames[curAnimFrame]
+		end
+	end
+end
+
+function Sprite:addAnimation(AName, Frames, FrameTime, Loop)
+	--table.insert(self.animations, {AName, Frames, Speed})
+	animations[AName] = {}
+	animations[AName] = {name = AName, frames = Frames, frameTime = FrameTime, loop = Loop}
+end
+function Sprite:playAnimation(AName,Restart)
+	if not Restart and (curAnim ~= nil) and (AName == curAnim.name) and not animFinished then
+		--Same as current animation, and neither forced restart or finished, so cancel
+		return
+	end
+	if (animations[AName] == nil) then
+		--Animation does not exist
+		return
+	end
+	curAnim = animations[AName]
+	curAnimFrame = 1
+	animTimer = 0
+end
+function Sprite:genImageFrame()
+	--(calcFrame)
+	--Generate an image using the spritesheet (TODO)
+end
 
 -- draws sprite
 function Sprite:draw()
