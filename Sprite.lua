@@ -4,8 +4,8 @@
 Sprite = {
 	x = 0,	--Position
 	y = 0,
-	width = 0,	--Size for collisions
-	height = 0,
+	width = 32,	--Size for collisions
+	height = 32,
 	velocityX = 0,	--Movement velocity, measured in px/second
 	velocityY = 0,
 	accelerationX = 0,	--Acceleration, measured in px/second/second
@@ -22,23 +22,32 @@ Sprite = {
 	scaleX = 1,		--Size multiplier
 	scaleY = 1,
 	imageFile = "[NO IMAGE]",	--Filename for image
-	image = love.graphics.newImage("/images/img_blank.png"), --Image of sprite
+	image = love.graphics.newImage("/images/err_noImage.png"), --Image of sprite
 	lockToScreen = false,	--Set to true to prevent sprite from moving offscreen
 	animated = false,
 	animations = {},	--List of animations registered for sprite
 	curAnim = nil,		--Table for current animation
 	curAnimFrame = 1,	--Frame index for the currently playing animation
-	curImageIndex = 1,	--Index for the current current graphic in the image file
+	curImageQuad = 1,	--Index for the current current graphic in the image file
 	animTimer = 0,		--Timer measuring between animation frames
 	animFinished = false,	--Whether the current animation has finished
 	curFrameImage = nil,
+	quadFrameCount = 1,
+	imageQuads = {},
 	touchingU = false,
 	touchingD = false,
 	touchingL = false,
 	touchingR = false
 }
 
--- new function based on http://www.lua.org/pil/16.1.html
+--[[Create a new sprite
+	X		Horizontal initial position
+	Y		Vertical initial position
+	ImageFile	(Optional) Specify a non-animated image file
+	Width	(Optional) Horizontal collision size of sprite
+	Height	(Optional) Vertical collision size of sprite
+ new function based on http://www.lua.org/pil/16.1.html
+--]]
 function Sprite:new(X,Y, ImageFile, Width, Height)
 	s = {}
 	setmetatable(s, self)
@@ -46,38 +55,85 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 
 	s.x = X
 	s.y = Y
-	s.width = Width or 0
-	s.height = Height or 0
+	s.width = Width or 32
+	s.height = Height
 	if (ImageFile ~= nil) then
 		s.imageFile = ImageFile
 		s.image = love.graphics.newImage(s.imageFile)
 	end
-	animations = {}
+	s.animations = {}
+	s.imageQuads = {}
 	return s
+end
+
+--[[Load an animated sprite sheet
+	ImageFile	Filename for sheet to load
+	Width		Pixel width of each frame
+	Height		Pixel height of each frame
+--]]
+function Sprite:loadSpriteSheet(ImageFile, Width, Height)
+	--Load image
+	self.imageFile = ImageFile
+	self.image = love.graphics.newImage(self.imageFile)
+	self.animated = true
+
+	--Calculate frames per row/column, and set total
+	local hIndices = self.image:getWidth()/Width
+	local vIndices = self.image:getHeight()/Height
+	self.quadFrameCount = hIndices * vIndices
+	
+	--Add all frames to imageQuads
+	--Frames are indexed by row, then by column, starting at 1,1
+	for i=0, vIndices-1, 1 do
+		for j=0, hIndices-1, 1 do
+			table.insert(self.imageQuads,
+				love.graphics.newQuad(j * Width, i * Height,
+									Width, Height,
+									self.image:getDimensions())
+			)
+		end
+	end
+end
+
+--[[Reset image to default
+--]]
+function Sprite:resetImage()
+	self.imageFile = nil
+	self.image = nil
+	self.animated = false
+	self.width = nil
+	self.height = nil
 end
 
 -- updates velocity and position of sprite
 function Sprite:update()
+	--Apply either drag or acceleration to velocity
 	if self.accelerationX == 0 then
-		self.velocityX = self.velocityX - self.dragX*Utility:signOf(self.velocityX)
+		self.velocityX = self.velocityX - self.dragX * Utility:signOf(self.velocityX)
 	else
-		self.velocityX = self.velocityX + self.accelerationX*General.elapsed
+		self.velocityX = self.velocityX + self.accelerationX * General.elapsed
 	end
+	--Limit velocity to maximum
 	if (self.maxVelocityX >= 0) and (math.abs(self.velocityX) > self.maxVelocityX) then
 		self.velocityX = self.maxVelocityX * Utility:signOf(self.velocityX)
 	end
 
+	--Apply either drag or acceleration to velocity
 	if self.accelerationY == 0 then
-		self.velocityY = self.velocityY - self.dragY*Utility:signOf(self.velocityY)
+		self.velocityY = self.velocityY - self.dragY * Utility:signOf(self.velocityY)
 	else
-		self.velocityY = self.velocityY + self.accelerationY*General.elapsed
+		self.velocityY = self.velocityY + self.accelerationY * General.elapsed
 	end
+	--Limit velocity to maximum
 	if (self.maxVelocityY >= 0) and (math.abs(self.velocityY) > self.maxVelocityY) then
 		self.velocityY = self.maxVelocityY * Utility:signOf(self.velocityY)
 	end
 	
-	self.x = self.x + self.velocityX*General.elapsed
-	self.y = self.y + self.velocityY*General.elapsed
+	--Apply velocity to position
+	self.x = self.x + self.velocityX * General.elapsed
+	self.y = self.y + self.velocityY * General.elapsed
+	
+	--Temporary screen bounding collisions
 	if (lockToScreen) then
 		touchingU = false
 		touchingD = false
@@ -100,75 +156,120 @@ function Sprite:update()
 		end
 	end
 
+	--Update animations
 	if (self.animated) then
 		self:updateAnimation()
 	end
 end
-
-function updateAnimation()
-	if not self.animated or curAnim == nil then
+--[[Determine the current frame for an animated sprite
+--]]
+function Sprite:updateAnimation()
+	if (not self.animated) or (self.curAnim == nil) then
+		--Cancel if not animating
 		return
 	end
 	
-	if (curAnim.loop or not animFinished) then
-		animTimer = animTimer + General.elapsed
-		if animTimer >= frameTime then
-			--Timer reached time for animation frame, reset
-			animTimer = 0
+	--Update if looping or animation has not yet finished
+	if (self.curAnim.loop or not self.animFinished) then
+		--Update timer
+		self.animTimer = self.animTimer + General.elapsed
+		
+		if self.animTimer >= self.curAnim.frameTime then
+			--Timer reached max time for frame, reset
+			self.animTimer = 0
 			
-			if curAnimFrame == table.getn(curAnim.frames) then
+			if self.curAnimFrame == table.getn(self.curAnim.frames) then
 				--Last frame of animation
-				if curAnim.loop then
+				
+				if self.curAnim.loop then
 					--Restart if looping
-					curAnimFrame = 1
+					self.curAnimFrame = 1
 				end
-				animFinished = true
+				--Animation has completed once, mark as finished
+				self.animFinished = true
 			else
-				--Go to next frame
-				curAnimFrame = curAnimFrame + 1
+				--Not yet finished, go to next frame
+				self.scurAnimFrame = self.curAnimFrame + 1
 			end
 			
-			--Set the actual image index for the sheet
-			curImageIndex = curAnim.frames[curAnimFrame]
+			--Set the quad index for this frame
+			self.curImageQuad = self.curAnim.frames[self.curAnimFrame]
 		end
 	end
 end
 
+--[[Add an animation to the sprite
+	AName	Name of the animation
+	Frames	Table containing the ordered list of frames to be used
+	FrameTime	Seconds each frame lasts
+	Loop	True or False to have animation repeat when finished
+--]]
 function Sprite:addAnimation(AName, Frames, FrameTime, Loop)
-	--table.insert(self.animations, {AName, Frames, Speed})
-	animations[AName] = {}
-	animations[AName] = {name = AName, frames = Frames, frameTime = FrameTime, loop = Loop}
+	--Check that frames are valid
+	for i=1, table.getn(Frames), 1 do
+		if Frames[i] > self.quadFrameCount then
+			self:resetImage()
+			self.imageFile = "[ERROR: Animation \"" .. AName .. "\" contains invalid frame index " .. Frames[i] .. "]"
+			self.image = love.graphics.newImage("images/err_noAnim.png")
+			return
+		end
+	end
+
+	self.animations[AName] = {name = AName,
+							frames = Frames or {1},
+							frameTime = FrameTime or 0,
+							loop = Loop or false}
 end
+--[[Start an animation
+	AName	Name of animation to play
+	Restart	Force animation to restart from beginning
+--]]
 function Sprite:playAnimation(AName,Restart)
-	if not Restart and (curAnim ~= nil) and (AName == curAnim.name) and not animFinished then
-		--Same as current animation, and neither forced restart or finished, so cancel
+	--Cancel if trying to play the active animation, but neither forced restart nor finished
+	if not Restart and (self.curAnim ~= nil) and (AName == self.curAnim.name) and not self.animFinished then
 		return
 	end
-	if (animations[AName] == nil) then
-		--Animation does not exist
+	--Check that animation exists
+	if (self.animations[AName] == nil) then
+		self:resetImage()
+		self.imageFile = "[ERROR: Animation \"" .. AName .. "\" not defined]"
+		self.image = love.graphics.newImage("images/err_noAnim.png")
 		return
 	end
-	curAnim = animations[AName]
-	curAnimFrame = 1
-	animTimer = 0
-end
-function Sprite:genImageFrame()
-	--(calcFrame)
-	--Generate an image using the spritesheet (TODO)
+	
+	--Start animation
+	self.curAnim = self.animations[AName]
+	self.curAnimFrame = 1
+	self.animTimer = 0
+	self.animFinished = false
 end
 
--- draws sprite
+--[[Draw sprite to screen
+--]]
 function Sprite:draw()
-	love.graphics.draw(
-		self.image,
-		self.x,
-		self.y,
-		self.rotation,
-		self.scaleX, self.scaleY,
-		self.offsetX, self.offsetY
-	)
+	if self.animated then
+		love.graphics.draw(
+			self.image, self.imageQuads[self.curAnim.frames[self.curAnimFrame]],
+			self.x,
+			self.y,
+			self.rotation,
+			self.scaleX, self.scaleY,
+			self.offsetX, self.offsety
+		)
+	else
+		love.graphics.draw(
+			self.image,
+			self.x,
+			self.y,
+			self.rotation,
+			self.scaleX, self.scaleY,
+			self.offsetX, self.offsetY
+		)
+	end
 end
 
+--[[Prevent sprite from moving offscreen during update()
+--]]
 function Sprite:lockToScreen(value)
 	lockToScreen = value or true
 end
@@ -186,6 +287,10 @@ function Sprite:getDebug()
 	debugStr = debugStr .. "\t width = " .. self.width .. ", height = " .. self.height .. "\n"
 	debugStr = debugStr .. "\t velocity = " .. math.floor(10 * self.velocityX)/10 .. ", " .. math.floor(10 * self.velocityY)/10 .. "\n"
 	debugStr = debugStr .. "\t acceleration = " .. math.floor(10 * self.accelerationX)/10 .. ", " .. math.floor(10 * self.accelerationY)/10 .. "\n"
+	if self.animated then
+		debugStr = debugStr .. "\t Anim Quad Index = " .. self.curAnim.frames[self.curAnimFrame] .. "\n"
+		debugStr = debugStr .. "\t Anim name = " .. self.curAnim.name .. "\n"
+	end
 	return debugStr
 end
 

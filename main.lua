@@ -18,7 +18,12 @@ function love.load()
 	gameState:add(spriteBg)
 	
 	--Create player
-	player = Player:new(100, 100, "images/ship_fly.png",128,64)
+	--player = Player:new(100, 100, "images/ship_fly.png",128,64)
+	player = Player:new(100, 100)
+	player:loadSpriteSheet("images/ship_fly.png",128,64)
+	player:setAnimations()
+	player.width = 128
+	player.height = 64
 	gameState:add(player)
 
 	enemies = Group:new()
