@@ -172,11 +172,11 @@ function Sprite:updateAnimation()
 	--Update if looping or animation has not yet finished
 	if (self.curAnim.loop or not self.animFinished) then
 		--Update timer
-		self.animTimer = self.animTimer + General.elapsed
+		self.animTimer = self.animTimer - General.elapsed
 		
-		if self.animTimer >= self.curAnim.frameTime then
+		if self.animTimer <= 0 then
 			--Timer reached max time for frame, reset
-			self.animTimer = 0
+			self.animTimer = self.curAnim.frameTime
 			
 			if self.curAnimFrame == table.getn(self.curAnim.frames) then
 				--Last frame of animation
@@ -189,7 +189,7 @@ function Sprite:updateAnimation()
 				self.animFinished = true
 			else
 				--Not yet finished, go to next frame
-				self.scurAnimFrame = self.curAnimFrame + 1
+				self.curAnimFrame = self.curAnimFrame + 1
 			end
 			
 			--Set the quad index for this frame
@@ -225,9 +225,16 @@ end
 	Restart	Force animation to restart from beginning
 --]]
 function Sprite:playAnimation(AName,Restart)
-	--Cancel if trying to play the active animation, but neither forced restart nor finished
-	if not Restart and (self.curAnim ~= nil) and (AName == self.curAnim.name) and not self.animFinished then
-		return
+	if self.curAnim ~= nil then
+		--Cancel if trying to play the active animation, but neither forced restart nor finished
+		if not Restart and (AName == self.curAnim.name) and not self.animFinished then
+			return
+		end
+	
+		--Cancel if trying to replay current non-looping animation
+		if AName == self.curAnim.name and self.animFinished and not self.curAnim.loop then
+			return
+		end
 	end
 	--Check that animation exists
 	if (self.animations[AName] == nil) then
@@ -240,7 +247,7 @@ function Sprite:playAnimation(AName,Restart)
 	--Start animation
 	self.curAnim = self.animations[AName]
 	self.curAnimFrame = 1
-	self.animTimer = 0
+	self.animTimer = self.curAnim.frameTime
 	self.animFinished = false
 end
 

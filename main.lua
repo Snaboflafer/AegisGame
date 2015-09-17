@@ -38,9 +38,8 @@ function love.load()
 	--Do music
 	bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
     bgmMusic:setLooping(true)
-	bgmMusic:setVolume(.2)
+	bgmMusic:setVolume(0)
 	bgmMusic:play()
-	
 end
 
 function love.update(dt)
@@ -52,7 +51,6 @@ function love.update(dt)
 	end
 	
 	gameState:update()
-	
 end
 
 function love.draw()
@@ -69,5 +67,4 @@ function love.draw()
 	debugStr = debugStr .. "enemyGroup:\n" .. enemies:toString()
 
 	love.graphics.print(debugStr)
-
 end
