@@ -1,8 +1,16 @@
-Player = Sprite:new(X,Y, ImageFile)
+Player = {}
 
-Player.magnitude = 400
-Player.momentArm = math.sqrt(Player.magnitude^2/2)
 thump = love.audio.newSource("sounds/thump.mp3")
+
+function Player:new(X,Y,ImageFile)
+	s = Sprite:new(X,Y,ImageFile)
+	setmetatable(s, self)
+	setmetatable(self, Sprite)
+	self.__index = self
+	s.magnitude = 400
+	s.momentArm = math.sqrt(s.magnitude^2/2)
+	return s
+end
 
 function Player:setAnimations()
 	self:addAnimation("idle", {1}, 1, false)
