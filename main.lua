@@ -29,7 +29,12 @@ function love.load()
 	enemies = Group:new()
 	for i=1,9,1 do
 		curEnemy = {}
-		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
+		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
+		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random())
+		curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
+		curEnemy:setAnimations()
+		curEnemy.width = 64
+		curEnemy.height = 64
 		curEnemy:lockToScreen()
 		enemies:add(curEnemy)
 	end
