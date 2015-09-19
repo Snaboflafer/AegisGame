@@ -53,6 +53,7 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	setmetatable(s, self)
 	self.__index = self
 
+	
 	s.x = X
 	s.y = Y
 	s.width = Width or 32

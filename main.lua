@@ -4,6 +4,7 @@ require("General")
 require("Utility")
 require("State")
 require("Group")
+require("Button")
 sprite = require("Sprite")
 player = require("Player")
 enemy = require("Enemy")
@@ -41,6 +42,11 @@ function love.load()
 	end
 	gameState:add(enemies)
 	
+	
+	--TESTING
+	button1 = Button:new(256,256,"images/button_256x64.png")
+	gameState:add(button1)
+	
 	--Do music
 	bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
     bgmMusic:setLooping(true)
@@ -57,6 +63,8 @@ function love.update(dt)
 	end
 	
 	currentState:update()
+	--button1.x = General.screenW * math.random()
+	--button1:update()
 end
 
 function love.draw()
@@ -70,7 +78,8 @@ function love.draw()
 	
 	debugStr = debugStr .. "\n"
 	debugStr = debugStr .. "player:\n" .. player:getDebug()
-	debugStr = debugStr .. "enemyGroup:\n" .. enemies:toString()
+	--debugStr = debugStr .. "enemyGroup:\n" .. enemies:toString()
+	debugStr = debugStr .. "button1:\n" .. button1:getDebug()
 
 	love.graphics.print(debugStr)
 end
