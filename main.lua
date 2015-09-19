@@ -13,7 +13,8 @@ function love.load()
 	General:newCamera(0,0)
 	
 	gameState = State:new()
-	
+	currentState = gameState
+
 	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
 	gameState:add(spriteBg)
 	
@@ -50,11 +51,11 @@ function love.update(dt)
 		love.event.push('quit')
 	end
 	
-	gameState:update()
+	currentState:update()
 end
 
 function love.draw()
-	gameState:draw()
+	currentState:draw()
 	
 	debugStr = ""
 	debugStr = debugStr .. "Frame time= " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
