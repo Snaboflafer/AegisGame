@@ -1,9 +1,9 @@
 --- Menu screen state.
-MenuState = {name = "MISHIMA", time = 0}
+MenuState = {name = "[MENU STATE]", time = 0}
 setmetatable(MenuState, State)
 
 function MenuState:load()
-        self.font = love.graphics.newFont("fonts/CaesarDressing-Regular.ttf", 64)
+        self.font = love.graphics.newFont("fonts/Square.ttf", 64)
         self.width = self.font:getWidth(self.name)
         self.height = self.font:getHeight(self.name)
         self.song = love.audio.newSource("sounds/runawayHorses.mp3")

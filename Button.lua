@@ -5,7 +5,7 @@ Button = {
 	label = ""
 }
 
-function Button:new(X,Y, ImageFile,CallBack)
+function Button:new(X,Y, ImageFile, CallBack)
 	--s = {}
 	s = Sprite:new(X,Y,ImageFile)
 	setmetatable(s, self)
@@ -23,13 +23,13 @@ end
 function Button:update()
 	Sprite.update(self)
 	
-	mouseX,mouseY = love.mouse.getPosition()
+	local mouseX,mouseY = love.mouse.getPosition()
 	if mouseX > self.x and mouseX < self.x + self.width then
 		if mouseY > self.y and mouseY < self.y + self.height then
 			if love.mouse.isDown() then
-				isPressed = true
-				lastPressed = true
-			elseif lastPressed then
+				self.isPressed = true
+				self.lastPressed = true
+			elseif self.lastPressed then
 				callBack()
 			end
 		end
