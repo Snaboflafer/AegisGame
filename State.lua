@@ -44,6 +44,11 @@ function switchTo(state)
 	current = state
 	current:start()
 end
+
+function lerp(a, b, t)
+        return (1-t)*a + t*b
+end
+
 function center(large,small)
 	return large/2 - small/2
 end

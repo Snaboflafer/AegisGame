@@ -3,6 +3,7 @@ time = 0
 require("General")
 require("Utility")
 require("State")
+require("TitleState")
 require("GameState")
 require("MenuState")
 require("Group")
@@ -12,9 +13,10 @@ player = require("Player")
 enemy = require("Enemy")
 
 function love.load()
-	GameState:load()
+	TitleState:load()
 	MenuState:load()
-	current = MenuState
+	GameState:load()
+	current = TitleState
 	current:start()
 end
 
