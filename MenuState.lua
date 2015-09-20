@@ -36,7 +36,7 @@ function MenuState:draw()
                 center(General.screenH*.9, self.height)
         )
         love.graphics.print(
-                "4. Value",
+                "4. Volume",
                 center(General.screenW, self.width),
                 center(General.screenH*1.1, self.height)
         )

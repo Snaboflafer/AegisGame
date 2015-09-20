@@ -1,3 +1,11 @@
+--[[
+	Steven Austin sausti12@jhu.edu
+	Nathaniel Rhodes nrhodes5@jhu.edu
+	Jung Yang jyang99@jhu.edu
+	Andrew Shiau ashiau1@jhu.edu
+	Team: SOL
+]]
+
 time = 0
 
 require("General")

@@ -42,6 +42,10 @@ function GameState:start()
         self.bgmMusic:play()
 end
 
+function GameState:stop()
+        self.bgmMusic:stop()
+end
+
 
 function GameState:keyreleased(key)
     if key == "escape" then
