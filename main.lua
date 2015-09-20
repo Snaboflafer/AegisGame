@@ -18,18 +18,21 @@ function love.load()
 	MenuState:load()
 	HighScoreState:load()
 	GameState:load()
-	current = TitleState
-	current:start()
+	
+	General:setState(TitleState)
+	--current = TitleState
+	--General.activeState:start()
+	--current:start()
 end
 
 function love.update(dt)
-	current:update(dt)
+	General.activeState:update(dt)
 end
 
 function love.draw()
-	current:draw()
+	General.activeState:draw()
 end
 
 function love.keyreleased(key)
-	current:keyreleased(key)
+	General.activeState:keyreleased(key)
 end

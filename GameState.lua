@@ -45,7 +45,7 @@ end
 
 function GameState:keyreleased(key)
     if key == "escape" then
-        switchTo(MenuState)
+        General:setState(MenuState)
     end
 end
 

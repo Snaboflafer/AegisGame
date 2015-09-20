@@ -5,7 +5,8 @@ General = {
 	volume = 1,
 	timeScale = 1,
 	screenW = 0,
-	screenH = 0
+	screenH = 0,
+	activeState = nil
 }
 
 function General:init()
@@ -38,6 +39,18 @@ function General:newCamera(X, Y)
 		x = 0,
 		y = 0
 	}
+end
+
+function General:setState(NewState)
+	if self.activeState ~= nil then
+		self.activeState:stop()
+	end
+	self.activeState = NewState
+	self.activeState:start()
+end
+
+function General:getState()
+	return self.activeState
 end
 
 return General

@@ -47,14 +47,13 @@ function MenuState:draw()
         )
 end
 function MenuState:keyreleased(key)
-        if key == "escape" or key == "5" then
-                love.event.quit()
-        elseif key == "1" then 
-                switchTo(GameState)
-        elseif key == "2" then
-                switchTo(HighScoreState)
-        end
-        
+	if key == "escape" or key == "5" then
+		love.event.quit()
+	elseif key == "1" then
+		General:setState(GameState)
+	elseif key == "2" then
+		General:setState(HighScoreState)
+	end
 end
 function MenuState:start()
         self.time = 0

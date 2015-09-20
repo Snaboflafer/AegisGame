@@ -16,28 +16,27 @@ function HighScoreState:update(dt)
         self.time = self.time + dt
 end
 function HighScoreState:draw()
-        love.graphics.setFont(self.font)
-        love.graphics.setColor({255, 255, 255, 255})
-        love.graphics.print(
-                self.name,
-                center(General.screenW, self.width),
-                center(General.screenH*.6, self.height)
-        )
-        love.graphics.setFont(self.subFont)
-        love.graphics.print(
-                self.players,
-                center(General.screenW * 1.5, self.subWidth),
-                center(General.screenH, self.subHeight))
+	love.graphics.setFont(self.font)
+	love.graphics.setColor({255, 255, 255, 255})
+	love.graphics.print(
+		self.name,
+		center(General.screenW, self.width),
+		center(General.screenH*.6, self.height)
+	)
+	love.graphics.setFont(self.subFont)
+	love.graphics.print(
+		self.players,
+		center(General.screenW * 1.5, self.subWidth),
+		center(General.screenH, self.subHeight))
 end
 
 function HighScoreState:keyreleased(key)
-        if key == "escape" then
-                switchTo(MenuState)
-        end
+	if key == "escape" then
+		General:setState(MenuState)
+	end
 end
 
 function HighScoreState:start()
-
 end
 function HighScoreState:stop()
 end
