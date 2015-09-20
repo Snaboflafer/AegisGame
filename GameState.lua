@@ -5,7 +5,7 @@ function GameState:load()
 	General:init()
 	General:newCamera(0,0)
 
-	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg")
+	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	GameState:add(spriteBg)
 	
 	--Create player
@@ -62,6 +62,7 @@ function GameState:draw()
 	debugStr = debugStr .. "player:\n" .. player:getDebug()
 	--debugStr = debugStr .. "enemyGroup:\n" .. enemies:toString()
 	debugStr = debugStr .. "button1:\n" .. button1:getDebug()
+	debugStr = debugStr .. "BG:\n" .. spriteBg:getDebug()
 
 	love.graphics.print(debugStr)
 end
