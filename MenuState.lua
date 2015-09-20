@@ -1,48 +1,43 @@
 --- Menu screen state.
-MenuState = {name = "MENU", time = 0}
+MenuState = {
+	title = "MENU",
+	options = {
+		"[1]\tStart",
+		"[2]\tHigh Scores",
+		"[3]\tBrightness",
+		"[4]\tVolume",
+		"[5]\tQuit"
+	},
+	time = 0
+}
 setmetatable(MenuState, State)
 
 function MenuState:load()
-	self.font = love.graphics.newFont("fonts/Square.ttf", 40)
-	self.width = self.font:getWidth(self.name)
-	self.height = self.font:getHeight(self.name)
+	self.headerFont = love.graphics.newFont("fonts/Square.ttf", 96)
+	self.subFont = love.graphics.newFont("fonts/04b09.ttf", 32)
+	--self.width = self.font:getWidth(self.name)
+	--self.height = self.font:getHeight(self.name)
 	self.song = love.audio.newSource("sounds/blast_network.mp3")
 	self.song:setLooping(true)
 end
 
 function MenuState:draw()
-	love.graphics.setFont(self.font)
+	love.graphics.setFont(self.headerFont)
 	love.graphics.setColor({255, 255, 255, 255})
 	love.graphics.print(
-		self.name,
-		center(General.screenW, self.width),
-		center(General.screenH*.3, self.height)
+		self.title,
+		Utility:mid(self.headerFont:getWidth(self.title), General.screenW),
+		Utility:mid(self.headerFont:getHeight(self.title), General.screenH*.3)
 	)
-	love.graphics.print(
-		"1. Start",
-		center(General.screenW, self.width),
-		center(General.screenH*.5, self.height)
-	)
-	love.graphics.print(
-		"2. High Scores",
-		center(General.screenW, self.width),
-		center(General.screenH*.7, self.height)
-	)
-	love.graphics.print(
-		"3. Brightness",
-		center(General.screenW, self.width),
-		center(General.screenH*.9, self.height)
-	)
-	love.graphics.print(
-		"4. Volume",
-		center(General.screenW, self.width),
-		center(General.screenH*1.1, self.height)
-	)
-	love.graphics.print(
-		"5. Quit",
-		center(General.screenW, self.width),
-		center(General.screenH*1.3, self.height)
-	)
+	
+	love.graphics.setFont(self.subFont)
+	for k,v in pairs(self.options) do
+		love.graphics.print(
+			self.options[k],
+			Utility:mid(0, General.screenW * .5),
+			Utility:mid(0, General.screenH * .75) + self.subFont:getHeight("")*k
+		)
+	end
 end
 
 function MenuState:keyreleased(key)
@@ -51,7 +46,7 @@ function MenuState:keyreleased(key)
 	elseif key == "1" then
 		General:setState(GameState)
 	elseif key == "2" then
-		General:setState(HighScoreState)
+		General:setState(HighScoreState, false)
 	end
 end
 

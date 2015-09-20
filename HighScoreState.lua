@@ -1,19 +1,17 @@
 --- HighScoreState screen state.
 HighScoreState = {
 	name = "High Scores",
-	players="Steven Austin 5000\nDavid Kimberk 4545\nEddie Snowden 3000\n",
+	players = "Steven Austin 5000\nDavid Kimberk 4545\nEddie Snowden 3000\n",
 	time = 0}
 setmetatable(HighScoreState, State)
 
 function HighScoreState:load()
 	self.font = love.graphics.newFont("fonts/Square.ttf", 64)
-	self.subFont = love.graphics.newFont("fonts/Square.ttf", 20)
+	self.subFont = love.graphics.newFont("fonts/04b09.ttf", 20)
 	self.width = self.font:getWidth(self.name)
 	self.height = self.font:getHeight(self.name)
 	self.subWidth = self.font:getWidth(self.players)
 	self.subHeight = self.font:getHeight(self.players)
-	self.song = love.audio.newSource("sounds/runawayHorses.mp3")
-	self.song:setLooping(true)
 end
 
 function HighScoreState:draw()
@@ -21,14 +19,15 @@ function HighScoreState:draw()
 	love.graphics.setColor({255, 255, 255, 255})
 	love.graphics.print(
 		self.name,
-		center(General.screenW, self.width),
-		center(General.screenH*.6, self.height)
+		Utility:mid(self.width, General.screenW),
+		Utility:mid(self.height, General.screenH*.6)
 	)
 	love.graphics.setFont(self.subFont)
 	love.graphics.print(
 		self.players,
-		center(General.screenW * 1.5, self.subWidth),
-		center(General.screenH, self.subHeight))
+		Utility:mid(self.subWidth, General.screenW * 1.5),
+		Utility:mid(self.subHeight, General.screenH)
+	)
 end
 
 function HighScoreState:keyreleased(key)

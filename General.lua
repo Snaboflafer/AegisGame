@@ -41,16 +41,17 @@ function General:newCamera(X, Y)
 	}
 end
 
-function General:setState(NewState)
-	if self.activeState ~= nil then
-		self.activeState:stop()
+function General:setState(NewState, CloseOld)
+	if CloseOld == nil then
+		CloseOld = true
+	end
+	if CloseOld then
+		if self.activeState ~= nil then
+			self.activeState:stop()
+		end
 	end
 	self.activeState = NewState
 	self.activeState:start()
-end
-
-function General:getState()
-	return self.activeState
 end
 
 return General

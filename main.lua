@@ -28,9 +28,6 @@ function love.load()
 	GameState:load()
 	
 	General:setState(TitleState)
-	--current = TitleState
-	--General.activeState:start()
-	--current:start()
 end
 
 function love.update(dt)

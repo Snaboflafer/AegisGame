@@ -54,7 +54,7 @@ function GameState:keyreleased(key)
 end
 
 function GameState:draw()
-	State.draw(self)
+	State:draw()
 	debugStr = ""
 	debugStr = debugStr .. "Frame time= " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
 	debugStr = debugStr .. "FPS= " .. math.floor(1/General.elapsed) .. "\n"	
