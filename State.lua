@@ -39,4 +39,12 @@ function State:draw()
 	end
 end
 
+function switchTo(state)
+	current:stop()
+	current = state
+	current:start()
+end
+function center(large,small)
+	return large/2 - small/2
+end
 return State
