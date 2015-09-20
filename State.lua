@@ -1,24 +1,33 @@
---State Class
+--State Object
 
 State = {
 	members = {}
 }
 
-function State:new()
-	s = {}
-	setmetatable(s, self)
-	self.__index = self
-	
-	members = {}
-	
-	return s
+State.__index = State
+
+function State:load()
 end
 
 function State:add(NewObject)
 	table.insert(self.members, NewObject)
 end
 
-function State:update()
+function State:start()
+end
+
+function State:stop()
+end
+
+function State:keyreleased(key)
+end
+
+function State:update(dt)
+	General.elapsed = dt * General.timeScale
+	time = time + General.elapsed
+	if love.keyboard.isDown('escape') then
+		love.event.push('quit')
+	end
 	for k,v in pairs(self.members) do
 		v:update()
 	end

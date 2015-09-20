@@ -1,5 +1,13 @@
 --Class for sprites. Should extend Object
-Enemy = Sprite:new{}
+Enemy = {}
+
+function Enemy:new(X,Y,ImageFile)
+	s = Sprite:new(X,Y,ImageFile)
+	setmetatable(s, self)
+	setmetatable(self, Sprite)
+	self.__index = self
+	return s
+end
 
 function Enemy:setAnimations()
 	self:addAnimation("idle", {1,2}, .1, true)
