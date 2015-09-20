@@ -56,12 +56,13 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	
 	s.x = X
 	s.y = Y
-	s.width = Width or 32
-	s.height = Height
 	if (ImageFile ~= nil) then
 		s.imageFile = ImageFile
 		s.image = love.graphics.newImage(s.imageFile)
 	end
+	s.width = Width or s.image:getWidth()
+	s.height = Height s.image:getHeight()
+
 	s.animations = {}
 	s.imageQuads = {}
 	return s
