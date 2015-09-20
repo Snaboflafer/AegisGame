@@ -31,11 +31,6 @@ function GameState:load()
 	end
 	GameState:add(enemies)
 	
-	
-	--TESTING
-	button1 = Button:new(256,256,"images/button_256x64.png")
-	GameState:add(button1)
-	
 	--Do music
 	self.bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
     self.bgmMusic:setLooping(true)
@@ -66,9 +61,9 @@ function GameState:draw()
 	debugStr = debugStr .. "\n"
 	debugStr = debugStr .. "player:\n" .. player:getDebug()
 	--debugStr = debugStr .. "enemyGroup:\n" .. enemies:toString()
-	debugStr = debugStr .. "button1:\n" .. button1:getDebug()
-	debugStr = debugStr .. "BG:\n" .. spriteBg:getDebug()
 
-	love.graphics.print(debugStr)
+ 	love.graphics.setFont(love.graphics.newFont(10))
+    love.graphics.setColor({255, 255, 255, 255})
+	--love.graphics.print(debugStr)
 end
 	

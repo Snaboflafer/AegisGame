@@ -1,5 +1,5 @@
 --- HighScoreState screen state.
-HighScoreState = {name = "High Score", time = 0}
+HighScoreState = {name = "High Scores", time = 0}
 setmetatable(HighScoreState, State)
 
 function HighScoreState:load()
@@ -20,9 +20,7 @@ function HighScoreState:draw()
                 center(General.screenW, self.width),
                 center(General.screenH*.6, self.height)
         )
-        love.graphics.setFont(love.graphics.newFont(10))
-        love.graphics.setColor({255, 255, 255, 255})
-        love.graphics.print(love.timer.getFPS(), 10, 10)
+       
 end
 
 function HighScoreState:keyreleased(key)
