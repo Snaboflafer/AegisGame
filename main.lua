@@ -4,6 +4,7 @@ require("General")
 require("Utility")
 require("State")
 require("TitleState")
+require("HighScoreState")
 require("GameState")
 require("MenuState")
 require("Group")
@@ -29,10 +30,5 @@ function love.draw()
 end
 
 function love.keyreleased(key)
-	if key == "escape" then
-		love.event.quit()
-	else
-		current:keyreleased(key)
-	end
-
+	current:keyreleased(key)
 end

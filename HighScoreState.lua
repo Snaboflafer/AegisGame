@@ -1,18 +1,18 @@
---- Menu screen state.
-MenuState = {name = "MISHIMA", time = 0}
-setmetatable(MenuState, State)
+--- HighScoreState screen state.
+HighScoreState = {name = "High Score", time = 0}
+setmetatable(HighScoreState, State)
 
-function MenuState:load()
+function HighScoreState:load()
         self.font = love.graphics.newFont("fonts/CaesarDressing-Regular.ttf", 64)
         self.width = self.font:getWidth(self.name)
         self.height = self.font:getHeight(self.name)
         self.song = love.audio.newSource("sounds/runawayHorses.mp3")
         self.song:setLooping(true)
 end
-function MenuState:update(dt)
+function HighScoreState:update(dt)
         self.time = self.time + dt
 end
-function MenuState:draw()
+function HighScoreState:draw()
         love.graphics.setFont(self.font)
         love.graphics.setColor({255, 255, 255, 255})
         love.graphics.print(
@@ -24,16 +24,15 @@ function MenuState:draw()
         love.graphics.setColor({255, 255, 255, 255})
         love.graphics.print(love.timer.getFPS(), 10, 10)
 end
-function MenuState:keyreleased(key)
+
+function HighScoreState:keyreleased(key)
         if key == "escape" then
-                love.event.quit()
+                switchTo(MenuState)
         end
-        switchTo(GameState)
 end
-function MenuState:start()
-        self.time = 0
-        self.song:play()
+
+function HighScoreState:start()
+
 end
-function MenuState:stop()
-        self.song:stop()
+function HighScoreState:stop()
 end

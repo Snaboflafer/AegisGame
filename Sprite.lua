@@ -136,7 +136,7 @@ function Sprite:update()
 	self.y = self.y + self.velocityY * General.elapsed
 	
 	--Temporary screen bounding collisions
-	if (lockToScreen) then
+	if (self.lockToScreen) then
 		touchingU = false
 		touchingD = false
 		touchingL = false
@@ -280,7 +280,7 @@ end
 --[[Prevent sprite from moving offscreen during update()
 --]]
 function Sprite:lockToScreen(value)
-	lockToScreen = value or true
+	self.lockToScreen = value or true
 end
 
 function Sprite:getType()
