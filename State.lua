@@ -36,12 +36,6 @@ function State:draw()
 	end
 end
 
-function switchTo(state)
-	current:stop()
-	current = state
-	current:start()
-end
-
 function lerp(a, b, t)
         return (1-t)*a + t*b
 end

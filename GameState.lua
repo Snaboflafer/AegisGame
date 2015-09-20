@@ -38,23 +38,22 @@ function GameState:load()
 end
 
 function GameState:start()
-        self.time = 0
-        self.bgmMusic:play()
+	self.time = 0
+	self.bgmMusic:play()
 end
 
 function GameState:stop()
-        self.bgmMusic:stop()
+	self.bgmMusic:stop()
 end
 
 
 function GameState:keyreleased(key)
-    if key == "escape" then
-        General:setState(MenuState)
-    end
+	if key == "escape" then
+		General:setState(MenuState)
+	end
 end
 
 function GameState:draw()
-	
 	State.draw(self)
 	debugStr = ""
 	debugStr = debugStr .. "Frame time= " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
