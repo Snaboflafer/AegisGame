@@ -20,9 +20,6 @@ function MenuState:draw()
                 center(General.screenW, self.width),
                 center(General.screenH*.6, self.height)
         )
-        love.graphics.setFont(love.graphics.newFont(10))
-        love.graphics.setColor({255, 255, 255, 255})
-        love.graphics.print(love.timer.getFPS(), 10, 10)
 end
 function MenuState:keyreleased(key)
         if key == "escape" then

@@ -64,6 +64,8 @@ function GameState:draw()
 	debugStr = debugStr .. "button1:\n" .. button1:getDebug()
 	debugStr = debugStr .. "BG:\n" .. spriteBg:getDebug()
 
+ 	love.graphics.setFont(love.graphics.newFont(10))
+    love.graphics.setColor({255, 255, 255, 255})
 	love.graphics.print(debugStr)
 end
 	
