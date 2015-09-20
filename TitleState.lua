@@ -10,7 +10,7 @@ function TitleState:fadein()
         end
 end
 function TitleState:load()
-        self.font = love.graphics.newFont("fonts/CaesarDressing-Regular.ttf", 94)
+        self.font = love.graphics.newFont("fonts/Square.ttf", 94)
         self.width = self.font:getWidth(self.name)
         self.height = self.font:getHeight(self.name)
         self.sound = love.audio.newSource("sounds/runawayHorses.mp3")
