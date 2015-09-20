@@ -29,10 +29,6 @@ function TitleState:draw()
                 self.name,
                 center(General.screenW, self.width), center(General.screenH, self.height)
         )
-        love.graphics.setFont(love.graphics.newFont(10))
-        love.graphics.setColor({255, 255, 255, 255})
-        love.graphics.print(love.timer.getFPS(), 10, 10)
-        love.graphics.print(self.time, 10, 20)
 end
 function TitleState:keyreleased(key)
         switchTo(MenuState)

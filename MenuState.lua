@@ -1,5 +1,5 @@
 --- Menu screen state.
-MenuState = {name = "[MENU STATE]", time = 0}
+MenuState = {name = "MENU", time = 0}
 setmetatable(MenuState, State)
 
 function MenuState:load()
