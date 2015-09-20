@@ -44,8 +44,8 @@ function GameState:load()
 end
 
 function GameState:keyreleased(key)
-    if key == "1" then
-        switchTo(HighScoreState)
+    if key == "escape" then
+        switchTo(MenuState)
     end
 end
 

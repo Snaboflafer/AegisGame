@@ -25,9 +25,6 @@ end
 function State:update(dt)
 	General.elapsed = dt * General.timeScale
 	time = time + General.elapsed
-	if love.keyboard.isDown('escape') then
-		love.event.push('quit')
-	end
 	for k,v in pairs(self.members) do
 		v:update()
 	end

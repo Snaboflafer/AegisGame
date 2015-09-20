@@ -25,6 +25,9 @@ function MenuState:draw()
         love.graphics.print(love.timer.getFPS(), 10, 10)
 end
 function MenuState:keyreleased(key)
+        if key == "escape" then
+                love.event.quit()
+        end
         switchTo(GameState)
 end
 function MenuState:start()

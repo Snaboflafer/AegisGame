@@ -29,10 +29,5 @@ function love.draw()
 end
 
 function love.keyreleased(key)
-	if key == "escape" then
-		love.event.quit()
-	else
-		current:keyreleased(key)
-	end
-
+	current:keyreleased(key)
 end

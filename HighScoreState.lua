@@ -26,8 +26,8 @@ function HighScoreState:draw()
 end
 
 function HighScoreState:keyreleased(key)
-        if key == "1" then
-                switchTo(GameState)
+        if key == "escape" then
+                switchTo(MenuState)
         end
 end
 
