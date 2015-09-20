@@ -6,7 +6,7 @@ function MenuState:load()
         self.font = love.graphics.newFont("fonts/Square.ttf", 64)
         self.width = self.font:getWidth(self.name)
         self.height = self.font:getHeight(self.name)
-        self.song = love.audio.newSource("sounds/runawayHorses.mp3")
+        self.song = love.audio.newSource("sounds/blast_network.mp3")
         self.song:setLooping(true)
 end
 function MenuState:update(dt)

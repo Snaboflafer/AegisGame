@@ -13,7 +13,7 @@ function TitleState:load()
         self.font = love.graphics.newFont("fonts/Square.ttf", 94)
         self.width = self.font:getWidth(self.name)
         self.height = self.font:getHeight(self.name)
-        self.sound = love.audio.newSource("sounds/runawayHorses.mp3")
+        self.sound = love.audio.newSource("sounds/mission_ui.mp3")
 end
 
 function TitleState:update(dt)

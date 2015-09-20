@@ -37,11 +37,16 @@ function GameState:load()
 	GameState:add(button1)
 	
 	--Do music
-	bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
-    bgmMusic:setLooping(true)
-	bgmMusic:setVolume(0)
-	bgmMusic:play()
+	self.bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
+    self.bgmMusic:setLooping(true)
+	self.bgmMusic:setVolume(.2)
 end
+
+function GameState:start()
+        self.time = 0
+        self.bgmMusic:play()
+end
+
 
 function GameState:keyreleased(key)
     if key == "escape" then
