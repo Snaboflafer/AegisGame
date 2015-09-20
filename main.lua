@@ -16,6 +16,7 @@ enemy = require("Enemy")
 function love.load()
 	TitleState:load()
 	MenuState:load()
+	HighScoreState:load()
 	GameState:load()
 	current = TitleState
 	current:start()
