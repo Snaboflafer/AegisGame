@@ -43,6 +43,12 @@ function GameState:load()
 	bgmMusic:play()
 end
 
+function GameState:keyreleased(key)
+    if key == "1" then
+        switchTo(HighScoreState)
+    end
+end
+
 function GameState:draw()
 	
 	State.draw(self)
