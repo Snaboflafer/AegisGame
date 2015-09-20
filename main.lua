@@ -4,7 +4,7 @@ require("General")
 require("Utility")
 require("State")
 require("GameState")
-require("Menu")
+require("MenuState")
 require("Group")
 require("Button")
 sprite = require("Sprite")
@@ -13,8 +13,8 @@ enemy = require("Enemy")
 
 function love.load()
 	GameState:load()
-	Menu:load()
-	current = Menu
+	MenuState:load()
+	current = MenuState
 	current:start()
 end
 
