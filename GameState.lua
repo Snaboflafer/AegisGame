@@ -11,7 +11,7 @@ function GameState:load()
 	--Create player
 	--player = Player:new(100, 100, "images/ship_fly.png",128,64)
 	player = Player:new(100, 100)
-	player:loadSpriteSheet("images/ship_fly.png",128,64)
+	player:loadSpriteSheet("images/player_ship.png",128,64)
 	player:setAnimations()
 	player.width = 128
 	player.height = 64

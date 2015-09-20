@@ -13,9 +13,9 @@ function Player:new(X,Y,ImageFile)
 end
 
 function Player:setAnimations()
-	self:addAnimation("idle", {1}, 1, false)
-	self:addAnimation("up", {2}, 1, false)
-	self:addAnimation("down", {3}, 1, false)
+	self:addAnimation("idle", {1,2}, .1, true)
+	self:addAnimation("up", {3,4}, .1, false)
+	self:addAnimation("down", {5,6}, .1, false)
 end
 
 -- as of now you must use this method to change the magnitude
@@ -25,7 +25,6 @@ function Player:changeMagnitude(m)
 	self.momentArm = math.sqrt(self.magnitude^2/2)
 end
 function Player:update()
-	self:playAnimation("idle")
 	if love.keyboard.isDown('w') and love.keyboard.isDown('d') then
         self:playAnimation("up")
         self.velocityX = self.momentArm
@@ -51,12 +50,15 @@ function Player:update()
         self.velocityX = 0
 		self.velocityY = self.magnitude
 	elseif love.keyboard.isDown('a') then
+		self:playAnimation("up")
         self.velocityX = -self.magnitude
 		self.velocityY = 0
 	elseif love.keyboard.isDown('d') then
+		self:playAnimation("down")
         self.velocityX = self.magnitude
 		self.velocityY = 0
 	else
+		self:playAnimation("idle")
 		self.velocityX = 0;
 		self.velocityY = 0;
     end
