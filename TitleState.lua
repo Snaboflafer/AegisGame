@@ -1,4 +1,7 @@
-TitleState = {name = "Mishima"}
+TitleState = {name = "Mishima", 
+	team = "by SOL Game", 
+	authors = {"Steven Austin", "Nathaniel Rhodes", "Andrew Shiau", "Jung Yang"}
+}
 setmetatable(TitleState, State)
 
 function TitleState:fadein()
@@ -22,13 +25,32 @@ function TitleState:update(dt)
             switchTo(MenuState)
     end
 end
+
 function TitleState:draw()
-    love.graphics.setFont(self.font)
-    love.graphics.setColor(self:fadein())
-    love.graphics.print(
-            self.name,
-            center(General.screenW, self.width), center(General.screenH, self.height)
-    )
+        love.graphics.setFont(self.font)
+        love.graphics.setColor(self:fadein())
+        love.graphics.print(
+                self.name,
+                center(General.screenW, self.width), center(General.screenH*.6, self.height)
+        )
+	love.graphics.print(
+                self.team,
+                center(General.screenW, self.font:getWidth(self.team)*.5), 
+		center(General.screenH*.8, self.font:getHeight(self.team)*.5),
+		0,
+		.5,
+		.5
+        )
+	for k,author in pairs(self.authors) do
+		love.graphics.print(
+                	author,
+                	center(General.screenW,self.font:getWidth(author)*(.3)), 
+                	center(General.screenH + General.screenH*(k*.1), self.font:getHeight(author)*.3),
+                	0,
+                	.3,
+                	.3
+        	)
+	end
 end
 function TitleState:keyreleased(key)
     General:setState(MenuState)
