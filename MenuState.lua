@@ -19,6 +19,7 @@ function MenuState:load()
 	--self.height = self.font:getHeight(self.name)
 	self.song = love.audio.newSource("sounds/blast_network.mp3")
 	self.song:setLooping(true)
+	self.keyPressSound = love.audio.newSource("sounds/laser.wav")
 end
 
 function MenuState:draw()
@@ -41,6 +42,7 @@ function MenuState:draw()
 end
 
 function MenuState:keyreleased(key)
+	self.keyPressSound:play()
 	if key == "escape" or key == "5" then
 		love.event.quit()
 	elseif key == "1" then
