@@ -8,7 +8,8 @@ MenuState = {
 		"[4]\tVolume",
 		"[5]\tQuit"
 	},
-	time = 0
+	time = 0,
+	highlight = 1
 }
 setmetatable(MenuState, State)
 
@@ -39,11 +40,21 @@ function MenuState:draw()
 	
 	love.graphics.setFont(self.subFont)
 	for k,v in pairs(self.options) do
-		love.graphics.print(
-			self.options[k],
-			Utility:mid(0, General.screenW * .5),
-			Utility:mid(0, General.screenH * .75) + self.subFont:getHeight("")*k
-		)
+		if k == self.highlight then
+			love.graphics.setColor({255, 255, 0, 255})
+			love.graphics.print(
+				self.options[k],
+				Utility:mid(0, General.screenW * .5),
+				Utility:mid(0, General.screenH * .75) + self.subFont:getHeight("")*k
+			)
+			love.graphics.setColor({255, 255, 255, 255})
+		else
+			love.graphics.print(
+				self.options[k],
+				Utility:mid(0, General.screenW * .5),
+				Utility:mid(0, General.screenH * .75) + self.subFont:getHeight("")*k
+			)
+		end
 	end
 end
 
@@ -55,7 +66,16 @@ function MenuState:keyreleased(key)
 		General:setState(GameState)
 	elseif key == "2" then
 		General:setState(HighScoreState, false)
-	end
+	elseif key == "w" then 
+                if (self.highlight > 1) then self.highlight = self.highlight - 1 end
+    elseif key == "s" then
+                if (self.highlight < 5) then self.highlight = self.highlight + 1 end
+    elseif key == "return" then
+            if self.highlight == 1 then General:setState(GameState)
+            elseif self.highlight == 2 then General:setState(HighScoreState, false)
+            elseif self.highlight == 5 then love.event.quit()
+            end
+    end
 end
 
 function MenuState:start()
