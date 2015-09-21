@@ -97,6 +97,17 @@ function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 	end
 end
 
+function Sprite:destroy()
+	count = #self
+	for i=0, count do self[i]=nil end
+	
+	--for k, v in ipairs(self) do
+	--	self[k] = nil
+	--end
+	
+	--self.image = nil
+	--self = nil
+end
 --[[Reset image to default
 --]]
 function Sprite:resetImage()
@@ -289,11 +300,10 @@ end
 	
 function Sprite:getDebug()
 	debugStr = ""
-	debugStr = debugStr .. "\t Type = " .. self:getType() .. "\n"
+	debugStr = debugStr .. "Sprite (" .. self:getType() .. "):\n"
 	debugStr = debugStr .. "\t Image = " .. self.imageFile .. "\n"
-	debugStr = debugStr .. "\t x = " .. math.floor(self.x) .. "\n"
-	debugStr = debugStr .. "\t y = " .. math.floor(self.y) .. "\n"
-	debugStr = debugStr .. "\t width = " .. self.width .. ", height = " .. self.height .. "\n"
+	debugStr = debugStr .. "\t Position = " .. math.floor(self.x) .. ", " .. math.floor(self.y) .. "\n"
+	debugStr = debugStr .. "\t Size = " .. self.width .. ", " .. self.height .. "\n"
 	debugStr = debugStr .. "\t velocity = " .. math.floor(10 * self.velocityX)/10 .. ", " .. math.floor(10 * self.velocityY)/10 .. "\n"
 	debugStr = debugStr .. "\t acceleration = " .. math.floor(10 * self.accelerationX)/10 .. ", " .. math.floor(10 * self.accelerationY)/10 .. "\n"
 	if self.animated then

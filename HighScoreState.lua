@@ -2,10 +2,12 @@
 HighScoreState = {
 	name = "High Scores",
 	players = "Steven Austin 5000\nDavid Kimberk 4545\nEddie Snowden 3000\n",
-	time = 0}
+	time = 0
+}
 setmetatable(HighScoreState, State)
 
 function HighScoreState:load()
+	State.load(self)
 	self.font = love.graphics.newFont("fonts/Square.ttf", 64)
 	self.subFont = love.graphics.newFont("fonts/04b09.ttf", 20)
 	self.width = self.font:getWidth(self.name)
@@ -15,6 +17,8 @@ function HighScoreState:load()
 end
 
 function HighScoreState:draw()
+	State:draw()
+
 	love.graphics.setFont(self.font)
 	love.graphics.setColor({255, 255, 255, 255})
 	love.graphics.print(

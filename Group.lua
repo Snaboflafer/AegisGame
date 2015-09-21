@@ -9,7 +9,7 @@ function Group:new()
 	s = {}
 	setmetatable(s, self)
 	self.__index = self
-	self.__tostring = s:toString()
+	--self.__tostring = s:toString()
 	
 	members = {}
 	
@@ -18,6 +18,13 @@ end
 
 function Group:add(NewObject)
 	table.insert(self.members, NewObject)
+end
+
+function Group:destroy()
+	for k, v in pairs(self.members) do
+		v:destroy()
+	end
+	self.members = nil
 end
 
 function Group:update()
@@ -36,8 +43,8 @@ function Group:getType()
 	return "Group"
 end
 
-function Group:toString()
-	printStr = ""
+function Group:getDebug()
+	printStr = "Group:\n"
 	for k,v in pairs(self.members) do
 		printStr = printStr .. "\t" .. k .. "\t" .. tostring(v) .. " (" .. v:getType() .. ")\n"
 	end

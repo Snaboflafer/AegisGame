@@ -2,9 +2,6 @@ GameState = {}
 setmetatable(GameState, State)
 
 function GameState:load()
-	General:init()
-	General:newCamera(0,0)
-
 	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	GameState:add(spriteBg)
 	
@@ -43,6 +40,7 @@ function GameState:start()
 end
 
 function GameState:stop()
+	State.stop(self)
 	self.bgmMusic:stop()
 end
 

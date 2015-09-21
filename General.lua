@@ -21,6 +21,7 @@ function General:init()
 	self.timeScale = 1
 	self.screenW = love.window.getWidth()
 	self.screenH = love.window.getHeight()
+	self.activeState = nil
 	
 	return s
 end
@@ -47,10 +48,14 @@ function General:setState(NewState, CloseOld)
 	end
 	if CloseOld then
 		if self.activeState ~= nil then
-			self.activeState:stop()
+			self.activeState:unload()
 		end
 	end
+	
 	self.activeState = NewState
+	if not self.activeState.loaded then
+		self.activeState:load()
+	end
 	self.activeState:start()
 end
 

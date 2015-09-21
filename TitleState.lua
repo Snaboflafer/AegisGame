@@ -5,13 +5,15 @@ TitleState = {
 }
 setmetatable(TitleState, State)
 
+--Fade disabled, will use a universal fade function in General
 function TitleState:fadein()
-    if self.time < 16 then
-            local c = lerp(0, 255, self.time/16)
-            return {c, c, c, 255}
-    else
-            return {255, 255, 255, 255}
-    end
+    --if self.time < 16 then
+    --        local c = lerp(0, 255, self.time/16)
+    --        return {c, c, c, 255}
+    --else
+    --        return {255, 255, 255, 255}
+    --end
+	return {255,255,255,255}
 end
 function TitleState:load()
     self.headerFont = love.graphics.newFont("fonts/Square.ttf", 96)
@@ -19,8 +21,7 @@ function TitleState:load()
     self.sound = love.audio.newSource("sounds/mission_ui.mp3")
 end
 
-function TitleState:update(dt)
-    self.time = self.time + dt
+function TitleState:update()
     if self.time > 20 then
 		General:setState(MenuState)
     end

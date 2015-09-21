@@ -22,20 +22,39 @@ player = require("Player")
 enemy = require("Enemy")
 
 function love.load()
-	TitleState:load()
-	MenuState:load()
-	HighScoreState:load()
-	GameState:load()
+	General:init()
+	General:newCamera(0,0)
+
+	--TitleState:load()
+	--MenuState:load()
+	--HighScoreState:load()
+	--GameState:load()
 	
 	General:setState(TitleState)
 end
 
 function love.update(dt)
-	General.activeState:update(dt)
+	General.elapsed = dt * General.timeScale
+	time = time + General.elapsed
+	General.activeState:update()
 end
 
 function love.draw()
 	General.activeState:draw()
+	
+	debugStr = ""
+	debugStr = debugStr .. "Frame time = " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
+	debugStr = debugStr .. math.floor(1/General.elapsed) .. "FPS\n"
+	debugStr = debugStr .. "Active state = " .. tostring(General.activeState)
+	--debugStr = debugStr .. "ScreenW = " .. General.screenW .. "\n"
+	--debugStr = debugStr .. "ScreenH = " .. General.screenH .. "\n"
+	
+	love.graphics.setFont(love.graphics.newFont("fonts/segoeui.ttf", 12))
+
+	for k,v in pairs(General.activeState.members) do
+		debugStr = debugStr .. v:getDebug()	
+	end
+	love.graphics.print(debugStr)
 end
 
 function love.keyreleased(key)
