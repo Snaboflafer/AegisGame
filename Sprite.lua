@@ -24,6 +24,7 @@ Sprite = {
 	imageFile = "[NO IMAGE]",	--Filename for image
 	image = love.graphics.newImage("/images/err_noImage.png"), --Image of sprite
 	lockToScreen = false,	--Set to true to prevent sprite from moving offscreen
+	visible = true,
 	animated = false,
 	animations = {},	--List of animations registered for sprite
 	curAnim = nil,		--Table for current animation
@@ -37,7 +38,8 @@ Sprite = {
 	touchingU = false,
 	touchingD = false,
 	touchingL = false,
-	touchingR = false
+	touchingR = false,
+	immovable = false
 }
 
 --[[Create a new sprite
@@ -98,15 +100,10 @@ function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 end
 
 function Sprite:destroy()
-	count = #self
-	for i=0, count do self[i]=nil end
-	
-	--for k, v in ipairs(self) do
-	--	self[k] = nil
-	--end
-	
-	--self.image = nil
-	--self = nil
+	for k, v in ipairs(self) do
+		self[k] = nil
+	end
+	self = nil
 end
 --[[Reset image to default
 --]]
@@ -267,6 +264,9 @@ end
 --[[Draw sprite to screen
 --]]
 function Sprite:draw()
+	if not self.visible then
+		return
+	end
 	if self.animated then
 		love.graphics.draw(
 			self.image, self.imageQuads[self.curAnim.frames[self.curAnimFrame]],

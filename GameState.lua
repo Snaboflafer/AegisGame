@@ -2,19 +2,19 @@ GameState = {}
 setmetatable(GameState, State)
 
 function GameState:load()
-	spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
+	local spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	GameState:add(spriteBg)
 	
 	--Create player
 	--player = Player:new(100, 100, "images/ship_fly.png",128,64)
-	player = Player:new(100, 100)
-	player:loadSpriteSheet("images/player_ship.png",128,64)
-	player:setAnimations()
-	player.width = 128
-	player.height = 64
-	GameState:add(player)
+	self.player = Player:new(100, 100)
+	self.player:loadSpriteSheet("images/player_ship.png",128,64)
+	self.player:setAnimations()
+	self.player.width = 128
+	self.player.height = 64
+	GameState:add(self.player)
 
-	enemies = Group:new()
+	local enemies = Group:new()
 	for i=1,9,1 do
 		curEnemy = {}
 		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
@@ -49,6 +49,14 @@ function GameState:keyreleased(key)
 	if key == "escape" then
 		General:setState(MenuState)
 	end
+end
+
+function GameState:update()
+	State:update()
+	--for i=1, table.getn(self.enemies),1 do
+	--	self.enemies[i] = nil
+	--end
+	--self.enemies = nil
 end
 
 function GameState:draw()

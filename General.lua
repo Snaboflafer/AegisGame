@@ -6,7 +6,13 @@ General = {
 	timeScale = 1,
 	screenW = 0,
 	screenH = 0,
-	activeState = nil
+	activeState = nil,
+	worldX = 0,
+	worldY = 0,
+	worldWidth = 0,
+	worldHeight = 0,
+	colDivisionsX = 16,
+	colDivisionsY = 16
 }
 
 function General:init()
@@ -40,6 +46,12 @@ function General:newCamera(X, Y)
 		x = 0,
 		y = 0
 	}
+end
+function General:setWorldBounds(X,Y,Width,Height)
+	worldX = X
+	worldY = Y
+	worldWidth = Width
+	worldHeight = Height
 end
 
 function General:setState(NewState, CloseOld)

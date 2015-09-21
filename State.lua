@@ -28,6 +28,7 @@ end
 function State:stop()
 	for k, v in pairs(self.members) do
 		v:destroy()
+		self.members[k] = nil
 	end
 end
 

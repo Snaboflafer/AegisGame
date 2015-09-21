@@ -23,8 +23,10 @@ end
 function Group:destroy()
 	for k, v in pairs(self.members) do
 		v:destroy()
+		self.members[k] = nil
 	end
 	self.members = nil
+	self = nil
 end
 
 function Group:update()
