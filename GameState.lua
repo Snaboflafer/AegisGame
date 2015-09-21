@@ -47,7 +47,7 @@ end
 
 function GameState:keyreleased(key)
 	if key == "escape" then
-		General:setState(MenuState)
+		General:setState(PauseState, false)
 	end
 end
 
