@@ -14,7 +14,11 @@ function GameState:load()
 	self.player.height = 64
 	GameState:add(self.player)
 
-	local enemies = Group:new()
+	self.sprite1 = Sprite:new(256,256, "images/button_256x64.png")
+	self.sprite1.immovable = true
+	GameState:add(self.sprite1)
+	
+	self.enemies = Group:new()
 	for i=1,9,1 do
 		curEnemy = {}
 		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
@@ -24,9 +28,10 @@ function GameState:load()
 		curEnemy.width = 64
 		curEnemy.height = 64
 		curEnemy:lockToScreen()
-		enemies:add(curEnemy)
+		self.enemies:add(curEnemy)
 	end
-	GameState:add(enemies)
+	GameState:add(self.enemies)
+	
 	
 	--Do music
 	self.bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
@@ -53,6 +58,9 @@ end
 
 function GameState:update()
 	State:update()
+	
+	General:collide(self.player, self.sprite1)
+	General:collide(self.enemies, self.enemies)
 	--for i=1, table.getn(self.enemies),1 do
 	--	self.enemies[i] = nil
 	--end

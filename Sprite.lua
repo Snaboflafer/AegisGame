@@ -39,7 +39,8 @@ Sprite = {
 	touchingD = false,
 	touchingL = false,
 	touchingR = false,
-	immovable = false
+	immovable = false,
+	bounceFactor = 0
 }
 
 --[[Create a new sprite
@@ -296,6 +297,19 @@ end
 
 function Sprite:getType()
 	return "Sprite"
+end
+
+function Sprite:getLeft()
+	return self.x + self.offsetX
+end
+function Sprite:getRight()
+	return self.x + self.offsetX + self.width
+end
+function Sprite:getTop()
+	return self.y + self.offsetY
+end
+function Sprite:getBottom()
+	return self.y + self.offsetY + self.height
 end
 	
 function Sprite:getDebug()
