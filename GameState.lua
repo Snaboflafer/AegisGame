@@ -21,17 +21,21 @@ function GameState:load()
 	
 	self.enemies = Group:new()
 	for i=1,9,1 do
-		curEnemy = {}
+		local curEnemy = {}
 		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
 		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random())
 		curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
 		curEnemy:setAnimations()
-		curEnemy:setCollisionBox(7, 29, 64, 64)
+		curEnemy:setCollisionBox(7, 26, 44, 19)
 		curEnemy:lockToScreen()
 		self.enemies:add(curEnemy)
 	end
 	GameState:add(self.enemies)
 	
+	self.text1 = Text:new(128,128,"SAMPLE TEXT","fonts/04b09.ttf",32)
+	self.text1:setAlign(Text.CENTER)
+	self.text1:lockToScreen()
+	GameState:add(self.text1)
 	
 	--Do music
 	self.bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
@@ -57,6 +61,8 @@ function GameState:keyreleased(key)
 end
 
 function GameState:update()
+	self.text1.x, self.text1.y = self.player.x, self.player:getBottom()
+	
 	State:update()
 	
 	General:collide(self.player, self.sprite1)	--Collide Sprite x Sprite

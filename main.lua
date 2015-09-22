@@ -21,6 +21,7 @@ require("Button")
 sprite = require("Sprite")
 player = require("Player")
 enemy = require("Enemy")
+require("Text")
 
 function love.load()
 	General:init()
