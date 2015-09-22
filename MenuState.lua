@@ -11,6 +11,7 @@ MenuState = {
 	time = 0,
 	highlight = 1
 }
+MenuState.__index = MenuState
 setmetatable(MenuState, State)
 
 function MenuState:load()
@@ -59,6 +60,7 @@ function MenuState:draw()
 end
 
 function MenuState:keyreleased(key)
+	self.keyPressSound:rewind() 
 	self.keyPressSound:play()
 	if key == "escape" or key == "5" then
 		love.event.quit()
@@ -66,10 +68,10 @@ function MenuState:keyreleased(key)
 		General:setState(GameState)
 	elseif key == "2" then
 		General:setState(HighScoreState, false)
-	elseif key == "w" then 
-                if (self.highlight > 1) then self.highlight = self.highlight - 1 end
-    elseif key == "s" then
-                if (self.highlight < 5) then self.highlight = self.highlight + 1 end
+	elseif key == "w" or key == "up" or key == "a" or key == "left" then 
+                self.highlight = (self.highlight + 3) % 5 + 1
+    elseif key == "s" or key == "down" or key == "d" or key == "right" then
+                self.highlight = (self.highlight + 5) % 5 + 1
     elseif key == "return" then
             if self.highlight == 1 then General:setState(GameState)
             elseif self.highlight == 2 then General:setState(HighScoreState, false)

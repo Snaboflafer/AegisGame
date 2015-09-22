@@ -1,7 +1,9 @@
 GameState = {}	
+GameState.__index = GameState
 setmetatable(GameState, State)
 
 function GameState:load()
+	State:load()
 	local spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	GameState:add(spriteBg)
 	
@@ -52,7 +54,7 @@ end
 
 function GameState:keyreleased(key)
 	if key == "escape" then
-		General:setState(MenuState)
+		General:setState(PauseState,false)
 	end
 end
 
