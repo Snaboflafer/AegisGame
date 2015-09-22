@@ -12,8 +12,7 @@ function GameState:load()
 	self.player = Player:new(100, 100)
 	self.player:loadSpriteSheet("images/player_ship.png",128,64)
 	self.player:setAnimations()
-	self.player.width = 128
-	self.player.height = 64
+	self.player:setCollisionBox(26, 15, 84, 35)
 	GameState:add(self.player)
 
 	self.sprite1 = Sprite:new(256,256, "images/button_256x64.png")
@@ -27,8 +26,7 @@ function GameState:load()
 		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random())
 		curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
 		curEnemy:setAnimations()
-		curEnemy.width = 64
-		curEnemy.height = 64
+		curEnemy:setCollisionBox(7, 29, 64, 64)
 		curEnemy:lockToScreen()
 		self.enemies:add(curEnemy)
 	end
