@@ -57,7 +57,7 @@ end
 function General:collide(Object1, Object2)
 
 	if Object1:getType() == "Group" then
-		if Object1 == Object2 or Object2 = nil then
+		if Object1 == Object2 or Object2 == nil then
 			--Collide within group
 			for k1,v1 in pairs(Object1.members) do
 				for k2,v2 in pairs(Object1.members) do

@@ -7,7 +7,7 @@ PauseState = {
 		"[3]\tBrightness",
 		"[4]\tVolume",
 		"[5]\tQuit"
-	},
+	}
 }
 PauseState.__index = PauseState
 setmetatable(PauseState, MenuState)
