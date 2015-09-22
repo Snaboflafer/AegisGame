@@ -63,8 +63,6 @@ function Player:update()
 		self.velocityY = 0;
     end
 	
-	Sprite.update(self)
-	
 	if (touchingU) or (touchingD) or (touchingL) or (touchingR) then
 		thump:play()
 		if (touchingU) then
@@ -80,6 +78,8 @@ function Player:update()
 			self.x = self.x - 10
 		end
 	end
+
+	Sprite.update(self)
 end
 
 function Player:getType()

@@ -24,9 +24,9 @@ function Enemy:update()
 	if touchingU or touchingD then self.velocityY = -self.velocityY end
 	if touchingR or touchingL then self.velocityX = -self.velocityX end
 	
-	if self.velocityY < 20 then
+	if self.velocityY < 50 then
 		self:playAnimation("up")
-	elseif self.velocityY > 20 then
+	elseif self.velocityY > 50 then
 		self:playAnimation("down")
 	else
 		self:playAnimation("idle")

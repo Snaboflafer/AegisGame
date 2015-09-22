@@ -61,28 +61,15 @@ end
 function GameState:update()
 	State:update()
 	
-	General:collide(self.player, self.sprite1)
-	General:collide(self.enemies, self.enemies)
-	--for i=1, table.getn(self.enemies),1 do
-	--	self.enemies[i] = nil
-	--end
-	--self.enemies = nil
+	General:collide(self.player, self.sprite1)	--Collide Sprite x Sprite
+	General:collide(self.enemies, self.sprite1)	--Collide Group x Sprite
+	General:collide(self.enemies)				--Collide Group with itself
 end
 
 function GameState:draw()
 	State:draw()
-	debugStr = ""
-	debugStr = debugStr .. "Frame time= " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
-	debugStr = debugStr .. "FPS= " .. math.floor(1/General.elapsed) .. "\n"	
-	debugStr = debugStr .. "ScreenW = " .. General.screenW .. "\n"
-	debugStr = debugStr .. "ScreenH = " .. General.screenH .. "\n"
-	
-	debugStr = debugStr .. "\n"
-	debugStr = debugStr .. "player:\n" .. player:getDebug()
-	--debugStr = debugStr .. "enemyGroup:\n" .. enemies:toString()
 
  	love.graphics.setFont(love.graphics.newFont(10))
     love.graphics.setColor({255, 255, 255, 255})
-	--love.graphics.print(debugStr)
 end
 	

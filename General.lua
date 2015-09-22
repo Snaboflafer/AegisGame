@@ -111,6 +111,7 @@ function General:collide(Object1, Object2)
 	local absDx = math.abs(dx)
 	local absDy = math.abs(dy)
 	
+	--Minimum allowed velocity after collision
 	local VELOCITY_THRESHOLD = 1
 	
 	if math.abs(absDx - absDy) < .1 then
