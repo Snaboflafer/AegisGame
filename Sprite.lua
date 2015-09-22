@@ -115,6 +115,13 @@ function Sprite:resetImage()
 	self.height = nil
 end
 
+function Sprite:setCollisionBox(X, Y, W, H)
+	self.offsetX = X
+	self.offsetY = Y
+	self.width = W
+	self.height = H
+end
+
 -- updates velocity and position of sprite
 function Sprite:update()
 	--Apply either drag or acceleration to velocity
