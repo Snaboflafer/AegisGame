@@ -1,4 +1,6 @@
-Player = {}
+Player = {
+	score = 0
+}
 
 thump = love.audio.newSource("sounds/thump.mp3")
 
@@ -16,6 +18,14 @@ function Player:setAnimations()
 	self:addAnimation("idle", {1,2}, .1, true)
 	self:addAnimation("up", {3,4}, .1, false)
 	self:addAnimation("down", {5,6}, .1, false)
+end
+
+function Player:updateScore(S)
+	self.score = self.score + S
+end
+
+function Player:getScore(S)
+	return self.score
 end
 
 -- as of now you must use this method to change the magnitude
