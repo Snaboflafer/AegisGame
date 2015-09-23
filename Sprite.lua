@@ -2,6 +2,7 @@
 
 --Default prototype values
 Sprite = {
+	VELOCITY_THRESHOLD = 1,
 	x = 0,	--Position
 	y = 0,
 	width = 32,	--Size for collisions
@@ -149,6 +150,14 @@ function Sprite:update()
 		self.velocityY = self.maxVelocityY * Utility:signOf(self.velocityY)
 	end
 	
+	if (math.abs(self.velocityX) < Sprite.VELOCITY_THRESHOLD) then
+		self.velocityX = 0
+	end
+	if (math.abs(self.velocityX) < Sprite.VELOCITY_THRESHOLD) then
+		self.velocityX = 0
+	end
+
+	
 	--Apply velocity to position
 	self.x = self.x + self.velocityX * General.elapsed
 	self.y = self.y + self.velocityY * General.elapsed
@@ -284,7 +293,7 @@ function Sprite:draw()
 			self.y,
 			self.rotation,
 			self.scaleX, self.scaleY,
-			self.offsetX, self.offsety
+			self.offsetX, self.offsetY
 		)
 	else
 		love.graphics.draw(

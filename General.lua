@@ -57,29 +57,32 @@ end
 function General:collide(Object1, Object2)
 
 	if Object1:getType() == "Group" then
+		local didCollide = false
 		if Object1 == Object2 or Object2 == nil then
 			--Collide within group
 			for k1,v1 in pairs(Object1.members) do
 				for k2,v2 in pairs(Object1.members) do
-					General:collide(Object1.members[k1], Object1.members[k2])
+					didCollide = didCollide or General:collide(Object1.members[k1], Object1.members[k2])
 				end
 			end
 		else
 			for k,v in pairs(Object1.members) do
-				General:collide(v, Object2)
+				didCollide = didCollide or General:collide(v, Object2)
 			end
 		end
-		return
+		return didCollide
 	end
 	if Object2:getType() == "Group" then
+		local didCollide = false
 		for k,v in pairs(Object2.members) do
-			General:collide(Object1, Object2.members[k])
+			didCollide = didCollide or General:collide(Object1, Object2.members[k])
 		end
-		return
+		return didCollide
 	end
 	
+	
 	if Object1 == Object2 then
-		return
+		return false
 	end
 	
 	local obj1X = Object1.x
@@ -100,10 +103,13 @@ function General:collide(Object1, Object2)
 		return
 	end
 
+	
 	local obj1MidX = obj1X + obj1W/2
 	local obj1MidY = obj1Y + obj1H/2
+	local obj1IM = Object1.immovable
 	local obj2MidX = obj2X + obj2W/2
 	local obj2MidY = obj2Y + obj2H/2
+	local obj2IM = Object2.immovable
 	
 	local dx = (obj2MidX - obj1MidX)
 	local dy = (obj2MidY - obj1MidY)
@@ -119,29 +125,27 @@ function General:collide(Object1, Object2)
 		
 		if dx < 0 then
 			Object1.x = Object2:getRight()
+			Object2.x = Object1:getLeft() - obj2W
 		else
 			Object1.x = Object2:getLeft() - obj1W
+			Object2.x = Object1:getRight()
 		end
 		
 		if dy < 0 then
 			Object1.y = Object2:getBottom()
+			Object2.y = Object1:getTop() - obj2H
 		else
 			Object1.y = Object2:getTop() - obj1H
+			Object2.y = Object1:getBottom()
 		end
 		
 		--Randomize reflection direction
 		if math.random() < .5 then
 			Object1.velocityX = -Object1.velocityX * Object1.bounceFactor
-			
-			if math.abs(Object1.velocityX) < VELOCITY_THRESHOLD then
-				Object1.velocityX = 0
-			end
+			Object2.velocityX = -Object2.velocityX * Object2.bounceFactor
 		else
 			Object1.velocityY = -Object1.velocityY * Object1.bounceFactor
-			
-			if math.abs(Object1.velocityY) < VELOCITY_THRESHOLD then
-				Object1.velocityY = 0
-			end
+			Object2.velocityY = -Object2.velocityY * Object2.bounceFactor
 		end
 		
 	elseif absDx > absDy then
@@ -153,10 +157,6 @@ function General:collide(Object1, Object2)
 		end
 		
 		Object1.velocityX = -Object1.velocityX * Object1.bounceFactor
-		
-		if math.abs(Object1.velocityX) < VELOCITY_THRESHOLD then
-			Object1.velocityX = 0
-		end
 	else
 		if dy < 0 then
 			Object1.y = Object2:getBottom()
@@ -165,10 +165,9 @@ function General:collide(Object1, Object2)
 		end
 		
 		Object1.velocityY = - Object1.velocityY * Object1.bounceFactor
-		if math.abs(Object1.velocityY) < VELOCITY_THRESHOLD then
-			Object1.velocityY = 0
-		end
 	end
+	
+	return true
 end
 
 function General:setState(NewState, CloseOld)

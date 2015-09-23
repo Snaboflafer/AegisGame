@@ -35,7 +35,7 @@ function GameState:load()
 	self.text1 = Text:new(128,128,"SAMPLE TEXT","fonts/04b09.ttf",32)
 	self.text1:setAlign(Text.CENTER)
 	self.text1:lockToScreen()
-	GameState:add(self.text1)
+	--GameState:add(self.text1)
 	
 	--Do music
 	self.bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
