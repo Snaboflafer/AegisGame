@@ -2,11 +2,11 @@
 PauseState = {
 	title = "GAME PAUSED",
 	options = {
-		"[1]\tResume",
-		"[2]\tHigh Scores",
-		"[3]\tBrightness",
-		"[4]\tVolume",
-		"[5]\tQuit"
+		"Resume",
+		"High Scores",
+		"Brightness",
+		"Volume",
+		"Quit"
 	}
 }
 PauseState.__index = PauseState
