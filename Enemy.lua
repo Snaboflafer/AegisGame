@@ -1,5 +1,7 @@
 --Class for sprites. Should extend Object
-Enemy = {}
+Enemy = {
+	pointValue = 0
+}
 
 function Enemy:new(X,Y,ImageFile)
 	s = Sprite:new(X,Y,ImageFile)
@@ -15,6 +17,9 @@ function Enemy:setAnimations()
 	self:addAnimation("down", {5,6}, .1, true)
 end
 
+function Enemy:setPointValue(V)
+	self.pointValue = V
+end
 
 function Enemy:update()
 	--math.randomseed(time*self.y)
