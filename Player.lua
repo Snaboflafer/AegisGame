@@ -24,7 +24,7 @@ function Player:updateScore(S)
 	self.score = self.score + S
 end
 
-function Player:getScore(S)
+function Player:getScore()
 	return self.score
 end
 
