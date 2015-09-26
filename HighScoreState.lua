@@ -1,7 +1,6 @@
 --- HighScoreState screen state.
 HighScoreState = {
 	name = "High Scores",
-	players = "Steven Austin 5000\nDavid Kimberk 4545\nEddie Snowden 3000\n",
 	time = 0
 }
 HighScoreState.__index = HighScoreState
@@ -11,8 +10,8 @@ function HighScoreState:load()
 	State.load(self)
 	self.width = General.headerFont:getWidth(self.name)
 	self.height = General.headerFont:getHeight(self.name)
-	self.subWidth = General.headerFont:getWidth(self.players)
-	self.subHeight = General.headerFont:getHeight(self.players)
+	self.subWidth = 300
+	self.subHeight = 20
 end
 
 function HighScoreState:draw()
@@ -64,9 +63,3 @@ end
 
 function HighScoreState:stop()
 end
---[[
-function HighScoreState:keyreleased(key)
-	self.keyPressSound:rewind() 
-	self.keyPressSound:play()
-end
---]]

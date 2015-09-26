@@ -16,6 +16,14 @@ function Group:new()
 	return s
 end
 
+function Group:getSize()
+	size = 0
+	for k, v in pairs(self.members) do
+		size = size + 1
+	end
+	return size
+end
+
 function Group:add(NewObject)
 	table.insert(self.members, NewObject)
 end

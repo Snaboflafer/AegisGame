@@ -16,14 +16,17 @@ function GameState:load()
 	self.player:setCollisionBox(26, 15, 84, 35)
 	GameState:add(self.player)
 
-	--self.sprite1 = Sprite:new(256,256, "images/button_256x64.png")
-	--self.sprite1.immovable = true
-	--GameState:add(self.sprite1)
-
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 
+	timeText = Text:new(10, 10, "Time ","fonts/04b09.ttf", 18)
+	timeText:setAlign(Text.LEFT)
+
 	GameState:add(highScoreText)
+	GameState:add(timeText)
+
+	-- Flag set to false as no enemies are destroyed yet
+	enemyDestroyed = false;
 	
 	self.enemies = Group:new()
 	for i=1,9,1 do
@@ -51,6 +54,8 @@ function GameState:checkCollisions()
 
 	for k,enemy in pairs(self.enemies.members) do
 		if General:collide(enemy, self.player) then
+			-- Enemy was destroyed
+			wasDestroyed = true
 			self.explosion:rewind()
 			self.explosion:play()
 			self.player:updateScore(enemy:getPointValue())
@@ -77,17 +82,22 @@ function GameState:keyreleased(key)
 	end
 end
 
-function GameState:update()	
+function GameState:update()
+	State:update()
+
+	local gameDuration = 10;	
 	self:checkCollisions()
-	-- Fix from global later
 	highScoreText:setLabel("Score: " .. self.player:getScore())
 
-	State:update()
-	
-	--General:collide(self.player, self.sprite1)	--Collide Sprite x Sprite
-	--General:collide(self.enemies, self.sprite1)	--Collide Group x Sprite
+	timeText:setLabel("Time " .. gameDuration - math.ceil(State.time))
 	General:collide(self.enemies)				--Collide Group with itself
-	if State.time > 5 then General:setState(HighScoreState) end
+
+
+	if State.time > gameDuration or (self.enemies:getSize() == 0 and wasDestroyed) then
+		--GameState:updateHighScores("Player", 10)
+		General:setState(HighScoreState) 
+	end
+
 end
 
 function GameState:draw()
@@ -98,7 +108,7 @@ function GameState:draw()
 end
 
 --updates the high scores checking against the score passed
-function updateHighScores(name, score)
+function GameState:updateHighScores(name, score)
    local file = io.open("highScores.txt", "rb") -- r read mode and b binary mode
     if not file then return nil end
     local content = ""
