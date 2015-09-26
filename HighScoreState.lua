@@ -9,18 +9,16 @@ setmetatable(HighScoreState, State)
 
 function HighScoreState:load()
 	State.load(self)
-	self.headerFont = love.graphics.newFont("fonts/Square.ttf", 96)
-	self.subFont = love.graphics.newFont("fonts/04b09.ttf", 32)
-	self.width = self.headerFont:getWidth(self.name)
-	self.height = self.headerFont:getHeight(self.name)
-	self.subWidth = self.headerFont:getWidth(self.players)
-	self.subHeight = self.headerFont:getHeight(self.players)
+	self.width = General.headerFont:getWidth(self.name)
+	self.height = General.headerFont:getHeight(self.name)
+	self.subWidth = General.headerFont:getWidth(self.players)
+	self.subHeight = General.headerFont:getHeight(self.players)
 end
 
 function HighScoreState:draw()
 	State:draw()
 
-	love.graphics.setFont(self.headerFont)
+	love.graphics.setFont(General.headerFont)
 	love.graphics.setColor({255, 255, 255, 255})
 	love.graphics.printf(
 		self.name,
@@ -29,7 +27,7 @@ function HighScoreState:draw()
 		General.screenW,
 		'center'
 	)
-	love.graphics.setFont(self.subFont)
+	love.graphics.setFont(General.subFont)
 	love.graphics.printf(
 		highScores,
 		0,

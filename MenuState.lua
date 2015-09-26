@@ -16,8 +16,6 @@ setmetatable(MenuState, State)
 
 function MenuState:load()
 	State.load(self)
-	self.headerFont = love.graphics.newFont("fonts/Square.ttf", 96)
-	self.subFont = love.graphics.newFont("fonts/04b09.ttf", 32)
 	--self.width = self.font:getWidth(self.name)
 	--self.height = self.font:getHeight(self.name)
 	self.song = love.audio.newSource("sounds/blast_network.mp3")
@@ -34,29 +32,29 @@ end
 function MenuState:draw()
 	State:draw()
 	
-	love.graphics.setFont(self.headerFont)
+	love.graphics.setFont(General.headerFont)
 	love.graphics.setColor({255, 255, 255, 255})
 	love.graphics.print(
 		self.title,
-		Utility:mid(self.headerFont:getWidth(self.title), General.screenW),
-		Utility:mid(self.headerFont:getHeight(self.title), General.screenH*.5)
+		Utility:mid(General.headerFont:getWidth(self.title), General.screenW),
+		Utility:mid(General.headerFont:getHeight(self.title), General.screenH*.5)
 	)
 	
-	love.graphics.setFont(self.subFont)
+	love.graphics.setFont(General.subFont)
 	for k,v in pairs(self.options) do
 		if k == self.highlight then
 			love.graphics.setColor({255, 255, 0, 255})
 			love.graphics.print(
 				self.options[k],
-				Utility:mid(self.headerFont:getWidth(MenuState.title) + General.screenW/10, General.screenW),
-				Utility:mid(0, General.screenH * .75) + self.subFont:getHeight("")*k
+				Utility:mid(General.headerFont:getWidth(MenuState.title) + General.screenW/10, General.screenW),
+				Utility:mid(0, General.screenH * .75) + General.subFont:getHeight("")*k
 			)
 			love.graphics.setColor({255, 255, 255, 255})
 		else
 			love.graphics.print(
 				self.options[k],
-				Utility:mid(self.headerFont:getWidth(MenuState.title), General.screenW),
-				Utility:mid(0, General.screenH * .75) + self.subFont:getHeight("")*k
+				Utility:mid(General.headerFont:getWidth(MenuState.title), General.screenW),
+				Utility:mid(0, General.screenH * .75) + General.subFont:getHeight("")*k
 			)
 		end
 	end
