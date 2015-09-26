@@ -1,7 +1,8 @@
 --- HighScoreState screen state.
 HighScoreState = {
 	name = "High Scores",
-	time = 0
+	time = 0,
+	highScores
 }
 HighScoreState.__index = HighScoreState
 setmetatable(HighScoreState, State)
