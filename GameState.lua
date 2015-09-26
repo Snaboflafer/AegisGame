@@ -47,6 +47,7 @@ function GameState:load()
     self.bgmMusic:setLooping(true)
 	self.bgmMusic:setVolume(.2)
 	self.explosion = love.audio.newSource("sounds/explosion.wav")
+	self.loaded = true
 end
 
 

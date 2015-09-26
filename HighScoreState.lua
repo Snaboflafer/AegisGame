@@ -58,6 +58,7 @@ highScores = readHighScores("highScores.txt");
 function HighScoreState:keyreleased(key)
 	General:setState(MenuState)
 end
+
 function HighScoreState:start()
 end
 
