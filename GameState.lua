@@ -20,7 +20,7 @@ function GameState:load()
 	self.sprite1.immovable = true
 	GameState:add(self.sprite1)
 
-	highScoreText= Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
+	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 
 	GameState:add(highScoreText)
@@ -32,6 +32,7 @@ function GameState:load()
 		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random())
 		curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
 		curEnemy:setAnimations()
+		curEnemy:setPointValue(100)
 		curEnemy:setCollisionBox(7, 26, 44, 19)
 		curEnemy:lockToScreen()
 		self.enemies:add(curEnemy)
@@ -42,6 +43,16 @@ function GameState:load()
 	self.bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
     self.bgmMusic:setLooping(true)
 	self.bgmMusic:setVolume(.2)
+end
+
+
+function GameState:checkCollisions()
+
+	for k,enemy in pairs(self.enemies.members) do
+		if General:collide(enemy, self.player) then
+			self.player:updateScore(enemy:getPointValue())
+		end
+	end
 end
 
 function GameState:start()
@@ -62,6 +73,10 @@ function GameState:keyreleased(key)
 end
 
 function GameState:update()	
+	self:checkCollisions()
+	-- Fix from global later
+	highScoreText:setLabel("Score: " .. self.player:getScore())
+
 	State:update()
 	
 	General:collide(self.player, self.sprite1)	--Collide Sprite x Sprite

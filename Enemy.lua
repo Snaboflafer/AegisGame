@@ -21,6 +21,10 @@ function Enemy:setPointValue(V)
 	self.pointValue = V
 end
 
+function Enemy:getPointValue()
+	return self.pointValue
+end
+
 function Enemy:update()
 	--math.randomseed(time*self.y)
 	self.accelerationX = (math.random() - 0.5)*1000
