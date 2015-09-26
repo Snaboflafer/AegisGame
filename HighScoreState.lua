@@ -59,9 +59,7 @@ end
 highScores = readHighScores("highScores.txt");
 
 function HighScoreState:keyreleased(key)
-	if key == "escape" then
-		General:setState(MenuState)
-	end
+	General:setState(MenuState)
 end
 function HighScoreState:start()
 end
