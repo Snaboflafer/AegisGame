@@ -43,6 +43,7 @@ function GameState:load()
 	self.bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
     self.bgmMusic:setLooping(true)
 	self.bgmMusic:setVolume(.2)
+	self.explosion = love.audio.newSource("sounds/explosion.wav")
 end
 
 
@@ -50,6 +51,8 @@ function GameState:checkCollisions()
 
 	for k,enemy in pairs(self.enemies.members) do
 		if General:collide(enemy, self.player) then
+			self.explosion:rewind()
+			self.explosion:play()
 			self.player:updateScore(enemy:getPointValue())
 			table.remove(self.enemies.members, k)
 		end
