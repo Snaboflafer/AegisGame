@@ -32,6 +32,8 @@ function State:stop()
 	end
 end
 
+function State:keypressed(key)
+end
 
 function State:keyreleased(key)
 end

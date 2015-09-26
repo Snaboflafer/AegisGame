@@ -60,7 +60,7 @@ function MenuState:draw()
 	end
 end
 
-function MenuState:keyreleased(key)
+function MenuState:keypressed(key)
 	self.keyPressSound:rewind() 
 	self.keyPressSound:play()
 	if key == "escape" then
@@ -77,6 +77,7 @@ function MenuState:keyreleased(key)
         end
     end
 end
+
 
 function MenuState:start()
 	self.time = 0

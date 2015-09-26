@@ -67,3 +67,7 @@ end
 function love.keyreleased(key)
 	General.activeState:keyreleased(key)
 end
+
+function love.keypressed(key)
+	General.activeState:keypressed(key)
+end
