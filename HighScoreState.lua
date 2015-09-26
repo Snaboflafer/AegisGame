@@ -31,7 +31,7 @@ function HighScoreState:draw()
 	)
 	love.graphics.setFont(self.subFont)
 	love.graphics.printf(
-		content,
+		highScores,
 		0,
 		Utility:mid(self.subHeight, General.screenH),
 		General.screenW,
@@ -39,18 +39,25 @@ function HighScoreState:draw()
 	)
 end
 
-local open = io.open
 
-local function read_file(path)
-    local file = open("highScores.txt", "rb") -- r read mode and b binary mode
+local function readHighScores(path)
+    local file = io.open(path, "rb") -- r read mode and b binary mode
     if not file then return nil end
-    content = file:read "*a" -- *a or *all reads the whole file
-    file:close()
+    local content = ""
+    local name = ""
+    local score = ""
+	repeat
+	    content = content .. name .. " " .. score .. "\n"
+	    name = file:read "*l"
+	    score = file:read "*n"
+	    file:read "*L"
+	until score == nil
+	file:close()
     return content
 end
 
-local fileContent = read_file("foo.html");
-print (fileContent);
+highScores = readHighScores("highScores.txt");
+
 function HighScoreState:keyreleased(key)
 	if key == "escape" then
 		General:setState(MenuState)

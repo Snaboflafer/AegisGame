@@ -91,4 +91,34 @@ function GameState:draw()
  	love.graphics.setFont(love.graphics.newFont(10))
     love.graphics.setColor({255, 255, 255, 255})
 end
+
+--updates the high scores checking against the score passed
+function updateHighScores(name, score)
+   local file = io.open("highScores.txt", "rb") -- r read mode and b binary mode
+    if not file then return nil end
+    local content = ""
+    local restOfFile
+    local readName = ""
+    local readScore = ""
+    local scoresPut = 0
+    local newHighScore = false
+	--checks each high score against the new score, putting the new score if it exceeds the high score
+	repeat
+	    content = content .. readName .. "\n" .. readScore .. "\n"
+	    scoresPut = scoresPut + 1
+	    readName = file:read "*l"
+	    readScore = file:read "*n"
+	    file:read "*L"
+	    if score > readScore and newHighScore == false then
+	    	content = content .. name .. "\n" .. score .. "\n"
+	    	scoresPut = scoresPut + 1
+	    	newHighScore = true
+	    end
+	until scoresPut > 5
+	file:close()
+	content = content:gsub("^%s*(.-)%s*$", "%1") --remove leading and trailing whitespace
+	hFile = io.open("highScores.txt", "w+") --write the file.
+	hFile:write(content)
+	hFile:close()
+end
 	
