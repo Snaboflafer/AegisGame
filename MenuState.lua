@@ -71,6 +71,7 @@ function MenuState:keyreleased(key)
             self.highlight = (self.highlight + table.getn(self.options)) % table.getn(self.options) + 1
     elseif key == "return" or key == " " then
         if self.highlight == 1 then General:setState(GameState)
+        	HighScoreState.loaded = false;
         elseif self.highlight == 2 then General:setState(HighScoreState, false)
         elseif self.highlight == 5 then love.event.quit()
         end

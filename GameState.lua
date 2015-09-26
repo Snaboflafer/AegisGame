@@ -60,6 +60,7 @@ function GameState:checkCollisions()
 end
 
 function GameState:start()
+	State.time = 0
 	self.time = 0
 	self.bgmMusic:play()
 end
@@ -86,6 +87,7 @@ function GameState:update()
 	--General:collide(self.player, self.sprite1)	--Collide Sprite x Sprite
 	--General:collide(self.enemies, self.sprite1)	--Collide Group x Sprite
 	General:collide(self.enemies)				--Collide Group with itself
+	if State.time > 5 then General:setState(HighScoreState) end
 end
 
 function GameState:draw()
