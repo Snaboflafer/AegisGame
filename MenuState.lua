@@ -68,14 +68,14 @@ function MenuState:keyreleased(key)
 	if key == "escape" then
 		love.event.quit()
 	elseif key == "w" or key == "up" or key == "a" or key == "left" then 
-                self.highlight = (self.highlight + 3) % 5 + 1
-    	elseif key == "s" or key == "down" or key == "d" or key == "right" then
-                self.highlight = (self.highlight + 5) % 5 + 1
-    	elseif key == "return" or key == " " then
-            if self.highlight == 1 then General:setState(GameState)
-            elseif self.highlight == 2 then General:setState(HighScoreState, false)
-            elseif self.highlight == 5 then love.event.quit()
-            end
+	        self.highlight = (self.highlight + table.getn(self.options) - 2) % table.getn(self.options) + 1
+    elseif key == "s" or key == "down" or key == "d" or key == "right" then
+            self.highlight = (self.highlight + table.getn(self.options)) % table.getn(self.options) + 1
+    elseif key == "return" or key == " " then
+        if self.highlight == 1 then General:setState(GameState)
+        elseif self.highlight == 2 then General:setState(HighScoreState, false)
+        elseif self.highlight == 5 then love.event.quit()
+        end
     end
 end
 

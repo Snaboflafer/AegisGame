@@ -56,6 +56,11 @@ function HighScoreState:keyreleased(key)
 		General:setState(MenuState)
 	end
 end
+function HighScoreState:start()
+end
+
+function HighScoreState:stop()
+end
 --[[
 function HighScoreState:keyreleased(key)
 	self.keyPressSound:rewind() 

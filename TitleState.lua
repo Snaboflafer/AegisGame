@@ -56,6 +56,9 @@ function TitleState:draw()
 	end
 end
 function TitleState:keyreleased(key)
+    if key == "escape" then
+		love.event.quit()
+	end
     General:setState(MenuState)
 end
 function TitleState:start()
