@@ -16,9 +16,9 @@ function GameState:load()
 	self.player:setCollisionBox(26, 15, 84, 35)
 	GameState:add(self.player)
 
-	self.sprite1 = Sprite:new(256,256, "images/button_256x64.png")
-	self.sprite1.immovable = true
-	GameState:add(self.sprite1)
+	--self.sprite1 = Sprite:new(256,256, "images/button_256x64.png")
+	--self.sprite1.immovable = true
+	--GameState:add(self.sprite1)
 
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
@@ -51,6 +51,7 @@ function GameState:checkCollisions()
 	for k,enemy in pairs(self.enemies.members) do
 		if General:collide(enemy, self.player) then
 			self.player:updateScore(enemy:getPointValue())
+			table.remove(self.enemies.members, k)
 		end
 	end
 end
@@ -79,8 +80,8 @@ function GameState:update()
 
 	State:update()
 	
-	General:collide(self.player, self.sprite1)	--Collide Sprite x Sprite
-	General:collide(self.enemies, self.sprite1)	--Collide Group x Sprite
+	--General:collide(self.player, self.sprite1)	--Collide Sprite x Sprite
+	--General:collide(self.enemies, self.sprite1)	--Collide Group x Sprite
 	General:collide(self.enemies)				--Collide Group with itself
 end
 
