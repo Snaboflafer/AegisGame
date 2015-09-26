@@ -55,7 +55,7 @@ function readHighScores(path)
     return content
 end
 
-function HighScoreState:keyreleased(key)
+function HighScoreState:keypressed(key)
 	General:setState(MenuState)
 end
 

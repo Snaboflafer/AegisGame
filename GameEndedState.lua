@@ -19,10 +19,10 @@ function GameEndedState:draw()
 	love.graphics.print(
 		self.title,
 		Utility:mid(General.headerFont:getWidth(self.title), General.screenW),
-		Utility:mid(General.headerFont:getHeight(self.title), General.screenH*.6)
+		Utility:mid(General.headerFont:getHeight(self.title), General.screenH)
 	)
 end
-function GameEndedState:keyreleased(key)
+function GameEndedState:keypressed(key)
     General:setState(HighScoreState)
 end
 function GameEndedState:start()
