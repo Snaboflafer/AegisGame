@@ -1,10 +1,10 @@
 lua
-99999999
+900
 steven austin
-10000
+800
 nathaniel rhodes
-10000
+700
 andrew shiau
-100000
+600
 jung yang
-10000
+500

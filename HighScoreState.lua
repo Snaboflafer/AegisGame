@@ -28,6 +28,7 @@ function HighScoreState:draw()
 		'center'
 	)
 	love.graphics.setFont(General.subFont)
+	highScores = readHighScores("highScores.txt");
 	love.graphics.printf(
 		highScores,
 		0,
@@ -38,7 +39,7 @@ function HighScoreState:draw()
 end
 
 
-local function readHighScores(path)
+function readHighScores(path)
     local file = io.open(path, "rb") -- r read mode and b binary mode
     if not file then return nil end
     local content = ""
@@ -54,9 +55,7 @@ local function readHighScores(path)
     return content
 end
 
-highScores = readHighScores("highScores.txt");
-
-function HighScoreState:keypressed(key)
+function HighScoreState:keyreleased(key)
 	General:setState(MenuState)
 end
 

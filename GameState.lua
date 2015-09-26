@@ -95,8 +95,14 @@ function GameState:update()
 
 
 	if State.time > gameDuration or (self.enemies:getSize() == 0 and wasDestroyed) then
-		--GameState:updateHighScores("Player", 10)
-		General:setState(HighScoreState) 
+		GameState:updateHighScores("Player", self.player:getScore())
+		if State.time > gameDuration then
+			GameEndedState.title = "GAME OVER"
+		else
+			GameEndedState.title = "VICTORY"
+		end
+		General:setState(GameEndedState) 
+
 	end
 
 end
@@ -120,17 +126,18 @@ function GameState:updateHighScores(name, score)
     local newHighScore = false
 	--checks each high score against the new score, putting the new score if it exceeds the high score
 	repeat
-	    content = content .. readName .. "\n" .. readScore .. "\n"
-	    scoresPut = scoresPut + 1
-	    readName = file:read "*l"
+		readName = file:read "*L"
 	    readScore = file:read "*n"
 	    file:read "*L"
-	    if score > readScore and newHighScore == false then
+	    if newHighScore == false and score > readScore then
 	    	content = content .. name .. "\n" .. score .. "\n"
 	    	scoresPut = scoresPut + 1
 	    	newHighScore = true
+	    	if scoresPut >= 5 then break end
 	    end
-	until scoresPut > 5
+	    content = content .. readName .. readScore .. "\n"
+	    scoresPut = scoresPut + 1
+	until scoresPut >= 5
 	file:close()
 	content = content:gsub("^%s*(.-)%s*$", "%1") --remove leading and trailing whitespace
 	hFile = io.open("highScores.txt", "w+") --write the file.

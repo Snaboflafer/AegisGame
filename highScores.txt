@@ -1,3 +1,5 @@
+lua
+900
 steven austin
 800
 nathaniel rhodes
