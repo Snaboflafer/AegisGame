@@ -7,7 +7,8 @@ Text = {
 	size = 12,
 	font = nil,
 	color = {255,255,255,255},
-	align = 0
+	align = 0,
+	shadowColor = {0,0,0,0}
 }
 
 function Text:new(X, Y, Label, TypeFace, Size)
@@ -37,6 +38,9 @@ end
 function Text:setColor(R,G,B,A)
 	self.color = {R, G, B, A or 255}
 end
+function Text:setShadow(R,G,B,A)
+	self.shadowColor = {R,G,B,A or 255}
+end
 function Text:setSize(Size)
 	self.size = Size
 end
@@ -57,12 +61,23 @@ function Text:draw()
 	end
 
 	love.graphics.setFont(self.font)
+
+	if self.shadowColor[4] ~= 0 then
+		love.graphics.setColor(self.shadowColor)
+		love.graphics.print(
+			self.label,
+			self.x + self.size/16 - self.align * (self.font:getWidth(self.label)),
+			self.y + self.size/16
+		)
+	end
+
 	love.graphics.setColor(self.color)
 	love.graphics.print(
 		self.label,
 		self.x - self.align * (self.font:getWidth(self.label)),
 		self.y
 	)
+	
 end
 
 function Text:getDebug()

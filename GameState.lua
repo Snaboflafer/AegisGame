@@ -15,6 +15,7 @@ function GameState:load()
 	self.player:setAnimations()
 	self.player:setCollisionBox(26, 15, 84, 35)
 	GameState:add(self.player)
+	self.fuelTimer = 10
 
 	
 	-- Flag set to false as no enemies are destroyed yet
@@ -40,19 +41,17 @@ function GameState:load()
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 
-	timeText = Text:new(10, 10, "Time ","fonts/04b09.ttf", 18)
+	timeText = Text:new(General.screenW * .5 - 128, 24, "Time: ","fonts/04b09.ttf", 32)
 	timeText:setAlign(Text.LEFT)
 
-	--instructionText1 = Text:new(self.player.x +.5*self.player.width, 
-	--	self.player.y  + self.player.height + General.screenH/60,
-	--	"Weapons are offline!\nRam enemy ships before\ntime runs out!","fonts/04b09.ttf", 36)
-	--instructionText1:setAlign(Text.CENTER)
 
 	instructionText = Text:new(General.screenW/2, General.screenH*.5,
-		"Weapons are offline!\nRam enemy ships before\ntime runs out!","fonts/04b09.ttf", 36)
+		"Weapons are offline!\nRam enemy ships before\nyou lose power!","fonts/04b09.ttf", 36)
 	instructionText:setAlign(Text.CENTER)
-	instructionText:setColor(0,0,0,255)
-
+	instructionText:setColor(255,200,0,255)
+	instructionText:setShadow(200,0,0,255)
+	self.instructionTimer = 6
+	
 	GameState:add(highScoreText)
 	GameState:add(timeText)
 	GameState:add(instructionText)
@@ -75,7 +74,12 @@ function GameState:checkCollisions()
 			self.explosion:rewind()
 			self.explosion:play()
 			self.player:updateScore(enemy:getPointValue())
-			table.remove(self.enemies.members, k)
+			
+			--table.remove(self.enemies.members, k)
+			enemy.x = General.screenW * math.random()
+			enemy.y = General.screenH * math.random()
+
+			self.fuelTimer = self.fuelTimer + .5
 		end
 	end
 end
@@ -100,29 +104,25 @@ end
 
 function GameState:update()
 	State:update()
-	local gameDuration = 10;	
 	self:checkCollisions()
+
+	self.instructionTimer = self.instructionTimer - General.elapsed
+	self.fuelTimer = self.fuelTimer - General.elapsed
+
 	highScoreText:setLabel("Score: " .. self.player:getScore())
+	timeText:setLabel("Time: " .. math.ceil(self.fuelTimer * 10)/10)
 
-	timeText:setLabel("Time " .. gameDuration - math.ceil(State.time))
-
-	--make instruction label follow player, disappear after certain amount of time
-	--instructionText1.x = self.player.x +.5*self.player.width
-	--instructionText1.y = self.player.y  + self.player.height + General.screenH/60
-	if State.time > 3 then
+	if self.instructionTimer <= 0 then
 			instructionText:setLabel("")
 	end
 	General:collide(self.enemies)				--Collide Group with itself
 
 
-	if State.time > gameDuration or (self.enemies:getSize() == 0 and wasDestroyed) then
+	if self.fuelTimer <= 0 then
 		GameState:updateHighScores("Player", self.player:getScore())
-		if State.time > gameDuration then
-			GameEndedState.title = "GAME OVER"
-		else
-			GameEndedState.title = "VICTORY"
-		end
-		General:setState(GameEndedState) 
+
+		GameEndedState.title = "GAME OVER"
+		General:setState(GameEndedState, false) 
 
 	end
 
