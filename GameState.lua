@@ -22,8 +22,18 @@ function GameState:load()
 	timeText = Text:new(10, 10, "Time ","fonts/04b09.ttf", 18)
 	timeText:setAlign(Text.LEFT)
 
+	instructionText1 = Text:new(self.player.x +.5*self.player.width, 
+		self.player.y  + self.player.height + General.screenH/60,
+		"WEAPONS DOWN","fonts/04b09.ttf", 36)
+	instructionText1:setAlign(Text.CENTER)
+
+	instructionText2 = Text:new(General.screenW/2, General.screenH*.5, "DESTROY ALL ENEMIES","fonts/04b09.ttf", 36)
+	instructionText2:setAlign(Text.CENTER)
+
 	GameState:add(highScoreText)
 	GameState:add(timeText)
+	GameState:add(instructionText1)
+	GameState:add(instructionText2)
 
 	-- Flag set to false as no enemies are destroyed yet
 	enemyDestroyed = false;
@@ -85,12 +95,19 @@ end
 
 function GameState:update()
 	State:update()
-
 	local gameDuration = 10;	
 	self:checkCollisions()
 	highScoreText:setLabel("Score: " .. self.player:getScore())
 
 	timeText:setLabel("Time " .. gameDuration - math.ceil(State.time))
+
+	--make instruction label follow player, disappear after certain amount of time
+	instructionText1.x = self.player.x +.5*self.player.width
+	instructionText1.y = self.player.y  + self.player.height + General.screenH/60
+	if State.time > 4 then
+			instructionText1:setLabel("")
+			instructionText2:setLabel("")
+	end
 	General:collide(self.enemies)				--Collide Group with itself
 
 
@@ -119,16 +136,15 @@ function GameState:updateHighScores(name, score)
    local file = io.open("highScores.txt", "rb") -- r read mode and b binary mode
     if not file then return nil end
     local content = ""
-    local restOfFile
     local readName = ""
     local readScore = ""
     local scoresPut = 0
     local newHighScore = false
 	--checks each high score against the new score, putting the new score if it exceeds the high score
 	repeat
-		readName = file:read "*L"
-	    readScore = file:read "*n"
-	    file:read "*L"
+		readName = file:read "*L" --next line with whitespace
+	    readScore = file:read "*n" --next number
+	    file:read "*L" --kill newline
 	    if newHighScore == false and score > readScore then
 	    	content = content .. name .. "\n" .. score .. "\n"
 	    	scoresPut = scoresPut + 1
