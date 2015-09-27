@@ -2,7 +2,7 @@
 HighScoreState = {
 	name = "High Scores",
 	time = 0,
-	highScores
+	highScores = nil
 }
 HighScoreState.__index = HighScoreState
 setmetatable(HighScoreState, State)
@@ -28,9 +28,9 @@ function HighScoreState:draw()
 		'center'
 	)
 	love.graphics.setFont(General.subFont)
-	highScores = readHighScores("highScores.txt");
+	self.highScores = HighScoreState:readHighScores("highScores.txt");
 	love.graphics.printf(
-		highScores,
+		self.highScores,
 		0,
 		Utility:mid(self.subHeight, General.screenH),
 		General.screenW,
@@ -39,7 +39,7 @@ function HighScoreState:draw()
 end
 
 
-function readHighScores(path)
+function HighScoreState:readHighScores(path)
     local file = io.open(path, "rb") -- r read mode and b binary mode
     if not file then return nil end
     local content = ""

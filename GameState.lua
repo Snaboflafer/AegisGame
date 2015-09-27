@@ -16,25 +16,7 @@ function GameState:load()
 	self.player:setCollisionBox(26, 15, 84, 35)
 	GameState:add(self.player)
 
-	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
-	highScoreText:setAlign(Text.RIGHT)
-
-	timeText = Text:new(10, 10, "Time ","fonts/04b09.ttf", 18)
-	timeText:setAlign(Text.LEFT)
-
-	instructionText1 = Text:new(self.player.x +.5*self.player.width, 
-		self.player.y  + self.player.height + General.screenH/60,
-		"WEAPONS DOWN","fonts/04b09.ttf", 36)
-	instructionText1:setAlign(Text.CENTER)
-
-	instructionText2 = Text:new(General.screenW/2, General.screenH*.5, "DESTROY ALL ENEMIES","fonts/04b09.ttf", 36)
-	instructionText2:setAlign(Text.CENTER)
-
-	GameState:add(highScoreText)
-	GameState:add(timeText)
-	GameState:add(instructionText1)
-	GameState:add(instructionText2)
-
+	
 	-- Flag set to false as no enemies are destroyed yet
 	enemyDestroyed = false;
 	
@@ -51,6 +33,29 @@ function GameState:load()
 		self.enemies:add(curEnemy)
 	end
 	GameState:add(self.enemies)
+
+
+	--Hud
+	self.hud = Group:new()	--Group not yet implemented
+	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
+	highScoreText:setAlign(Text.RIGHT)
+
+	timeText = Text:new(10, 10, "Time ","fonts/04b09.ttf", 18)
+	timeText:setAlign(Text.LEFT)
+
+	--instructionText1 = Text:new(self.player.x +.5*self.player.width, 
+	--	self.player.y  + self.player.height + General.screenH/60,
+	--	"Weapons are offline!\nRam enemy ships before\ntime runs out!","fonts/04b09.ttf", 36)
+	--instructionText1:setAlign(Text.CENTER)
+
+	instructionText = Text:new(General.screenW/2, General.screenH*.5,
+		"Weapons are offline!\nRam enemy ships before\ntime runs out!","fonts/04b09.ttf", 36)
+	instructionText:setAlign(Text.CENTER)
+	instructionText:setColor(0,0,0,255)
+
+	GameState:add(highScoreText)
+	GameState:add(timeText)
+	GameState:add(instructionText)
 
 	--Do music
 	self.bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
@@ -102,11 +107,10 @@ function GameState:update()
 	timeText:setLabel("Time " .. gameDuration - math.ceil(State.time))
 
 	--make instruction label follow player, disappear after certain amount of time
-	instructionText1.x = self.player.x +.5*self.player.width
-	instructionText1.y = self.player.y  + self.player.height + General.screenH/60
-	if State.time > 4 then
-			instructionText1:setLabel("")
-			instructionText2:setLabel("")
+	--instructionText1.x = self.player.x +.5*self.player.width
+	--instructionText1.y = self.player.y  + self.player.height + General.screenH/60
+	if State.time > 3 then
+			instructionText:setLabel("")
 	end
 	General:collide(self.enemies)				--Collide Group with itself
 
