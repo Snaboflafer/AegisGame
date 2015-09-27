@@ -5,8 +5,11 @@ Andrew Shiau ashiau1@jhu.edu
 Team: SOL
 
 UPDATES
-Menu options are numbered, use number keys to navigate. Do exit
-or go back a level in the menu structure, use the “Escape” key.
+Enemies give points and additional play time for each one
+destroyed.
+Player "wins" or "loses" depending on how they play. Good play
+is rewarded with additional time. The game ends when time runs
+out, and the the player may compare their score with previous.
 
 Credits
 Music: 	Nighogg soundtrack by Daedelus,

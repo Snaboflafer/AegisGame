@@ -56,7 +56,7 @@ function love.draw()
 	--debugStr = debugStr .. "ScreenW = " .. General.screenW .. "\n"
 	--debugStr = debugStr .. "ScreenH = " .. General.screenH .. "\n"
 	
-	love.graphics.setFont(love.graphics.newFont("fonts/segoeui.ttf", 12))
+	love.graphics.setFont(love.graphics.newFont("fonts/lucon.ttf", 12))
 
 	for k,v in pairs(General.activeState.members) do
 		debugStr = debugStr .. v:getDebug()	
