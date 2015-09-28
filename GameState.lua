@@ -117,7 +117,7 @@ function GameState:update()
 	end
 	General:collide(self.enemies)				--Collide Group with itself
 
-
+	--[[
 	if self.fuelTimer <= 0 then
 		GameState:updateHighScores("Player", self.player:getScore())
 
@@ -125,7 +125,7 @@ function GameState:update()
 		General:setState(GameEndedState, false) 
 
 	end
-
+	--]]
 end
 
 function GameState:draw()
