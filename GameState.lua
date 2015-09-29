@@ -8,16 +8,26 @@ function GameState:load()
 	self.camera = General:newCamera(0,0)
 	GameState:add(self.camera)
 	
-	local spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
+
+	--Create floor block
+	--May need to change to responsive sizing
+	self.floorBlock1 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
+	self.floorBlock1:setCollisionBox(0, 0, self.floorBlock1.width, self.floorBlock1.height)
+	self.floorBlock2 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
+	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
+
+	local spriteBg = sprite:new(0,0 - self.floorBlock1.width,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	--spriteBg.scrollFactorX = .1
 	GameState:add(spriteBg)
 	--local spriteBg2 = sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	--GameState:add(spriteBg2)
+	GameState:add(self.floorBlock1)
 
 	self.collisionSprite = sprite:new(400,400,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(1,1,254,62)
 	GameState:add(self.collisionSprite)
-	
+
+
 	--Create player
 	--player = Player:new(100, 100, "images/ship_fly.png",128,64)
 	self.player = Player:new(100, 100)
@@ -35,7 +45,7 @@ function GameState:load()
 	for i=1,5,1 do
 		local curEnemy = {}
 		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
-		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random())
+		curEnemy = enemy:new(General.screenW - 64, (General.screenH - self.floorBlock1.height)* math.random())
 		curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
 		curEnemy:setAnimations()
 		curEnemy:setPointValue(100)
@@ -77,6 +87,7 @@ end
 
 function GameState:checkCollisions()
 
+	--check for player:enemy collisions
 	for k,enemy in pairs(self.enemies.members) do
 		if General:collide(enemy, self.player) then
 			-- Enemy was destroyed
@@ -87,11 +98,32 @@ function GameState:checkCollisions()
 			
 			--table.remove(self.enemies.members, k)
 			enemy.x = General.screenW * math.random()
-			enemy.y = General.screenH * math.random()
-
+			enemy.y = (General.screenH - self.floorBlock1.height) * math.random()
 			self.fuelTimer = self.fuelTimer + .5
 		end
 	end
+
+	--check for player:floor collision
+	if General:collide(self.floorBlock1, self.player) then
+		self.explosion:rewind()
+		self.explosion:play()
+		General:setState(GameEndedState)
+	end
+
+	--check for enemy:floor collision
+	for k,enemy in pairs(self.enemies.members) do
+		if General:collide(enemy, self.floorBlock1) then
+			-- Enemy was destroyed
+			--wasDestroyed = true
+			--self.explosion:rewind()
+			--self.explosion:play()
+			--table.remove(self.enemies.members, k)
+			--enemy.x = General.screenW * math.random()
+			--enemy.y = (General.screenH - self.floorBlock.height) * math.random()
+			--self.fuelTimer = self.fuelTimer + .5
+		end
+	end
+
 end
 
 function GameState:start()
@@ -135,7 +167,6 @@ function GameState:update()
 			instructionText:setLabel("")
 	end
 	
-
 	if self.fuelTimer <= 0 then
 		GameState:updateHighScores("Player", self.player:getScore())
     
@@ -143,7 +174,7 @@ function GameState:update()
 		General:setState(GameEndedState, false) 
     
 	end
-
+	--]]
 end
 
 function GameState:draw()

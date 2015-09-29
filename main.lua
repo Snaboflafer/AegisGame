@@ -23,6 +23,7 @@ require("Button")
 sprite = require("Sprite")
 player = require("Player")
 enemy = require("Enemy")
+floorBlock  = require("FloorBlock")
 require("Text")
 
 function love.load()

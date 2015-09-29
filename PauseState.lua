@@ -11,7 +11,7 @@ PauseState = {
 PauseState.__index = PauseState
 setmetatable(PauseState, MenuState)
 
-function PauseState:keyreleased(key)
+function PauseState:keypressed(key)
 	self.keyPressSound:rewind() 
 	self.keyPressSound:play()
 	if key == "escape" then

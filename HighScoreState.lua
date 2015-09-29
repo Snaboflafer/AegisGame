@@ -41,7 +41,7 @@ end
 
 function HighScoreState:readHighScores(path)
     local file = io.open(path, "rb") -- r read mode and b binary mode
-    if not file then return nil end
+    if not file then return "Couldn't read highScore File" end
     local content = ""
     local name = ""
     local score = ""
