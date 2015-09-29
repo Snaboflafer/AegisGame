@@ -10,6 +10,7 @@ time = 0
 
 require("General")
 require("Utility")
+require("Camera")
 require("State")
 require("TitleState")
 require("HighScoreState")
@@ -26,7 +27,7 @@ require("Text")
 
 function love.load()
 	General:init()
-	General:newCamera(0,0)
+	--Camera:newCamera(General.screenW/2,General.screenH/2)
 
 	--TitleState:load()
 	--MenuState:load()
@@ -61,7 +62,7 @@ function love.draw()
 	for k,v in pairs(General.activeState.members) do
 		debugStr = debugStr .. v:getDebug()	
 	end
-	--love.graphics.print(debugStr)
+	love.graphics.print(debugStr)
 end
 
 function love.keyreleased(key)

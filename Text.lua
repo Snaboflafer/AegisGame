@@ -60,22 +60,23 @@ function Text:draw()
 		return
 	end
 
+	local camera = General:getCamera()
 	love.graphics.setFont(self.font)
 
 	if self.shadowColor[4] ~= 0 then
 		love.graphics.setColor(self.shadowColor)
 		love.graphics.print(
 			self.label,
-			self.x + self.size/16 - self.align * (self.font:getWidth(self.label)),
-			self.y + self.size/16
+			self.x + self.size/16 - self.align * (self.font:getWidth(self.label)) - (camera.x * self.scrollFactorX),
+			self.y + self.size/16 - (camera.y * self.scrollFactorY)
 		)
 	end
 
 	love.graphics.setColor(self.color)
 	love.graphics.print(
 		self.label,
-		self.x - self.align * (self.font:getWidth(self.label)),
-		self.y
+		self.x - (camera.x * self.scrollFactorX) - (self.align * (self.font:getWidth(self.label))),
+		self.y - (camera.y * self.scrollFactorY)
 	)
 	
 end

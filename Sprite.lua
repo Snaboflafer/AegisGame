@@ -43,7 +43,10 @@ Sprite = {
 	touchingL = false,
 	touchingR = false,
 	immovable = false,
-	bounceFactor = 0
+	bounceFactor = 0,
+	alive = false,
+	visible = false,
+	active = false
 }
 
 --[[Create a new sprite
@@ -71,6 +74,11 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 
 	s.animations = {}
 	s.imageQuads = {}
+	
+	s.alive = true
+	s.visible = true
+	s.active = true
+	
 	return s
 end
 
@@ -128,6 +136,10 @@ end
 
 -- updates velocity and position of sprite
 function Sprite:update()
+	if not self.active then
+		return
+	end
+	
 	--Apply either drag or acceleration to velocity
 	if self.accelerationX == 0 then
 		self.velocityX = self.velocityX - self.dragX * Utility:signOf(self.velocityX)
@@ -286,11 +298,14 @@ function Sprite:draw()
 	if not self.visible then
 		return
 	end
+	
+	local camera = General:getCamera()
+	
 	if self.animated then
 		love.graphics.draw(
 			self.image, self.imageQuads[self.curAnim.frames[self.curAnimFrame]],
-			self.x,
-			self.y,
+			self.x - (camera.x * self.scrollFactorX),
+			self.y - (camera.y * self.scrollFactorY),
 			self.rotation,
 			self.scaleX, self.scaleY,
 			self.offsetX, self.offsetY
@@ -298,8 +313,8 @@ function Sprite:draw()
 	else
 		love.graphics.draw(
 			self.image,
-			self.x,
-			self.y,
+			self.x - (camera.x * self.scrollFactorX),
+			self.y - (camera.y * self.scrollFactorY),
 			self.rotation,
 			self.scaleX, self.scaleY,
 			self.offsetX, self.offsetY

@@ -4,9 +4,19 @@ setmetatable(GameState, State)
 
 function GameState:load()
 	State:load()
+	
+	self.camera = General:newCamera(0,0)
+	GameState:add(self.camera)
+	
 	local spriteBg = sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
+	--spriteBg.scrollFactorX = .1
 	GameState:add(spriteBg)
+	--local spriteBg2 = sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
+	--GameState:add(spriteBg2)
 
+	self.collisionSprite = sprite:new(400,400,"images/button_256x64.png")
+	self.collisionSprite:setCollisionBox(1,1,254,62)
+	GameState:add(self.collisionSprite)
 	
 	--Create player
 	--player = Player:new(100, 100, "images/ship_fly.png",128,64)
@@ -22,7 +32,7 @@ function GameState:load()
 	enemyDestroyed = false;
 	
 	self.enemies = Group:new()
-	for i=1,9,1 do
+	for i=1,5,1 do
 		local curEnemy = {}
 		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
 		curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random())
@@ -100,14 +110,23 @@ function GameState:keyreleased(key)
 	if key == "escape" then
 		General:setState(PauseState,false)
 	end
+	if key == "left" then
+		General:getCamera().x = General:getCamera().x - 10
+	end
+	if key == "right" then
+		General:getCamera().x = General:getCamera().x + 10
+	end
 end
 
 function GameState:update()
 	State:update()
+	General:collide(self.enemies)				--Collide Group with itself
+	General:collide(self.player, self.collisionSprite)
+
 	self:checkCollisions()
 
 	self.instructionTimer = self.instructionTimer - General.elapsed
-	self.fuelTimer = self.fuelTimer - General.elapsed
+	self.fuelTimer = self.fuelTimer - General.elapsed * .05
 
 	highScoreText:setLabel("Score: " .. self.player:getScore())
 	timeText:setLabel("Time: " .. math.ceil(self.fuelTimer * 10)/10)
@@ -115,15 +134,14 @@ function GameState:update()
 	if self.instructionTimer <= 0 then
 			instructionText:setLabel("")
 	end
-	General:collide(self.enemies)				--Collide Group with itself
-
+	
 
 	if self.fuelTimer <= 0 then
 		GameState:updateHighScores("Player", self.player:getScore())
-
+    
 		GameEndedState.title = "GAME OVER"
 		General:setState(GameEndedState, false) 
-
+    
 	end
 
 end

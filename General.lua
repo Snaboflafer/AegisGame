@@ -1,7 +1,6 @@
 --General class for game data
 General = {
 	elapsed = 0,
-	camera = {x=0, y=0},
 	volume = 1,
 	timeScale = 1,
 	screenW = 0,
@@ -42,11 +41,11 @@ function General:newCamera(X, Y)
 		--self.camera:destroy()
 	end
 	
-	self.camera = {}
-	self.camera = {
-		x = 0,
-		y = 0
-	}
+	self.camera = Camera:new(X, Y)
+	return self.camera
+end
+function General:getCamera()
+	return self.camera
 end
 function General:setWorldBounds(X,Y,Width,Height)
 	worldX = X
@@ -159,6 +158,7 @@ function General:collide(Object1, Object2)
 		
 		Object1.velocityX = -Object1.velocityX * Object1.bounceFactor
 	else
+		--Approaching from top/bottom
 		if dy < 0 then
 			Object1.y = Object2:getBottom()
 		else

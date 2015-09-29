@@ -11,13 +11,13 @@ function Group:new()
 	self.__index = self
 	--self.__tostring = s:toString()
 	
-	members = {}
+	s.members = {}
 	
 	return s
 end
 
 function Group:getSize()
-	size = 0
+	local size = 0
 	for k, v in pairs(self.members) do
 		size = size + 1
 	end
