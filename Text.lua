@@ -75,7 +75,7 @@ function Text:draw()
 	love.graphics.setColor(self.color)
 	love.graphics.print(
 		self.label,
-		self.x - (camera.x * self.scrollFactorX) - (self.align * (self.font:getWidth(self.label))),
+		self.x - (self.align * (self.font:getWidth(self.label))) - (camera.x * self.scrollFactorX),
 		self.y - (camera.y * self.scrollFactorY)
 	)
 	

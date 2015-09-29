@@ -11,7 +11,8 @@ General = {
 	worldWidth = 0,
 	worldHeight = 0,
 	colDivisionsX = 16,
-	colDivisionsY = 16
+	colDivisionsY = 16,
+	camera = nil
 }
 
 function General:init()
@@ -22,7 +23,7 @@ function General:init()
 	self.headerFont = love.graphics.newFont("fonts/Square.ttf", 96)
 	self.subFont = love.graphics.newFont("fonts/04b09.ttf", 32)
 	self.elapsed = 0
-	self.camera = {}
+	self.camera = nil
 	self.volume = 1
 	self.timeScale = 1
 	self.screenW = love.window.getWidth()

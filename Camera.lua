@@ -2,11 +2,14 @@
 Camera = {
 	x = 0,
 	y = 0,
+	width = General.screenW,
+	height = General.screenH,
 	zoom = 1,
 	bounds = nil,
-	target = {
-		x = General.screenW/2,
-		y = General.screenH/2
+	target = nil,
+	deadzone = {
+		width = 0,
+		height = 0
 	}
 }
 
@@ -17,17 +20,41 @@ function Camera:new(X, Y)
 	setmetatable(s, self)
 	self.__index = self
 	
-	self.x = X
-	self.y = Y
-	target = {
-		self.x + General.screenW/2,
-		self.y + General.screenH/2
+	s.x = X
+	s.y = Y
+	s.width = General.screenW
+	s.height = General.screenH
+	s.deadzone = {
+		width = 0,
+		height = 0
 	}
 	
 	return s
 end
 
 function Camera:update()
+	
+	if self.target ~= nil then
+		local midX = self.x + self.width/2
+		local midY = self.y + self.height/2
+		local targetX, targetY = self.target:getCenter()
+		
+		if targetX < midX - self.deadzone.width then
+			self.x = self.x - (midX - targetX)*.05
+		end
+		if targetX > midX + self.deadzone.width then
+			self.x = self.x  + (targetX - midX)*.05
+		end
+
+		if targetY < midY - self.deadzone.height then
+			self.y = self.y - (midY - targetY)*.05
+		end
+		if targetY > midY + self.deadzone.height then
+			self.y = self.y  + (targetY - midY)*.05
+		end
+	end
+	
+	--Lock to bounds
 	if self.bounds ~= nil then
 		if self.x < self.bounds.left then
 			self.x = self.bounds.left
@@ -45,14 +72,23 @@ function Camera:update()
 end
 
 function Camera:draw()
-	--Empty function, camera object is not drawn
+	--Empty function, camera objects are not drawn
 end
 
-function Camera:setBounds(U,D,L,R)
-	self.bounds = {up = U or 0, 
-				down = D or General.screenH, 
+function Camera:setBounds(L, T, R, B)
+	self.bounds = {top = T or 0, 
+				bottom = B or General.screenH, 
 				left = L or 0, 
 				right = R or General.screenW}
+end
+function Camera:setDeadzone(W, H)
+	self.deadzone = {
+		width = W,
+		height = H
+	}
+end
+function Camera:setTarget(TargetObject)
+	self.target = TargetObject
 end
 
 function Camera:getPosition()

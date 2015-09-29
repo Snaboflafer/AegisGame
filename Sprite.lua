@@ -344,6 +344,9 @@ end
 function Sprite:getBottom()
 	return self.y + self.offsetY + self.height
 end
+function Sprite:getCenter()
+	return self.x + self.offsetX + self.width/2, self.y + self.offsetY + self.height/2
+end
 	
 function Sprite:getDebug()
 	debugStr = ""

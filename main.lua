@@ -52,11 +52,9 @@ function love.draw()
 	if PauseState.loaded == true then debugStr = debugStr .. "PauseState loaded\n" end
 	if MenuState.loaded == true then debugStr = debugStr .. "MenuState loaded\n" end
 	if HighScoreState.loaded == true then debugStr = debugStr .. "HighScoreState loaded\n" end
+
 	debugStr = debugStr .. "Frame time = " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
 	debugStr = debugStr .. math.floor(1/General.elapsed) .. "FPS\n"
-	debugStr = debugStr .. "Active state = " .. tostring(General.activeState)
-	--debugStr = debugStr .. "ScreenW = " .. General.screenW .. "\n"
-	--debugStr = debugStr .. "ScreenH = " .. General.screenH .. "\n"
 	
 	love.graphics.setFont(love.graphics.newFont("fonts/lucon.ttf", 12))
 

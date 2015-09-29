@@ -6,6 +6,7 @@ function GameState:load()
 	State:load()
 	
 	self.camera = General:newCamera(0,0)
+	self.camera:setBounds(-32, -32, General.screenW + 32, General.screenH + 32)
 	GameState:add(self.camera)
 	
 
@@ -17,7 +18,8 @@ function GameState:load()
 	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
 
 	local spriteBg = sprite:new(0,0 - self.floorBlock1.width,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
-	--spriteBg.scrollFactorX = .1
+	spriteBg.scrollFactorY = .3
+	spriteBg.scrollFactorX = .3
 	GameState:add(spriteBg)
 	--local spriteBg2 = sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	--GameState:add(spriteBg2)
@@ -34,6 +36,8 @@ function GameState:load()
 	self.player:loadSpriteSheet("images/player_ship.png",128,64)
 	self.player:setAnimations()
 	self.player:setCollisionBox(26, 15, 84, 35)
+	self.camera:setTarget(self.player)
+	self.camera:setDeadzone(128,32)
 	GameState:add(self.player)
 	self.fuelTimer = 10
 
@@ -142,11 +146,17 @@ function GameState:keyreleased(key)
 	if key == "escape" then
 		General:setState(PauseState,false)
 	end
+	if key == "up" then
+		General:getCamera().y = General:getCamera().target.y - 10
+	end
+	if key == "down" then
+		General:getCamera().y = General:getCamera().target.y + 10
+	end
 	if key == "left" then
-		General:getCamera().x = General:getCamera().x - 10
+		General:getCamera().x = General:getCamera().target.x - 10
 	end
 	if key == "right" then
-		General:getCamera().x = General:getCamera().x + 10
+		General:getCamera().x = General:getCamera().target.x + 10
 	end
 end
 
