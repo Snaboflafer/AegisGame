@@ -22,6 +22,7 @@ require("Button")
 sprite = require("Sprite")
 player = require("Player")
 enemy = require("Enemy")
+floorBlock  = require("FloorBlock")
 require("Text")
 
 function love.load()
@@ -61,7 +62,7 @@ function love.draw()
 	for k,v in pairs(General.activeState.members) do
 		debugStr = debugStr .. v:getDebug()	
 	end
-	--love.graphics.print(debugStr)
+	love.graphics.print(debugStr)
 end
 
 function love.keyreleased(key)

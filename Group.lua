@@ -11,7 +11,7 @@ function Group:new()
 	self.__index = self
 	--self.__tostring = s:toString()
 	
-	members = {}
+	s.members = {}
 	
 	return s
 end
