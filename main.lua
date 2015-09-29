@@ -45,14 +45,30 @@ function love.update(dt)
 end
 
 function love.draw()
-	General.activeState:draw()
+	love.graphics.setColor(255,255,255,255)
+	General:draw()
 	
 	debugStr = ""
-	if GameState.loaded == true then debugStr = debugStr .. "GameState loaded\n" end
-	if PauseState.loaded == true then debugStr = debugStr .. "PauseState loaded\n" end
-	if MenuState.loaded == true then debugStr = debugStr .. "MenuState loaded\n" end
-	if HighScoreState.loaded == true then debugStr = debugStr .. "HighScoreState loaded\n" end
-
+	if TitleState.loaded == true then 
+		debugStr = debugStr .. "TitleState (" .. tostring(TitleState) .. ") is loaded\n"
+	end
+	if GameState.loaded == true then 
+		debugStr = debugStr .. "GameState (" .. tostring(GameState) .. ") is loaded\n"
+	end
+	if PauseState.loaded == true then 
+		debugStr = debugStr .. "PauseState (" .. tostring(PauseState) .. ") is loaded\n"
+	end
+	if MenuState.loaded == true then
+		debugStr = debugStr .. "MenuState (" .. tostring(MenuState) .. ") is loaded\n" 
+	end
+	if HighScoreState.loaded == true then 
+		debugStr = debugStr .. "HighScoreState (" .. tostring(HighScoreState) .. ") is loaded\n"
+	end
+	debugStr = debugStr .. "All loaded states:\n"
+	for i=1, General.loadedStates:getSize(), 1 do
+		debugStr = debugStr .. "\t(" .. tostring(General.loadedStates.members[i]) .. ")\n"
+	end
+	
 	debugStr = debugStr .. "Frame time = " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
 	debugStr = debugStr .. math.floor(1/General.elapsed) .. "FPS\n"
 	
@@ -61,6 +77,8 @@ function love.draw()
 	for k,v in pairs(General.activeState.members) do
 		debugStr = debugStr .. v:getDebug()	
 	end
+
+	love.graphics.setColor(255,255,255,255)
 	love.graphics.print(debugStr)
 end
 

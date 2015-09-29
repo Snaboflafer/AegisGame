@@ -8,7 +8,7 @@ Text = {
 	font = nil,
 	color = {255,255,255,255},
 	align = 0,
-	shadowColor = {0,0,0,0}
+	shadow = nil
 }
 
 function Text:new(X, Y, Label, TypeFace, Size)
@@ -39,7 +39,7 @@ function Text:setColor(R,G,B,A)
 	self.color = {R, G, B, A or 255}
 end
 function Text:setShadow(R,G,B,A)
-	self.shadowColor = {R,G,B,A or 255}
+	self.shadow = {R,G,B,A or 255}
 end
 function Text:setSize(Size)
 	self.size = Size
@@ -63,8 +63,8 @@ function Text:draw()
 	local camera = General:getCamera()
 	love.graphics.setFont(self.font)
 
-	if self.shadowColor[4] ~= 0 then
-		love.graphics.setColor(self.shadowColor)
+	if self.shadow ~= nil then
+		love.graphics.setColor(self.shadow)
 		love.graphics.print(
 			self.label,
 			self.x + self.size/16 - self.align * (self.font:getWidth(self.label)) - (camera.x * self.scrollFactorX),

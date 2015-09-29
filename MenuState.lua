@@ -1,89 +1,97 @@
 --- Menu screen state.
 MenuState = {
-	title = "MENU",
-	options = {
-		"Start",
-		"High Scores",
-		"Brightness",
-		"Volume",
-		"Quit"
-	},
-	time = 0,
-	highlight = 1
+	selected = 1
 }
 MenuState.__index = MenuState
 setmetatable(MenuState, State)
 
 function MenuState:load()
 	State.load(self)
-	--self.width = self.font:getWidth(self.name)
-	--self.height = self.font:getHeight(self.name)
-	self.song = love.audio.newSource("sounds/blast_network.mp3")
-	self.song:setLooping(true)
-	self.keyPressSound = love.audio.newSource("sounds/laser.wav")
-	self.titleText = Text:new(General.screenW/2,General.screenH/2, "fonts/Square.ttf",96)
-	self.titleText:setAlign(Text.CENTER)
-	self.titleText:lockToScreen()
-	MenuState:add(self.titleText)
-	--self.sprite1 = Sprite:new(128, 128,"images/button_256x64.png")
-	--MenuState:add(sprite1)
+	
+	local txtTitle = "MENU"
+	local txtOptions = {"Start", "High Scores", "Options", "Quit"}
+	
+	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
+						txtTitle, "fonts/Commodore.ttf", 64)
+	headerText:setAlign(Text.CENTER)
+	headerText:setColor(240, 240, 240, 255)
+	headerText:setShadow(0, 150, 150, 255)
+	MenuState:add(headerText)
+	
+	self.options = Group:new()
+	self.selected = 1
+	for i=1, table.getn(txtOptions), 1 do
+		local curText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (i-1),
+						txtOptions[i], "fonts/Commodore.ttf", 48)
+		self.options:add(curText)
+	end
+	MenuState:add(self.options)
+	
+	
+	self.bgm = love.audio.newSource("sounds/blast_network.mp3")
+	self.bgm:setLooping(true)
+	self.optionSound = love.audio.newSource("sounds/select_1.wav")
+	self.selectSound = love.audio.newSource("sounds/select_2.wav")
+	self.startSound = love.audio.newSource("sounds/select_long.wav")
+end
+
+function MenuState:start()
+	State.start(self)
+	self.bgm:play()
+end
+function MenuState:stop()
+	State.stop(self)
+	self.bgm:stop()
+end
+
+function MenuState:update()
+	for k, v in pairs(self.options.members) do
+		if k == self.selected then
+			v.x = General.screenW * .3 - 64
+			v:setColor(255,255,0,255)
+		else
+			v.x = General.screenW * .3
+			v:setColor(255,255,255,255)
+		end
+	end
+	
+	State.update(self)
 end
 
 function MenuState:draw()
-	State:draw()
-	
-	love.graphics.setFont(General.headerFont)
-	love.graphics.setColor({255, 255, 255, 255})
-	love.graphics.print(
-		self.title,
-		Utility:mid(General.headerFont:getWidth(self.title), General.screenW),
-		Utility:mid(General.headerFont:getHeight(self.title), General.screenH*.5)
-	)
-	
-	love.graphics.setFont(General.subFont)
-	for k,v in pairs(self.options) do
-		if k == self.highlight then
-			love.graphics.setColor({255, 255, 0, 255})
-			love.graphics.print(
-				self.options[k],
-				Utility:mid(General.headerFont:getWidth(MenuState.title) + General.screenW/10, General.screenW),
-				Utility:mid(0, General.screenH * .75) + General.subFont:getHeight("")*k
-			)
-			love.graphics.setColor({255, 255, 255, 255})
-		else
-			love.graphics.print(
-				self.options[k],
-				Utility:mid(General.headerFont:getWidth(MenuState.title), General.screenW),
-				Utility:mid(0, General.screenH * .75) + General.subFont:getHeight("")*k
-			)
-		end
-	end
+	State.draw(self)
 end
 
 function MenuState:keypressed(key)
-	self.keyPressSound:rewind() 
-	self.keyPressSound:play()
+	
 	if key == "escape" then
 		love.event.quit()
-	elseif key == "w" or key == "up" or key == "a" or key == "left" then 
-	        self.highlight = (self.highlight + table.getn(self.options) - 2) % table.getn(self.options) + 1
-    elseif key == "s" or key == "down" or key == "d" or key == "right" then
-            self.highlight = (self.highlight + table.getn(self.options)) % table.getn(self.options) + 1
+	elseif key == "w" or key == "up" then 
+		self.optionSound:rewind() 
+		self.optionSound:play()
+		self.selected = (self.selected + self.options:getSize() - 2) % self.options:getSize() + 1
+    elseif key == "s" or key == "down" then
+		self.optionSound:rewind() 
+		self.optionSound:play()
+		self.selected = (self.selected + self.options:getSize()) % self.options:getSize() + 1
     elseif key == "return" or key == " " then
-        if self.highlight == 1 then General:setState(GameState)
-        	HighScoreState.loaded = false;
-        elseif self.highlight == 2 then General:setState(HighScoreState, false)
-        elseif self.highlight == 5 then love.event.quit()
-        end
+		if self.selected == 1 then General:setState(GameState)
+			self.startSound:rewind()
+			self.startSound:play()
+			HighScoreState.loaded = false
+		elseif self.selected == 2 then
+			self.selectSound:rewind()
+			self.selectSound:play()
+			General:setState(HighScoreState)
+		elseif self.selected == 3 then
+			self.selectSound:rewind()
+			self.selectSound:play()
+			--General:setState(OptionState)
+		elseif self.selected == 4 then
+			self.selectSound:rewind()
+			self.selectSound:play()
+			love.event.quit()
+		end
     end
 end
 
-
-function MenuState:start()
-	self.time = 0
-	self.song:play()
-end
-
-function MenuState:stop()
-	self.song:stop()
-end

@@ -1,67 +1,62 @@
-TitleState = {
-	title = "Team SOL game", 
-	team = "Assignment part 3", 
-	authors = {"Steven Austin", "Nathaniel Rhodes", "Andrew Shiau", "Jung Yang"}
-}
+TitleState = {}
+TitleState.__index = TitleState
 setmetatable(TitleState, State)
 
---Fade disabled, will use a universal fade function in General
-function TitleState:fadein()
-    --if self.time < 16 then
-    --        local c = lerp(0, 255, self.time/16)
-    --        return {c, c, c, 255}
-    --else
-    --        return {255, 255, 255, 255}
-    --end
-	return {255,255,255,255}
-end
 function TitleState:load()
-    self.sound = love.audio.newSource("sounds/mission_ui.mp3")
+	State.load(self)
+	
+	local txtTitle1 = "Team SOL"
+	local txtTitle2 = "Game"
+	local txtInstructions = "Press any key..."
+	local txtAuthors = {"Steven Austin", "Nathaniel Rhodes", "Andrew Shiau", "Jung Yang"}
+	
+	local titleText1 = Text:new(General.screenW * .5, General.screenH * .1,
+							txtTitle1, "fonts/Commodore.ttf", 96)
+	titleText1:setAlign(Text.CENTER)
+	titleText1:setColor(250, 250, 250, 255)
+	titleText1:setShadow(0, 150, 150, 255)
+	TitleState:add(titleText1)
+	
+	local titleText2 = Text:new(General.screenW * .5, General.screenH * .1 + 96,
+							txtTitle2, "fonts/Commodore.ttf", 96)
+	titleText2:setColor(250, 250, 250, 255)
+	titleText2:setShadow(0, 150, 150, 255)
+	titleText2:setAlign(Text.CENTER)
+	TitleState:add(titleText2)
+	
+	local instructionText = Text:new(General.screenW * .5, General.screenH * .5,
+							txtInstructions, "fonts/Commodore.ttf", 48)
+	instructionText:setAlign(Text.CENTER)
+	TitleState:add(instructionText)
+
+	local authorText
+	for i=1, table.getn(txtAuthors), 1 do
+		authorText = Text:new(General.screenW * .5, General.screenH - 128 + (32 * (i-1)),
+				txtAuthors[i], "fonts/Commodore.ttf", 32)
+		authorText:setAlign(Text.CENTER)
+		TitleState:add(authorText)
+	end
+    self.bgm = love.audio.newSource("sounds/mission_ui.mp3")
+end
+
+function TitleState:start()
+    State.start(self)
+    self.bgm:play()
+end
+function TitleState:stop()
+	State.stop(self)
+    self.bgm:stop()
 end
 
 function TitleState:update()
-    if self.time > 20 then
-		General:setState(MenuState)
-    end
+	State.update(self)
 end
 
 function TitleState:draw()
-	love.graphics.setFont(General.headerFont)
-	love.graphics.setColor(self:fadein())
-	love.graphics.print(
-		self.title,
-		Utility:mid(General.headerFont:getWidth(self.title), General.screenW),
-		Utility:mid(General.headerFont:getHeight(self.title), General.screenH*.6)
-	)
-	love.graphics.print(
-		self.team,
-		Utility:mid(General.headerFont:getWidth(self.team)*.5, General.screenW), 
-		Utility:mid(General.headerFont:getHeight(self.team)*.5, General.screenH*.8),
-		0,
-		.5,
-		.5
-	)
-	love.graphics.setFont(General.subFont)
-	for k,author in pairs(self.authors) do
-		love.graphics.print(
-			author,
-			Utility:mid(General.subFont:getWidth(author), General.screenW), 
-			Utility:mid(General.subFont:getHeight(author), General.screenH + General.screenH*(k*.1)),
-			0
-		)
-	end
+	State.draw(self)
 end
+
 function TitleState:keyreleased(key)
-    if key == "escape" then
-		love.event.quit()
-	end
     General:setState(MenuState)
-end
-function TitleState:start()
-    self.time = 0
-    self.sound:play()
-end
-function TitleState:stop()
-    self.sound:stop()
 end
 

@@ -6,6 +6,7 @@ General = {
 	screenW = 0,
 	screenH = 0,
 	activeState = nil,
+	loadedStates = nil,
 	worldX = 0,
 	worldY = 0,
 	worldWidth = 0,
@@ -23,14 +24,24 @@ function General:init()
 	self.headerFont = love.graphics.newFont("fonts/Square.ttf", 96)
 	self.subFont = love.graphics.newFont("fonts/04b09.ttf", 32)
 	self.elapsed = 0
-	self.camera = nil
+	self.camera = Camera:new(X,Y)
 	self.volume = 1
 	self.timeScale = 1
 	self.screenW = love.window.getWidth()
 	self.screenH = love.window.getHeight()
 	self.activeState = nil
+	self.loadedStates = nil
 	
 	return s
+end
+
+function General:draw()
+	if self.loadedStates == nil then
+		return
+	end
+	for i=1, self.loadedStates:getSize(), 1 do
+		State.draw(self.loadedStates.members[i])
+	end
 end
 
 function General:getFPS()
@@ -178,15 +189,47 @@ function General:setState(NewState, CloseOld)
 	end
 	if CloseOld then
 		if self.activeState ~= nil then
-			self.activeState:unload()
+			--There is a current state to close
+			General:closeState(self.activeState, true)
 		end
 	end
 	
 	self.activeState = NewState
 	if not self.activeState.loaded then
+		--Load if not yet loaded
 		self.activeState:load()
+		
+		--Create loaded group if needed
+		if self.loadedStates == nil then
+			self.loadedStates = Group:new()
+		end
+		--Add new state
+		self.loadedStates:add(NewState)
 	end
+	--Start new state
 	self.activeState:start()
+end
+
+function General:closeState(OldState, Force)
+	if Force == nil then
+		Force = true
+	end
+	if OldState == self.activeState and not Force then
+		--Can't close the active state. Use setState instead!
+		return
+	end
+	if not OldState.loaded then
+		--Can't close an unloaded state
+		return
+	end
+	
+	--Unload and remove from loaded group
+	OldState:unload()
+	self.loadedStates:delete(OldState)
+	--Delete loaded group if empty
+	if self.loadedStates:getSize() == 0 then
+		self.loadedStates = nil
+	end
 end
 
 return General

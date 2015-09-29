@@ -328,10 +328,6 @@ function Sprite:lockToScreen(value)
 	self.lockToScreen = value or true
 end
 
-function Sprite:getType()
-	return "Sprite"
-end
-
 function Sprite:getLeft()
 	return self.x + self.offsetX
 end
@@ -348,6 +344,10 @@ function Sprite:getCenter()
 	return self.x + self.offsetX + self.width/2, self.y + self.offsetY + self.height/2
 end
 	
+function Sprite:getType()
+	return "Sprite"
+end
+
 function Sprite:getDebug()
 	debugStr = ""
 	debugStr = debugStr .. "Sprite (" .. self:getType() .. "):\n"

@@ -27,6 +27,17 @@ end
 function Group:add(NewObject)
 	table.insert(self.members, NewObject)
 end
+function Group:delete(SelObject)
+	if self.size == 0 then
+		return
+	end
+	for i=1, Group.getSize(self), 1 do
+		if self.members[i] == SelObject then
+			table.remove(self.members, i)
+			return
+		end
+	end
+end
 
 function Group:destroy()
 	for k, v in pairs(self.members) do

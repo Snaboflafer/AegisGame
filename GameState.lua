@@ -85,9 +85,49 @@ function GameState:load()
     self.bgmMusic:setLooping(true)
 	self.bgmMusic:setVolume(.2)
 	self.explosion = love.audio.newSource("sounds/explosion.wav")
-	self.loaded = true
+end
+function GameState:start()
+	State.start(self)
+	self.bgmMusic:play()
+end
+function GameState:stop()
+	State.stop(self)
+	self.bgmMusic:stop()
 end
 
+function GameState:update()
+	State:update()
+	General:collide(self.enemies)				--Collide Group with itself
+	General:collide(self.player, self.collisionSprite)
+
+	self:checkCollisions()
+
+	self.instructionTimer = self.instructionTimer - General.elapsed
+	self.fuelTimer = self.fuelTimer - General.elapsed * .05
+
+	highScoreText:setLabel("Score: " .. self.player:getScore())
+	timeText:setLabel("Time: " .. math.ceil(self.fuelTimer * 10)/10)
+
+	if self.instructionTimer <= 0 then
+			instructionText:setLabel("")
+	end
+	
+	if self.fuelTimer <= 0 then
+		GameState:updateHighScores("Player", self.player:getScore())
+    
+		GameEndedState.title = "GAME OVER"
+		General:setState(GameEndedState, false) 
+    
+	end
+	--]]
+end
+
+function GameState:draw()
+	State.draw(self)
+
+ 	love.graphics.setFont(love.graphics.newFont(10))
+    love.graphics.setColor({255, 255, 255, 255})
+end
 
 function GameState:checkCollisions()
 
@@ -130,18 +170,6 @@ function GameState:checkCollisions()
 
 end
 
-function GameState:start()
-	State.time = 0
-	self.time = 0
-	self.bgmMusic:play()
-end
-
-function GameState:stop()
-	State.stop(self)
-	self.bgmMusic:stop()
-end
-
-
 function GameState:keyreleased(key)
 	if key == "escape" then
 		General:setState(PauseState,false)
@@ -158,40 +186,6 @@ function GameState:keyreleased(key)
 	if key == "right" then
 		General:getCamera().x = General:getCamera().target.x + 10
 	end
-end
-
-function GameState:update()
-	State:update()
-	General:collide(self.enemies)				--Collide Group with itself
-	General:collide(self.player, self.collisionSprite)
-
-	self:checkCollisions()
-
-	self.instructionTimer = self.instructionTimer - General.elapsed
-	self.fuelTimer = self.fuelTimer - General.elapsed * .05
-
-	highScoreText:setLabel("Score: " .. self.player:getScore())
-	timeText:setLabel("Time: " .. math.ceil(self.fuelTimer * 10)/10)
-
-	if self.instructionTimer <= 0 then
-			instructionText:setLabel("")
-	end
-	
-	if self.fuelTimer <= 0 then
-		GameState:updateHighScores("Player", self.player:getScore())
-    
-		GameEndedState.title = "GAME OVER"
-		General:setState(GameEndedState, false) 
-    
-	end
-	--]]
-end
-
-function GameState:draw()
-	State:draw()
-
- 	love.graphics.setFont(love.graphics.newFont(10))
-    love.graphics.setColor({255, 255, 255, 255})
 end
 
 --updates the high scores checking against the score passed

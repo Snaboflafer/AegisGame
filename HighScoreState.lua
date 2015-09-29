@@ -9,39 +9,50 @@ setmetatable(HighScoreState, State)
 
 function HighScoreState:load()
 	State.load(self)
+	
+	local txtHeader = "High Scores"
+	
+	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
+						txtHeader, "fonts/Commodore.ttf", 64)
+	headerText:setAlign(Text.CENTER)
+	headerText:setColor(240, 240, 240, 240, 255)
+	headerText:setShadow(180, 130, 0, 255)
+	HighScoreState:add(headerText)
+	
+	
+	local highScores = HighScoreState:readHighScores("highScores.txt")
+	local scoresText = Text:new(General.screenW * .1, General.screenH * .5,
+						highScores, "fonts/Commodore.ttf", 32)
+	scoresText:setAlign(Text.LEFT)
+	HighScoreState:add(scoresText)
+	
 	self.width = General.headerFont:getWidth(self.name)
 	self.height = General.headerFont:getHeight(self.name)
 	self.subWidth = 300
 	self.subHeight = 20
 end
 
-function HighScoreState:draw()
-	State:draw()
-
-	love.graphics.setFont(General.headerFont)
-	love.graphics.setColor({255, 255, 255, 255})
-	love.graphics.printf(
-		self.name,
-		0,
-		Utility:mid(self.height, General.screenH*.5),
-		General.screenW,
-		'center'
-	)
-	love.graphics.setFont(General.subFont)
-	self.highScores = HighScoreState:readHighScores("highScores.txt");
-	love.graphics.printf(
-		self.highScores,
-		0,
-		Utility:mid(self.subHeight, General.screenH),
-		General.screenW,
-		'center'
-	)
+function HighScoreState:start()
+	State.start(self)
+end
+function HighScoreState:stop()
+	State.stop(self)
 end
 
+function HighScoreState:update()
+	State.update(self)
+end
+
+function HighScoreState:draw()
+	State.draw(self)
+end
 
 function HighScoreState:readHighScores(path)
     local file = io.open(path, "rb") -- r read mode and b binary mode
-    if not file then return "Couldn't read highScore File" end
+    if not file then
+		love.audio.newSource("sounds/fail.wav"):play()
+		return "[Unable to read scores\n  from \"" .. path .. "\"]"
+	end
     local content = ""
     local name = ""
     local score = ""
@@ -57,10 +68,4 @@ end
 
 function HighScoreState:keypressed(key)
 	General:setState(MenuState)
-end
-
-function HighScoreState:start()
-end
-
-function HighScoreState:stop()
 end
