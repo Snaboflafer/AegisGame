@@ -245,7 +245,7 @@ end
 	FrameTime	Seconds each frame lasts
 	Loop	True or False to have animation repeat when finished
 --]]
-function Sprite:addAnimation(AName, Frames, FrameTime, Loop)
+function Sprite:`imation(AName, Frames, FrameTime, Loop)
 	--Check that frames are valid
 	for i=1, table.getn(Frames), 1 do
 		if Frames[i] > self.quadFrameCount then

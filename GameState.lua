@@ -217,4 +217,8 @@ function GameState:updateHighScores(name, score)
 	hFile:write(content)
 	hFile:close()
 end
-	
+
+
+function GameState:loadEffects()
+
+end
