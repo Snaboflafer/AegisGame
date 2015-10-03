@@ -33,7 +33,7 @@ function GameState:load()
 
 
 	self.effect = Effect:new("images/explosion.png")
-	self.effect:initialize("explosion", "images/explosion.png",192,192)
+	self.effect:initialize("explosion", "images/explosion.png",64,64)
 	self.effect:play("explosion",0,0)
 
 	GameState:add(self.effect)
@@ -176,7 +176,8 @@ function GameState:checkCollisions()
 			-- Enemy was destroyed
 
 			-- Destroy animation
-			self.effect:play("explosion", enemy.x, enemy.y)
+			x, y = enemy:getCenter()
+			self.effect:play("explosion", x, y)
 
 			wasDestroyed = true
 			self.explosion:rewind()

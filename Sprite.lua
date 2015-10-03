@@ -368,7 +368,7 @@ function Sprite:getDebug()
 		debugStr = debugStr .. "\t Anim Quad Index = " .. self.curAnim.frames[self.curAnimFrame] .. "\n"
 		debugStr = debugStr .. "\t Anim name = " .. self.curAnim.name .. "\n"
 	end
-
+	
 	return debugStr
 end
 
