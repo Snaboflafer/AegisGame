@@ -8,8 +8,9 @@ function GameState:load()
 	self.camera = General:newCamera(0,0)
 	self.camera:setBounds(-32, -32, General.screenW + 32, General.screenH + 32)
 	GameState:add(self.camera)
-	
 
+	GameState:loadEffects()
+	
 	--Create floor block
 	--May need to change to responsive sizing
 	self.floorBlock1 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
@@ -96,6 +97,7 @@ function GameState:stop()
 end
 
 function GameState:update()
+
 	State:update()
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
@@ -119,6 +121,9 @@ function GameState:update()
 		General:setState(GameEndedState, false) 
     
 	end
+
+	effect = self.effectGroup:getEffect("explosion")
+	effect:play("explosion", 100, 100)
 	--]]
 end
 
@@ -218,7 +223,7 @@ function GameState:updateHighScores(name, score)
 	hFile:close()
 end
 
-
 function GameState:loadEffects()
-
+	self.effectGroup = EffectGroup:new()
+	self.effectGroup:add("explosion", Effect:new("explosion", "images/player_ship.png",128,64))
 end

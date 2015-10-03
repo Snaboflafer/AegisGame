@@ -3,7 +3,7 @@ EffectGroup = {
 	members = {}
 }
 
-function Group:new()
+function EffectGroup:new()
 	s = {}
 	setmetatable(s, self)
 	self.__index = self
