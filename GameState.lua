@@ -7,10 +7,8 @@ function GameState:load()
 	
 	self.camera = General:newCamera(0,0)
 	self.camera:setBounds(-32, -32, General.screenW + 32, General.screenH + 32)
-	GameState:add(self.camera)
+	--GameState:add(self.camera)
 
-	GameState:loadEffects()
-	
 	--Create floor block
 	--May need to change to responsive sizing
 	self.floorBlock1 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
@@ -29,6 +27,14 @@ function GameState:load()
 	self.collisionSprite = sprite:new(400,400,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(1,1,254,62)
 	GameState:add(self.collisionSprite)
+
+
+	self.effect = Effect:new("images/explosion.png")
+	self.effect:initialize("explosion", "images/explosion.png",192,192)
+	self.effect:play("explosion",0,0)
+
+	GameState:add(self.effect)
+
 
 
 	--Create player
@@ -137,10 +143,9 @@ function GameState:checkCollisions()
 	for k,enemy in pairs(self.enemies.members) do
 		if General:collide(enemy, self.player) then
 			-- Enemy was destroyed
-			
+
 			-- Destroy animation
-			effect = self.effectGroup:getEffect("explosion")
-			effect:play("explosion", 100, 100)
+			self.effect:play("explosion", enemy.x, enemy.y)
 
 			wasDestroyed = true
 			self.explosion:rewind()
@@ -223,9 +228,4 @@ function GameState:updateHighScores(name, score)
 	hFile = io.open("highScores.txt", "w+") --write the file.
 	hFile:write(content)
 	hFile:close()
-end
-
-function GameState:loadEffects()
-	self.effectGroup = EffectGroup:new()
-	self.effectGroup:add("explosion", Effect:new("explosion", "images/player_ship.png",128,64))
 end

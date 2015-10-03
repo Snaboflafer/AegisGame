@@ -98,6 +98,9 @@ function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 	self.image = love.graphics.newImage(self.imageFile)
 	self.animated = true
 
+	s.width = Width
+	s.height = Height
+
 	--Calculate frames per row/column, and set total
 	local hIndices = self.image:getWidth()/Width
 	local vIndices = self.image:getHeight()/Height
@@ -278,7 +281,7 @@ function Sprite:playAnimation(AName,Restart)
 		end
 	
 		--Cancel if trying to replay current non-looping animation
-		if AName == self.curAnim.name and self.animFinished and not self.curAnim.loop then
+		if AName == self.curAnim.name and self.animFinished and not self.curAnim.loop and not Restart then
 			return
 		end
 	end
@@ -365,6 +368,7 @@ function Sprite:getDebug()
 		debugStr = debugStr .. "\t Anim Quad Index = " .. self.curAnim.frames[self.curAnimFrame] .. "\n"
 		debugStr = debugStr .. "\t Anim name = " .. self.curAnim.name .. "\n"
 	end
+
 	return debugStr
 end
 

@@ -25,7 +25,6 @@ player = require("Player")
 enemy = require("Enemy")
 floorBlock  = require("FloorBlock")
 require("Text")
-require("EffectGroup")
 require("Effect")
 
 function love.load()
