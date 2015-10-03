@@ -25,6 +25,15 @@ function Enemy:getPointValue()
 	return self.pointValue
 end
 
+function Enemy:shootBullet(bullet, aimx, aimy)
+	local distance = math.sqrt((aimx - self.x)^2 + (aimy - self.y)^2)
+	local vx = (aimx - self.x)/distance*100
+	local vy = (aimy - self.y)/distance*100
+	print(vx)
+	print(vy)
+	bullet:reset(self.x, self.y, vx, vy)
+end
+
 function Enemy:update()
 	--math.randomseed(time*self.y)
 	self.accelerationX = (math.random() - 0.5)*1000

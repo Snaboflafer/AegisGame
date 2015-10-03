@@ -11,9 +11,9 @@ function GameState:load()
 
 	--Create floor block
 	--May need to change to responsive sizing
-	self.floorBlock1 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
+	self.floorBlock1 = WrappingSprite:new(0, General.screenH-130, "images/floorBlock.png",800,130)
 	self.floorBlock1:setCollisionBox(0, 0, self.floorBlock1.width, self.floorBlock1.height)
-	self.floorBlock2 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
+	self.floorBlock2 = WrappingSprite:new(0, General.screenH-130, "images/floorBlock.png",800,130)
 	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
 
 	local spriteBg = sprite:new(0,0 - self.floorBlock1.width,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
@@ -35,9 +35,7 @@ function GameState:load()
 
 	GameState:add(self.effect)
 
-
-
-	--Create player
+		--Create player
 	--player = Player:new(100, 100, "images/ship_fly.png",128,64)
 	self.player = Player:new(100, 100)
 	self.player:loadSpriteSheet("images/player_ship.png",128,64)
@@ -66,6 +64,14 @@ function GameState:load()
 	end
 	GameState:add(self.enemies)
 
+	--add bullets
+	self.bullets = Group:new()
+	for i=1,2,1 do
+		local curBullet = {}
+		curBullet = Bullet:new(-20, -20, "images/bullet_2.png", false)
+		self.bullets:add(curBullet)
+	end
+	GameState:add(self.bullets)
 
 	--Hud
 	self.hud = Group:new()	--Group not yet implemented
@@ -104,6 +110,23 @@ end
 
 function GameState:update()
 
+	--update bullets
+	for k,v in pairs(self.enemies.members) do
+		for k1, v1 in pairs(self.bullets.members) do 
+			if v1.active == false then
+				v1.active = true
+				v:shootBullet(v1, self.player.x, self.player.y)
+				break
+			end
+		end
+	end
+
+	for k,v in pairs(self.bullets.members) do
+		if v.x < -10 or v.y < -10 or v.x > General.screenW + 10 or v.y > General.screenH + 10 then
+			v.active = false
+		end
+	end
+	
 	State:update()
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
