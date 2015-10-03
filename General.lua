@@ -225,10 +225,12 @@ function General:closeState(OldState, Force)
 	
 	--Unload and remove from loaded group
 	OldState:unload()
-	self.loadedStates:delete(OldState)
-	--Delete loaded group if empty
-	if self.loadedStates:getSize() == 0 then
-		self.loadedStates = nil
+	if self.loadedStates ~= nil then
+		self.loadedStates:delete(OldState)
+		--Delete loaded group if empty
+		if self.loadedStates:getSize() == 0 then
+			self.loadedStates = nil
+		end
 	end
 end
 

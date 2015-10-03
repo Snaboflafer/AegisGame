@@ -6,6 +6,7 @@ GameEndedState.__index = GameEndedState
 
 function GameEndedState:load()
 	State.load(self)
+	self.loaded = true
 end
 
 function GameEndedState:start()
@@ -19,7 +20,9 @@ end
 function GameEndedState:update()
 	State.update(self)
     if State.time > 5 then
-		General:setState(HighScoreState)
+    	--patchwork fix for GameState improper closing bug
+    	love.event.push('quit')
+		--General:setState(HighScoreState)
     end
 end
 
@@ -33,7 +36,9 @@ function GameEndedState:draw()
 	)
 end
 function GameEndedState:keypressed(key)
-    General:setState(HighScoreState)
+	--patchwork fix for GameState improper closing bug
+	love.event.push('quit')
+    --General:setState(HighScoreState)
 end
 
 

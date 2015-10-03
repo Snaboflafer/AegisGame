@@ -147,7 +147,7 @@ function GameState:update()
 		GameState:updateHighScores("Player", self.player:getScore())
     
 		GameEndedState.title = "GAME OVER"
-		General:setState(GameEndedState, false) 
+		General:setState(GameEndedState) 
     
 	end
 	--]]

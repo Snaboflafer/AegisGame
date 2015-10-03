@@ -67,8 +67,10 @@ function love.draw()
 		debugStr = debugStr .. "HighScoreState (" .. tostring(HighScoreState) .. ") is loaded\n"
 	end
 	debugStr = debugStr .. "All loaded states:\n"
-	for i=1, General.loadedStates:getSize(), 1 do
-		debugStr = debugStr .. "\t(" .. tostring(General.loadedStates.members[i]) .. ")\n"
+	if General.loadedStates ~= nil then
+		for i=1, General.loadedStates:getSize(), 1 do
+			debugStr = debugStr .. "\t(" .. tostring(General.loadedStates.members[i]) .. ")\n"
+		end
 	end
 	
 	debugStr = debugStr .. "Frame time = " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"

@@ -78,7 +78,7 @@ function MenuState:keypressed(key)
 		if self.selected == 1 then General:setState(GameState)
 			self.startSound:rewind()
 			self.startSound:play()
-			HighScoreState.loaded = false
+			--HighScoreState.loaded = false
 		elseif self.selected == 2 then
 			self.selectSound:rewind()
 			self.selectSound:play()
