@@ -12,29 +12,45 @@ function GameState:load()
 	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
 	self.cameraFocus.velocityX = 50
 
+
+	self.wrappingSprites = Group:new()
+
 	local SpriteBg = Sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	SpriteBg.scrollFactorY = .3
 	SpriteBg.scrollFactorX = .3
-	GameState:add(SpriteBg)
+	self.wrappingSprites:add(spriteBg)
 	--local SpriteBg2 = Sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	--GameState:add(SpriteBg2)
 
 	--Create floor block
 	--May need to change to responsive sizing
-	self.floorBlock1 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
+
+	self.floorBlock1 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
 	self.floorBlock1:setCollisionBox(0, 0, self.floorBlock1.width, self.floorBlock1.height)
 	self.floorBlock1.immovable = true
-	self.floorBlock2 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
-	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
-	GameState:add(self.floorBlock1)
+	self.wrappingSprites:add(self.floorBlock1)
 
+	self.floorBlock2 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
+	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
+	self.floorBlock2.immovable = true
+	self.wrappingSprites:add(self.floorBlock2)
+	
+	GameState:add(self.wrappingSprites)
+
+	
 	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(1,1,254,62)
 	self.collisionSprite:lockToScreen(Sprite.ALL)
 	GameState:add(self.collisionSprite)
 
 
-	--Create player
+	self.effect = Effect:new("images/explosion.png")
+	self.effect:initialize("explosion", "images/explosion.png",64,64)
+	self.effect:play("explosion",0,0)
+
+	GameState:add(self.effect)
+
+		--Create player
 	--player = Player:new(100, 100, "images/ship_fly.png",128,64)
 	self.player = Player:new(100, 100)
 	self.player:loadSpriteSheet("images/player_ship.png",128,64)
@@ -66,6 +82,14 @@ function GameState:load()
 	end
 	GameState:add(self.enemies)
 
+	--add bullets
+	self.bullets = Group:new()
+	for i=1,2,1 do
+		local curBullet = {}
+		curBullet = Bullet:new(-20, -20, "images/bullet_2.png", false)
+		self.bullets:add(curBullet)
+	end
+	GameState:add(self.bullets)
 
 	--Hud
 	self.hud = Group:new()	--Group not yet implemented
@@ -103,6 +127,29 @@ function GameState:stop()
 end
 
 function GameState:update()
+
+	--update bullets
+	for k,v in pairs(self.enemies.members) do
+		for k1, v1 in pairs(self.bullets.members) do 
+			if v1.active == false then
+				v1.active = true
+				v:shootBullet(v1, self.player.x, self.player.y)
+				break
+			end
+		end
+	end
+
+	for k,v in pairs(self.bullets.members) do
+		if v.x < -10 or v.y < -10 or v.x > General.screenW + 10 or v.y > General.screenH + 10 then
+			v.active = false
+		end
+	end
+	
+	for k,v in pairs(self.bullets.members) do
+		if v.x < -10 or v.y < -10 or v.x > General.screenW + 10 or v.y > General.screenH + 10 then
+			v.active = false
+		end
+	end
 	State:update()
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
@@ -126,7 +173,7 @@ function GameState:update()
 		GameState:updateHighScores("Player", self.player:getScore())
     
 		GameEndedState.title = "GAME OVER"
-		General:setState(GameEndedState, false) 
+		General:setState(GameEndedState) 
     
 	end
 	--]]
@@ -145,6 +192,11 @@ function GameState:checkCollisions()
 	for k,enemy in pairs(self.enemies.members) do
 		if General:collide(enemy, self.player) then
 			-- Enemy was destroyed
+
+			-- Destroy animation
+			x, y = enemy:getCenter()
+			self.effect:play("explosion", x, y)
+
 			wasDestroyed = true
 			self.explosion:rewind()
 			self.explosion:play()
@@ -214,9 +266,4 @@ function GameState:updateHighScores(name, score)
 	hFile = io.open("highScores.txt", "w+") --write the file.
 	hFile:write(content)
 	hFile:close()
-end
-
-
-function GameState:loadEffects()
-
 end

@@ -79,7 +79,7 @@ function PauseState:keypressed(key)
 			--General:setState(OptionsState, false)
 		elseif self.selected == 3 then
 	--DONT CLOSE GAMESTATE until state state closure is properly worked out
-			--General:closeState(GameState)
+			General:closeState(GameState)
 			General:setState(MenuState)
 		end
     end

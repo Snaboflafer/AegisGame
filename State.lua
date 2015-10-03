@@ -56,7 +56,7 @@ function lerp(a, b, t)
 end
 
 function State:getType()
-	return "Group"
+	return "State"
 end
 
 return State

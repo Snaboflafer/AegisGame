@@ -94,7 +94,8 @@ end
 function Camera:getPosition()
 	return self.x, self.y
 end
-
+function Camera:destroy()
+end
 function Camera:getDebug()
 	debugStr = "Camera:\n" ..
 				"\t Position = " .. math.floor(self.x) .. ", " .. math.floor(self.y) .. "\n" ..

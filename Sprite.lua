@@ -60,6 +60,11 @@ Sprite = {
 	active = false		--Whether the sprite should update
 }
 
+function Sprite:setPosition(X, Y)
+	self.x = X
+	self.y = Y
+end
+
 --[[Create a new sprite
 	X		Horizontal initial position
 	Y		Vertical initial position
@@ -94,6 +99,33 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	s.active = true
 	
 	return s
+end
+
+function Sprite:loadSpriteSheet(ImageFile, Width, Height)
+	--Load image
+	self.imageFile = ImageFile
+	self.image = love.graphics.newImage(self.imageFile)
+	self.animated = true
+
+	s.width = Width
+	s.height = Height
+
+	--Calculate frames per row/column, and set total
+	local hIndices = self.image:getWidth()/Width
+	local vIndices = self.image:getHeight()/Height
+	self.quadFrameCount = hIndices * vIndices
+	
+	--Add all frames to imageQuads
+	--Frames are indexed by row, then by column, starting at 1,1
+	for i=0, vIndices-1, 1 do
+		for j=0, hIndices-1, 1 do
+			table.insert(self.imageQuads,
+				love.graphics.newQuad(j * Width, i * Height,
+									Width, Height,
+									self.image:getDimensions())
+			)
+		end
+	end
 end
 
 --[[Dispose of the object
@@ -304,7 +336,7 @@ function Sprite:playAnimation(AName,Restart)
 		end
 	
 		--Cancel if trying to replay current non-looping animation
-		if AName == self.curAnim.name and self.animFinished and not self.curAnim.loop then
+		if AName == self.curAnim.name and self.animFinished and not self.curAnim.loop and not Restart then
 			return
 		end
 	end
@@ -399,6 +431,7 @@ function Sprite:getDebug()
 		debugStr = debugStr .. "\t Anim Quad Index = " .. self.curAnim.frames[self.curAnimFrame] .. "\n"
 		debugStr = debugStr .. "\t Anim name = " .. self.curAnim.name .. "\n"
 	end
+	
 	return debugStr
 end
 

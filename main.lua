@@ -21,10 +21,12 @@ require("GameEndedState")
 require("Group")
 require("Button")
 require("Sprite")
+require("Bullet")
 player = require("Player")
 enemy = require("Enemy")
-floorBlock  = require("FloorBlock")
+wrappingSprite  = require("wrappingSprite")
 require("Text")
+require("Effect")
 
 function love.load()
 	General:init()
@@ -82,8 +84,10 @@ function love.update(dt)
 		debugStr = debugStr .. "HighScoreState (" .. tostring(HighScoreState) .. ") is loaded\n"
 	end
 	debugStr = debugStr .. "All loaded states:\n"
-	for i=1, General.loadedStates:getSize(), 1 do
-		debugStr = debugStr .. "\t(" .. tostring(General.loadedStates.members[i]) .. ")\n"
+	if General.loadedStates ~= nil then
+		for i=1, General.loadedStates:getSize(), 1 do
+			debugStr = debugStr .. "\t(" .. tostring(General.loadedStates.members[i]) .. ")\n"
+		end
 	end
 	
 	
