@@ -11,18 +11,21 @@ function GameState:load()
 
 	--Create floor block
 	--May need to change to responsive sizing
-	self.floorBlock1 = WrappingSprite:new(0, General.screenH-130, "images/floorBlock.png",800,130)
+	self.floorBlock1 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
 	self.floorBlock1:setCollisionBox(0, 0, self.floorBlock1.width, self.floorBlock1.height)
-	self.floorBlock2 = WrappingSprite:new(0, General.screenH-130, "images/floorBlock.png",800,130)
+	self.floorBlock2 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
 	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
 
-	local spriteBg = sprite:new(0,0 - self.floorBlock1.width,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
+	local spriteBg = sprite:new(0,0 - self.floorBlock1.height,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	spriteBg.scrollFactorY = .3
 	spriteBg.scrollFactorX = .3
-	GameState:add(spriteBg)
 	--local spriteBg2 = sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	--GameState:add(spriteBg2)
-	GameState:add(self.floorBlock1)
+	self.wrappingSprites = Group:new()
+	self.wrappingSprites:add(spriteBg)
+	self.wrappingSprites:add(self.floorBlock1)
+	self.wrappingSprites:add(self.floorBlock2)
+	GameState:add(self.wrappingSprites)
 
 	self.collisionSprite = sprite:new(400,400,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(1,1,254,62)
@@ -127,6 +130,11 @@ function GameState:update()
 		end
 	end
 	
+	for k,v in pairs(self.bullets.members) do
+		if v.x < -10 or v.y < -10 or v.x > General.screenW + 10 or v.y > General.screenH + 10 then
+			v.active = false
+		end
+	end
 	State:update()
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
