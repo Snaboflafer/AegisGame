@@ -20,7 +20,7 @@ require("PauseState")
 require("GameEndedState")
 require("Group")
 require("Button")
-sprite = require("Sprite")
+require("Sprite")
 player = require("Player")
 enemy = require("Enemy")
 floorBlock  = require("FloorBlock")
@@ -34,6 +34,12 @@ function love.load()
 	--MenuState:load()
 	--HighScoreState:load()
 	--GameState:load()
+	debugText = Text:new(0,0, "fonts/lucon.ttf", 12)
+	debugText.visible = false
+	
+	
+	frameTimes = {}	--First value is average
+	frameStartTime = os.time()
 	
 	General:setState(TitleState)
 end
@@ -42,13 +48,24 @@ function love.update(dt)
 	General.elapsed = dt * General.timeScale
 	time = time + General.elapsed
 	General.activeState:update()
-end
 
-function love.draw()
-	love.graphics.setColor(255,255,255,255)
-	General:draw()
+	--Update stored frame times
+	if os.time() == frameStartTime then
+		table.insert(frameTimes, General.elapsed)
+	else
+		frameTimes = { (frameTimes[1] + 1/(table.getn(frameTimes)-1)) / 2 }
+		frameStartTime = os.time()
+	end
 	
+	--Debug text
 	debugStr = ""
+
+	--Game speed info
+	debugStr = debugStr .. "Frame time = " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
+	--debugStr = debugStr .. math.floor(1/General.elapsed) .. "FPS\n"
+	debugStr = debugStr .. math.floor(10/frameTimes[1])/10 .. " FPS\n"
+	debugStr = debugStr .. "Speed x" .. General.timeScale .. "\n"
+
 	if TitleState.loaded == true then 
 		debugStr = debugStr .. "TitleState (" .. tostring(TitleState) .. ") is loaded\n"
 	end
@@ -69,23 +86,37 @@ function love.draw()
 		debugStr = debugStr .. "\t(" .. tostring(General.loadedStates.members[i]) .. ")\n"
 	end
 	
-	debugStr = debugStr .. "Frame time = " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
-	debugStr = debugStr .. math.floor(1/General.elapsed) .. "FPS\n"
 	
-	love.graphics.setFont(love.graphics.newFont("fonts/lucon.ttf", 12))
-
+	--Get debug for all members of active state
 	for k,v in pairs(General.activeState.members) do
 		debugStr = debugStr .. v:getDebug()	
 	end
 
+	debugText:setLabel(debugStr)
+end
+
+function love.draw()
 	love.graphics.setColor(255,255,255,255)
-	love.graphics.print(debugStr)
+	General:draw()
+	
+	Text.draw(debugText)
 end
 
 function love.keyreleased(key)
 	General.activeState:keyreleased(key)
+	
+	if key == "`" then
+		debugText.visible = not debugText.visible
+	end
 end
 
 function love.keypressed(key)
 	General.activeState:keypressed(key)
+	
+	if key == "up" then
+		debugText.y = debugText.y - 14
+	end
+	if key == "down" then
+		debugText.y = debugText.y + 14
+	end
 end

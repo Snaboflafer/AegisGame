@@ -129,6 +129,13 @@ function General:collide(Object1, Object2)
 	local absDx = math.abs(dx)
 	local absDy = math.abs(dy)
 	
+	if Object1.massless then
+		obj2IM = true
+	end
+	if Object2.massless then
+		obj1IM = true
+	end
+	
 	--Minimum allowed velocity after collision
 	local VELOCITY_THRESHOLD = 1
 	
@@ -136,19 +143,27 @@ function General:collide(Object1, Object2)
 		--Less than threshold, so from a corner
 		
 		if dx < 0 then
-			Object1.x = Object2:getRight()
-			Object2.x = Object1:getLeft() - obj2W
+			if not obj1IM then Object1.x = Object2:getRight() end
+			if not obj2IM then Object2.x = Object1:getLeft() - obj2W end
+			--Object1.touching = bit32.band(Object1.touching, Sprite.LEFT)
+			--Object2.touching = bit32.band(Object2.touching, Sprite.RIGHT)
 		else
-			Object1.x = Object2:getLeft() - obj1W
-			Object2.x = Object1:getRight()
+			if not obj1IM then Object1.x = Object2:getLeft() - obj1W end
+			if not obj2IM then Object2.x = Object1:getRight() end
+			--Object1.touching = bit32.band(Object1.touching, Sprite.RIGHT)
+			--Object2.touching = bit32.band(Object2.touching, Sprite.LEFT)
 		end
 		
 		if dy < 0 then
-			Object1.y = Object2:getBottom()
-			Object2.y = Object1:getTop() - obj2H
+			if not obj1IM then Object1.y = Object2:getBottom() end
+			if not obj2IM then Object2.y = Object1:getTop() - obj2H end
+			--Object1.touching = bit32.band(Object1.touching, Sprite.UP)
+			--Object2.touching = bit32.band(Object2.touching, Sprite.DOWN)
 		else
-			Object1.y = Object2:getTop() - obj1H
-			Object2.y = Object1:getBottom()
+			if not obj1IM then Object1.y = Object2:getTop() - obj1H end
+			if not obj2IM then Object2.y = Object1:getBottom() end
+			--Object1.touching = bit32.band(Object1.touching, Sprite.DOWN)
+			--Object2.touching = bit32.band(Object2.touching, Sprite.UP)
 		end
 		
 		--Randomize reflection direction
@@ -163,21 +178,35 @@ function General:collide(Object1, Object2)
 	elseif absDx > absDy then
 		--Approaching from side
 		if dx < 0 then
-			Object1.x = Object2:getRight()
+			if not obj1IM then Object1.x = Object2:getRight() end
+			if not obj2IM then Object2.x = Object1:getLeft() - obj2W end
+			--Object1.touching = bit32.band(Object1.touching, Sprite.LEFT)
+			--Object2.touching = bit32.band(Object2.touching, Sprite.RIGHT)
 		else
-			Object1.x = Object2:getLeft() - obj1W
+			if not obj1IM then Object1.x = Object2:getLeft() - obj1W end
+			if not obj2IM then Object2.x = Object1:getRight() end
+			--Object1.touching = bit32.band(Object1.touching, Sprite.RIGHT)
+			--Object2.touching = bit32.band(Object2.touching, Sprite.LEFT)
 		end
 		
 		Object1.velocityX = -Object1.velocityX * Object1.bounceFactor
+		Object2.velocityX = -Object2.velocityX * Object2.bounceFactor
 	else
 		--Approaching from top/bottom
 		if dy < 0 then
-			Object1.y = Object2:getBottom()
+			if not obj1IM then Object1.y = Object2:getBottom() end
+			if not obj2IM then Object2.y = Object1:getTop() - obj2H end
+			--Object1.touching = bit32.band(Object1.touching, Sprite.UP)
+			--Object2.touching = bit32.band(Object2.touching, Sprite.DOWN)
 		else
-			Object1.y = Object2:getTop() - obj1H
+			if not obj1IM then Object1.y = Object2:getTop() - obj1H end
+			if not obj2IM then Object2.y = Object1:getBottom() end
+			--Object1.touching = bit32.band(Object1.touching, Sprite.DOWN)
+			--Object2.touching = bit32.band(Object2.touching, Sprite.UP)
 		end
 		
 		Object1.velocityY = - Object1.velocityY * Object1.bounceFactor
+		Object2.velocityY = - Object2.velocityY * Object2.bounceFactor
 	end
 	
 	return true

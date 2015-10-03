@@ -59,7 +59,7 @@ function Camera:update()
 		if self.x < self.bounds.left then
 			self.x = self.bounds.left
 		end
-		if self.x > self.bounds.right - General.screenW then
+		if not self.bounds.right == nil and self.x > self.bounds.right - General.screenW then
 			self.x = self.bounds.right - General.screenW
 		end
 		if self.y < self.bounds.top then
@@ -79,7 +79,7 @@ function Camera:setBounds(L, T, R, B)
 	self.bounds = {top = T or 0, 
 				bottom = B or General.screenH, 
 				left = L or 0, 
-				right = R or General.screenW}
+				right = R}
 end
 function Camera:setDeadzone(W, H)
 	self.deadzone = {

@@ -9,24 +9,28 @@ function GameState:load()
 	self.camera:setBounds(-32, -32, General.screenW + 32, General.screenH + 32)
 	GameState:add(self.camera)
 	
+	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
+	self.cameraFocus.velocityX = 50
+
+	local SpriteBg = Sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
+	SpriteBg.scrollFactorY = .3
+	SpriteBg.scrollFactorX = .3
+	GameState:add(SpriteBg)
+	--local SpriteBg2 = Sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
+	--GameState:add(SpriteBg2)
 
 	--Create floor block
 	--May need to change to responsive sizing
 	self.floorBlock1 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
 	self.floorBlock1:setCollisionBox(0, 0, self.floorBlock1.width, self.floorBlock1.height)
+	self.floorBlock1.immovable = true
 	self.floorBlock2 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
 	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
-
-	local spriteBg = sprite:new(0,0 - self.floorBlock1.width,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
-	spriteBg.scrollFactorY = .3
-	spriteBg.scrollFactorX = .3
-	GameState:add(spriteBg)
-	--local spriteBg2 = sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
-	--GameState:add(spriteBg2)
 	GameState:add(self.floorBlock1)
 
-	self.collisionSprite = sprite:new(400,400,"images/button_256x64.png")
+	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(1,1,254,62)
+	self.collisionSprite:lockToScreen(Sprite.ALL)
 	GameState:add(self.collisionSprite)
 
 
@@ -36,11 +40,14 @@ function GameState:load()
 	self.player:loadSpriteSheet("images/player_ship.png",128,64)
 	self.player:setAnimations()
 	self.player:setCollisionBox(26, 15, 84, 35)
+	self.player:lockToScreen(Sprite.UPDOWN)
 	self.camera:setTarget(self.player)
-	self.camera:setDeadzone(128,32)
+	--self.camera:setDeadzone(128,32)
 	GameState:add(self.player)
 	self.fuelTimer = 10
 
+	GameState:add(self.cameraFocus)
+	self.camera:setTarget(self.cameraFocus)
 	
 	-- Flag set to false as no enemies are destroyed yet
 	enemyDestroyed = false;
@@ -102,6 +109,9 @@ function GameState:update()
 
 	self:checkCollisions()
 
+	self.cameraFocus.y = self.player.y
+
+	
 	self.instructionTimer = self.instructionTimer - General.elapsed
 	self.fuelTimer = self.fuelTimer - General.elapsed * .05
 
@@ -173,18 +183,6 @@ end
 function GameState:keyreleased(key)
 	if key == "escape" then
 		General:setState(PauseState,false)
-	end
-	if key == "up" then
-		General:getCamera().y = General:getCamera().target.y - 10
-	end
-	if key == "down" then
-		General:getCamera().y = General:getCamera().target.y + 10
-	end
-	if key == "left" then
-		General:getCamera().x = General:getCamera().target.x - 10
-	end
-	if key == "right" then
-		General:getCamera().x = General:getCamera().target.x + 10
 	end
 end
 

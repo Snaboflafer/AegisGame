@@ -1,6 +1,7 @@
 --Class for sprites. Should extend Object
 Enemy = {
-	pointValue = 0
+	pointValue = 0,
+	massless = true
 }
 
 function Enemy:new(X,Y,ImageFile)
@@ -8,6 +9,10 @@ function Enemy:new(X,Y,ImageFile)
 	setmetatable(s, self)
 	setmetatable(self, Sprite)
 	self.__index = self
+	
+	s.maxVelocityX = 150
+	s.maxVelocityY = 150
+	
 	return s
 end
 

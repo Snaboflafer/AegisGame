@@ -72,21 +72,24 @@ function Player:update()
 		self.velocityX = 0;
 		self.velocityY = 0;
     end
+	--Keep up with screen scrolling
+	self.velocityX = self.velocityX + GameState.cameraFocus.velocityX
 	
-	if (touchingU) or (touchingD) or (touchingL) or (touchingR) then
+	if (self.touching == Sprite.UP) then
 		thump:play()
-		if (touchingU) then
-			self.y = self.y + 10
-		end
-		if (touchingD) then
-			self.y = self.y - 10
-		end
-		if (touchingL) then
-			self.x = self.x + 10
-		end
-		if (touchingR) then
-			self.x = self.x - 10
-		end
+		self.y = self.y + 10
+	end
+	if (self.touching == Sprite.DOWN) then
+		thump:play()
+		self.y = self.y - 10
+	end
+	if (self.touching == Sprite.LEFT) then
+		thump:play()
+		self.x = self.x + 10
+	end
+	if (self.touching == Sprite.RIGHT) then
+		thump:play()
+		self.x = self.x - 10
 	end
 
 	Sprite.update(self)

@@ -10,6 +10,7 @@ function MenuState:load()
 	
 	local txtTitle = "MENU"
 	local txtOptions = {"Start", "High Scores", "Options", "Quit"}
+	local txtInfo = "[Press ~ for debug]"
 	
 	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
 						txtTitle, "fonts/Commodore.ttf", 64)
@@ -27,6 +28,10 @@ function MenuState:load()
 	end
 	MenuState:add(self.options)
 	
+	local debugInfo = Text:new(General.screenW, General.screenH - 16,
+						txtInfo, "fonts/Commodore.ttf", 16)
+	debugInfo:setAlign(Text.RIGHT)
+	MenuState:add(debugInfo)
 	
 	self.bgm = love.audio.newSource("sounds/blast_network.mp3")
 	self.bgm:setLooping(true)
