@@ -121,9 +121,6 @@ function GameState:update()
 		General:setState(GameEndedState, false) 
     
 	end
-
-	effect = self.effectGroup:getEffect("explosion")
-	effect:play("explosion", 100, 100)
 	--]]
 end
 
@@ -140,6 +137,11 @@ function GameState:checkCollisions()
 	for k,enemy in pairs(self.enemies.members) do
 		if General:collide(enemy, self.player) then
 			-- Enemy was destroyed
+			
+			-- Destroy animation
+			effect = self.effectGroup:getEffect("explosion")
+			effect:play("explosion", 100, 100)
+
 			wasDestroyed = true
 			self.explosion:rewind()
 			self.explosion:play()
