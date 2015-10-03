@@ -37,7 +37,6 @@ Sprite = {
 	imageFile = "[NO IMAGE]",	--Filename for image
 	image = love.graphics.newImage("/images/err_noImage.png"), --Image of sprite
 	lockSides = 0,	--Set to true to prevent sprite from moving offscreen
-	visible = true,
 	animated = false,
 	animations = {},	--List of animations registered for sprite
 	curAnim = nil,		--Table for current animation
@@ -59,6 +58,14 @@ Sprite = {
 	visible = false,	--Whether the sprite should draw
 	active = false		--Whether the sprite should update
 }
+
+function Sprite:setIsActive(isActive)
+	self.active = isActive
+end
+
+function Sprite:setIsVisible(isVisible)
+	self.visible = isVisible
+end
 
 function Sprite:setPosition(X, Y)
 	self.x = X
