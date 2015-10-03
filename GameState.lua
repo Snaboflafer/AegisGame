@@ -69,7 +69,7 @@ function GameState:load()
 	enemyDestroyed = false;
 	
 	self.enemies = Group:new()
-	for i=1,5,1 do
+	for i=1,1,1 do
 		local curEnemy = {}
 		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
 		curEnemy = enemy:new(General.screenW - 64, (General.screenH - self.floorBlock1.height)* math.random())
@@ -150,6 +150,10 @@ function GameState:update()
 			v.active = false
 		end
 	end
+
+	-- Trys adding a new enemy
+	GameState:tryNewEnemy()
+
 	State:update()
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
@@ -186,25 +190,42 @@ function GameState:draw()
     love.graphics.setColor({255, 255, 255, 255})
 end
 
+function GameState:tryNewEnemy() 
+	val = math.random(100)
+	for k,enemy in pairs(self.enemies.members) do
+			if enemy.active == false then
+				if val > 50 then
+					GameState:generateEnemy(enemy)
+				end
+				return
+			end
+	end
+end
+
+function GameState:generateEnemy(enemy)
+	enemy:setIsActive(true)
+	local cameraX, cameraY = self.camera:getPosition()
+	enemy.x = cameraX + General.screenW
+	enemy.y = (General.screenH - self.floorBlock1.height) * math.random()
+end
+
+
 function GameState:checkCollisions()
 
 	--check for player:enemy collisions
 	for k,enemy in pairs(self.enemies.members) do
 		if General:collide(enemy, self.player) then
-			-- Enemy was destroyed
 
 			-- Destroy animation
-			x, y = enemy:getCenter()
+			local x, y = enemy:getCenter()
 			self.effect:play("explosion", x, y)
 
-			wasDestroyed = true
 			self.explosion:rewind()
 			self.explosion:play()
 			self.player:updateScore(enemy:getPointValue())
-			
-			--table.remove(self.enemies.members, k)
-			enemy.x = General.screenW * math.random()
-			enemy.y = (General.screenH - self.floorBlock1.height) * math.random()
+
+			enemy:setIsActive(false)
+				
 			self.fuelTimer = self.fuelTimer + .5
 		end
 	end
