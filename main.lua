@@ -66,7 +66,7 @@ function love.update(dt)
 	debugStr = debugStr .. "Frame time = " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
 	--debugStr = debugStr .. math.floor(1/General.elapsed) .. "FPS\n"
 	debugStr = debugStr .. math.floor(10/frameTimes[1])/10 .. " FPS\n"
-	debugStr = debugStr .. "Speed x" .. General.timeScale .. "\n"
+	debugStr = debugStr .. "Speed x" .. math.floor(10 * General.timeScale) / 10 .. "\n"
 
 	if TitleState.loaded == true then 
 		debugStr = debugStr .. "TitleState (" .. tostring(TitleState) .. ") is loaded\n"
@@ -117,10 +117,16 @@ end
 function love.keypressed(key)
 	General.activeState:keypressed(key)
 	
-	if key == "up" then
+	if key == "down" then
 		debugText.y = debugText.y - 14
 	end
-	if key == "down" then
+	if key == "up" then
 		debugText.y = debugText.y + 14
+	end
+	if key == "pageup" then
+		General.timeScale = General.timeScale - .5
+	end
+	if key == "pagedown" then
+		General.timeScale = General.timeScale + .5
 	end
 end

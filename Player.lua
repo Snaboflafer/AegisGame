@@ -77,19 +77,15 @@ function Player:update()
 	
 	if (self.touching == Sprite.UP) then
 		thump:play()
-		self.y = self.y + 10
 	end
 	if (self.touching == Sprite.DOWN) then
 		thump:play()
-		self.y = self.y - 10
 	end
 	if (self.touching == Sprite.LEFT) then
 		thump:play()
-		self.x = self.x + 10
 	end
 	if (self.touching == Sprite.RIGHT) then
 		thump:play()
-		self.x = self.x - 10
 	end
 
 	Sprite.update(self)

@@ -180,7 +180,7 @@ function Sprite:update()
 	self.x = self.x + self.velocityX * General.elapsed
 	self.y = self.y + self.velocityY * General.elapsed
 	
-	--Temporary screen bounding collisions
+	--Lock to screen handling
 	if (self.lockSides > Sprite.NONE) then
 		local camera = General:getCamera()
 	
@@ -398,19 +398,24 @@ function Sprite:lockToScreen(value)
 end
 
 function Sprite:getLeft()
-	return self.x - self.offsetX
+	--return self.x - self.offsetX
+	return self.x
 end
 function Sprite:getRight()
-	return self.x + self.offsetX + self.width
+	--return self.x + self.offsetX + self.width
+	return self.x + self.width
 end
 function Sprite:getTop()
-	return self.y - self.offsetY
+	--return self.y - self.offsetY
+	return self.y
 end
 function Sprite:getBottom()
-	return self.y + self.offsetY + self.height
+	--return self.y + self.offsetY + self.height
+	return self.y + self.height
 end
 function Sprite:getCenter()
-	return self.x + self.offsetX + self.width/2, self.y + self.offsetY + self.height/2
+	--return self.x + self.offsetX + self.width/2, self.y + self.offsetY + self.height/2
+	return self.x + self.width/2, self.y + self.height/2
 end
 	
 function Sprite:getType()

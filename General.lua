@@ -112,104 +112,52 @@ function General:collide(Object1, Object2)
 		obj1Y > obj2Y + obj2H then
 		
 		--No collisions
-		return
+		return false
 	end
-
 	
-	local obj1MidX = obj1X + obj1W/2
-	local obj1MidY = obj1Y + obj1H/2
+	--Handle immovable and massless objects
 	local obj1IM = Object1.immovable
-	local obj2MidX = obj2X + obj2W/2
-	local obj2MidY = obj2Y + obj2H/2
 	local obj2IM = Object2.immovable
-	
-	local dx = (obj2MidX - obj1MidX)
-	local dy = (obj2MidY - obj1MidY)
-	
-	local absDx = math.abs(dx)
-	local absDy = math.abs(dy)
-	
-	if Object1.massless then
+	if Object1.massless and not Object2.massless then
 		obj2IM = true
 	end
-	if Object2.massless then
+	if Object2.massless and not Object1.massless then
 		obj1IM = true
 	end
 	
-	--Minimum allowed velocity after collision
-	local VELOCITY_THRESHOLD = 1
+	--Determine distance and overlap amount
+	local dx = (obj2X + obj2W/2) - (obj1X + obj1W/2)
+	local dy = (obj2Y + obj2H/2) - (obj1Y + obj1H/2)
+	local overlapX = math.abs(dx) - .5*(obj2W + obj1W)
+	local overlapY = math.abs(dy) - .5*(obj1H + obj2H)
 	
-	if math.abs(absDx - absDy) < .1 then
-		--Less than threshold, so from a corner
-		
-		if dx < 0 then
-			if not obj1IM then Object1.x = Object2:getRight() end
-			if not obj2IM then Object2.x = Object1:getLeft() - obj2W end
-			--Object1.touching = bit32.band(Object1.touching, Sprite.LEFT)
-			--Object2.touching = bit32.band(Object2.touching, Sprite.RIGHT)
-		else
+	--Collide in direction of least penetration
+	if math.abs(overlapX) < math.abs(overlapY) then
+		--Collide horizontal
+		if dx > 0 then
 			if not obj1IM then Object1.x = Object2:getLeft() - obj1W end
 			if not obj2IM then Object2.x = Object1:getRight() end
-			--Object1.touching = bit32.band(Object1.touching, Sprite.RIGHT)
-			--Object2.touching = bit32.band(Object2.touching, Sprite.LEFT)
-		end
-		
-		if dy < 0 then
-			if not obj1IM then Object1.y = Object2:getBottom() end
-			if not obj2IM then Object2.y = Object1:getTop() - obj2H end
-			--Object1.touching = bit32.band(Object1.touching, Sprite.UP)
-			--Object2.touching = bit32.band(Object2.touching, Sprite.DOWN)
 		else
-			if not obj1IM then Object1.y = Object2:getTop() - obj1H end
-			if not obj2IM then Object2.y = Object1:getBottom() end
-			--Object1.touching = bit32.band(Object1.touching, Sprite.DOWN)
-			--Object2.touching = bit32.band(Object2.touching, Sprite.UP)
-		end
-		
-		--Randomize reflection direction
-		if math.random() < .5 then
-			Object1.velocityX = -Object1.velocityX * Object1.bounceFactor
-			Object2.velocityX = -Object2.velocityX * Object2.bounceFactor
-		else
-			Object1.velocityY = -Object1.velocityY * Object1.bounceFactor
-			Object2.velocityY = -Object2.velocityY * Object2.bounceFactor
-		end
-		
-	elseif absDx > absDy then
-		--Approaching from side
-		if dx < 0 then
 			if not obj1IM then Object1.x = Object2:getRight() end
 			if not obj2IM then Object2.x = Object1:getLeft() - obj2W end
-			--Object1.touching = bit32.band(Object1.touching, Sprite.LEFT)
-			--Object2.touching = bit32.band(Object2.touching, Sprite.RIGHT)
-		else
-			if not obj1IM then Object1.x = Object2:getLeft() - obj1W end
-			if not obj2IM then Object2.x = Object1:getRight() end
-			--Object1.touching = bit32.band(Object1.touching, Sprite.RIGHT)
-			--Object2.touching = bit32.band(Object2.touching, Sprite.LEFT)
 		end
-		
 		Object1.velocityX = -Object1.velocityX * Object1.bounceFactor
 		Object2.velocityX = -Object2.velocityX * Object2.bounceFactor
 	else
-		--Approaching from top/bottom
-		if dy < 0 then
-			if not obj1IM then Object1.y = Object2:getBottom() end
-			if not obj2IM then Object2.y = Object1:getTop() - obj2H end
-			--Object1.touching = bit32.band(Object1.touching, Sprite.UP)
-			--Object2.touching = bit32.band(Object2.touching, Sprite.DOWN)
-		else
+		--Collide vertical
+		if dy > 0 then
 			if not obj1IM then Object1.y = Object2:getTop() - obj1H end
 			if not obj2IM then Object2.y = Object1:getBottom() end
-			--Object1.touching = bit32.band(Object1.touching, Sprite.DOWN)
-			--Object2.touching = bit32.band(Object2.touching, Sprite.UP)
+		else
+			if not obj1IM then Object1.y = Object2:getBottom() end
+			if not obj2IM then Object2.y = Object1:getTop() - obj2H end
 		end
-		
-		Object1.velocityY = - Object1.velocityY * Object1.bounceFactor
-		Object2.velocityY = - Object2.velocityY * Object2.bounceFactor
+		Object1.velocityY = -Object1.velocityY * Object1.bounceFactor
+		Object2.velocityY = -Object2.velocityY * Object2.bounceFactor
 	end
-	
+
 	return true
+	
 end
 
 function General:setState(NewState, CloseOld)

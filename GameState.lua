@@ -15,9 +15,9 @@ function GameState:load()
 
 	self.wrappingSprites = Group:new()
 
-	local SpriteBg = Sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
-	SpriteBg.scrollFactorY = .3
-	SpriteBg.scrollFactorX = .3
+	local spriteBg = Sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
+	spriteBg.scrollFactorY = .3
+	spriteBg.scrollFactorX = .3
 	self.wrappingSprites:add(spriteBg)
 	--local SpriteBg2 = Sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
 	--GameState:add(SpriteBg2)
@@ -39,7 +39,7 @@ function GameState:load()
 
 	
 	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
-	self.collisionSprite:setCollisionBox(1,1,254,62)
+	self.collisionSprite:setCollisionBox(0,0,256,64)
 	self.collisionSprite:lockToScreen(Sprite.ALL)
 	GameState:add(self.collisionSprite)
 
@@ -56,7 +56,7 @@ function GameState:load()
 	self.player:loadSpriteSheet("images/player_ship.png",128,64)
 	self.player:setAnimations()
 	self.player:setCollisionBox(26, 15, 84, 35)
-	self.player:lockToScreen(Sprite.UPDOWN)
+	self.player:lockToScreen(Sprite.ALL)
 	self.camera:setTarget(self.player)
 	--self.camera:setDeadzone(128,32)
 	GameState:add(self.player)
@@ -119,7 +119,7 @@ function GameState:load()
 end
 function GameState:start()
 	State.start(self)
-	self.bgmMusic:play()
+	--self.bgmMusic:play()
 end
 function GameState:stop()
 	State.stop(self)
