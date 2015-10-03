@@ -13,9 +13,9 @@ function GameState:load()
 	
 	--Create floor block
 	--May need to change to responsive sizing
-	self.floorBlock1 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
+	self.floorBlock1 = WrappingSprite:new(0, General.screenH-130, "images/floorBlock.png",800,130)
 	self.floorBlock1:setCollisionBox(0, 0, self.floorBlock1.width, self.floorBlock1.height)
-	self.floorBlock2 = FloorBlock:new(0, General.screenH-130, "images/floorBlock.png",800,130)
+	self.floorBlock2 = WrappingSprite:new(0, General.screenH-130, "images/floorBlock.png",800,130)
 	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
 
 	local spriteBg = sprite:new(0,0 - self.floorBlock1.width,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
