@@ -29,8 +29,7 @@ function GameState:load()
 	self.collisionSprite = sprite:new(400,400,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(1,1,254,62)
 	GameState:add(self.collisionSprite)
-
-
+	
 	--Create player
 	--player = Player:new(100, 100, "images/ship_fly.png",128,64)
 	self.player = Player:new(100, 100)
@@ -60,6 +59,14 @@ function GameState:load()
 	end
 	GameState:add(self.enemies)
 
+	--add bullets
+	self.bullets = Group:new()
+	for i=1,2,1 do
+		local curBullet = {}
+		curBullet = Bullet:new(-20, -20, "images/bullet_2.png", false)
+		self.bullets:add(curBullet)
+	end
+	GameState:add(self.bullets)
 
 	--Hud
 	self.hud = Group:new()	--Group not yet implemented
@@ -98,6 +105,23 @@ end
 
 function GameState:update()
 
+	--update bullets
+	for k,v in pairs(self.enemies.members) do
+		for k1, v1 in pairs(self.bullets.members) do 
+			if v1.active == false then
+				v1.active = true
+				v:shootBullet(v1, self.player.x, self.player.y)
+				break
+			end
+		end
+	end
+
+	for k,v in pairs(self.bullets.members) do
+		if v.x < -10 or v.y < -10 or v.x > General.screenW + 10 or v.y > General.screenH + 10 then
+			v.active = false
+		end
+	end
+	
 	State:update()
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
