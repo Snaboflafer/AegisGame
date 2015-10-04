@@ -67,8 +67,13 @@ function General:setWorldBounds(X,Y,Width,Height)
 end
 
 function General:collide(Object1, Object2)
-
+	if not Object1.solid or not Object1.exists then
+		return
+	end
+	
 	if Object1:getType() == "Group" then
+		--First object is a group
+		
 		local didCollide = false
 		if Object1 == Object2 or Object2 == nil then
 			--Collide within group
@@ -78,12 +83,24 @@ function General:collide(Object1, Object2)
 				end
 			end
 		else
+			--Collide each member of Group1 with Object2
+			if not Object2.solid or not Object2.exists then
+				--Cancel if Object2 cannot be collided against
+				return
+			end
 			for k,v in pairs(Object1.members) do
 				didCollide = didCollide or General:collide(v, Object2)
 			end
 		end
 		return didCollide
+	elseif Object1 == Object2 or Object2 == nil then
+		--Cannot collide a single sprite against itself
+		return
+	elseif not Object2.solid or not Object2.exists then
+		--Cannot collide against Object2
+		return
 	end
+	
 	if Object2:getType() == "Group" then
 		local didCollide = false
 		for k,v in pairs(Object2.members) do
@@ -93,7 +110,7 @@ function General:collide(Object1, Object2)
 	end
 	
 	
-	if Object1 == Object2 then
+	if Object1 == Object2 or not Object1.solid or not Object2.solid then
 		return false
 	end
 	

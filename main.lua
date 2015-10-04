@@ -10,6 +10,7 @@ time = 0
 
 require("General")
 require("Utility")
+require("Data")
 require("Camera")
 require("State")
 require("TitleState")
@@ -31,10 +32,6 @@ function love.load()
 	General:init()
 	--Camera:newCamera(General.screenW/2,General.screenH/2)
 
-	--TitleState:load()
-	--MenuState:load()
-	--HighScoreState:load()
-	--GameState:load()
 	debugText = Text:new(0,0, "fonts/lucon.ttf", 12)
 	debugText.visible = false
 	
@@ -82,12 +79,16 @@ function love.update(dt)
 	if HighScoreState.loaded == true then 
 		debugStr = debugStr .. "HighScoreState (" .. tostring(HighScoreState) .. ") is loaded\n"
 	end
+	if GameEndedState.loaded == true then 
+		debugStr = debugStr .. "GameEndedState (" .. tostring(GameEndedState) .. ") is loaded\n"
+	end
 	debugStr = debugStr .. "All loaded states:\n"
 	if General.loadedStates ~= nil then
 		for i=1, General.loadedStates:getSize(), 1 do
 			debugStr = debugStr .. "\t(" .. tostring(General.loadedStates.members[i]) .. ")\n"
 		end
 	end
+	debugStr = debugStr .. "Active state:\n\t(" .. tostring(General.activeState) .. ")\n"
 	
 	
 	--Get debug for all members of active state

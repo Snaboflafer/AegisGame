@@ -40,17 +40,17 @@ function Camera:update()
 		local targetX, targetY = self.target:getCenter()
 		
 		if targetX < midX - self.deadzone.width then
-			self.x = self.x - (midX - targetX)*.05
+			self.x = self.x - (midX - targetX)*General.elapsed
 		end
 		if targetX > midX + self.deadzone.width then
-			self.x = self.x  + (targetX - midX)*.05
+			self.x = self.x  + (targetX - midX)*General.elapsed
 		end
 
 		if targetY < midY - self.deadzone.height then
-			self.y = self.y - (midY - targetY)*.05
+			self.y = self.y - (midY - targetY)*General.elapsed
 		end
 		if targetY > midY + self.deadzone.height then
-			self.y = self.y  + (targetY - midY)*.05
+			self.y = self.y  + (targetY - midY)*General.elapsed
 		end
 	end
 	

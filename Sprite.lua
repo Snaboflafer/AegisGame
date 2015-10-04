@@ -54,17 +54,23 @@ Sprite = {
 	immovable = false,	--Object cannot be pushed by objects during collision
 	massless = false,	--Object won't push objects during collision
 	bounceFactor = 0,	--Percentage of speed retained after collision
-	alive = false,
-	visible = false,	--Whether the sprite should draw
-	active = false		--Whether the sprite should update
+	exists = true,		--Whether the sprite has any calls done on it
+	active = true,		--Whether the sprite should update
+	visible = true,		--Whether the sprite should draw
+	solid = true		--Whether the sprite responds to collisions
 }
 
-function Sprite:setIsActive(isActive)
-	self.active = isActive
+function Sprite:setActive(Active)
+	self.active = Active
 end
-
-function Sprite:setIsVisible(isVisible)
-	self.visible = isVisible
+function Sprite:setExists(Exists)
+	self.exists = Exists
+end
+function Sprite:setSolid(Solid)
+	self.solid = Solid
+end
+function Sprite:setVisible(Visible)
+	self.visible = Visible
 end
 
 function Sprite:setPosition(X, Y)
@@ -146,7 +152,7 @@ end
 
 -- updates velocity and position of sprite
 function Sprite:update()
-	if not self.active then
+	if not self.active or not self.exists then
 		return
 	end
 	
@@ -224,7 +230,7 @@ end
 --[[Draw sprite to screen
 --]]
 function Sprite:draw()
-	if not self.visible then
+	if not self.visible or not self.exists then
 		return
 	end
 	
@@ -308,6 +314,18 @@ function Sprite:resetImage()
 	self.animated = false
 	self.width = nil
 	self.height = nil
+end
+function Sprite:setScale(X, Y)
+	if X == 0 then
+		X = .00001
+	end
+	if Y == 0 then
+		Y = .00001
+	end
+	self.width = (X / self.scaleX) * self.width
+	self.height = (Y / self.scaleY) * self.height
+	self.scaleX = X
+	self.scaleY = Y
 end
 
 
@@ -426,6 +444,13 @@ end
 function Sprite:getCenter()
 	--return self.x + self.offsetX + self.width/2, self.y + self.offsetY + self.height/2
 	return self.x + self.width/2, self.y + self.height/2
+end
+
+function Sprite:getScreenX()
+	return self.x - (General:getCamera().x * self.scrollFactorX)
+end
+function Sprite:getScreenY()
+	return self.y - (General:getCamera().y * self.scrollFactorY)
 end
 	
 function Sprite:getType()
