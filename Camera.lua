@@ -39,6 +39,7 @@ function Camera:update()
 		local midY = self.y + self.height/2
 		local targetX, targetY = self.target:getCenter()
 		
+		--Move camera if target is outside deadzone
 		if targetX < midX - self.deadzone.width then
 			self.x = self.x - (midX - targetX)*General.elapsed
 		end

@@ -4,15 +4,31 @@ Jung Yang jyang99@jhu.edu
 Andrew Shiau ashiau1@jhu.edu
 Team: SOL
 
-UPDATES
-Enemies give points and additional play time for each one
-destroyed.
-Player "wins" or "loses" depending on how they play. Good play
-is rewarded with additional time. The game ends when time runs
-out, and the the player may compare their score with previous.
+UPDATES (Assignment 5)
+
+1. LEVEL
+Level 0 is autoscrolling, and continues until the player runs out of time.
+Projectiles/emitters are not yet implemented, so the player earns time by
+ colliding with enemies.
+ 
+2. CAMERA
+Level scrolling is accomplished by creating a Camera object. It has a position and
+ size to determine what sprites can be drawn. Created cameras are state specific and
+ are registered with the General repository. The draw function for Sprites uses the
+ active camera's (or a dummy camera's if none exists) position to calculate where it should
+ be drawn on the screen.
+Sprites have an additional property, ScrollFactor, which is used for parallax scrolling
+ (background objects move slower relative to the camera)
+
+For the scrolling level, the camera follows an invisible focus point, with the player
+ matching it's speed. Enemies move relative to the world, not the camera, and are recycled
+ whenever they move past the left side or are destroyed. The background and ground is
+ stationary, with "movement" being simulated by camera movement and ScrollFactors. Scenery
+ sprites that move offscreen are moved to the other side, to create a looping stage.
+
 
 Credits
 Music: 	Nighogg soundtrack by Daedelus,
-Spiral Knights soundtrack
-Image: Image Stealth Hawk Alien Landscape
-Image: Explosion Sprite sheet http://rtype-2014-minetta.googlecode.com/svn/trunk/img/
+		Spiral Knights soundtrack
+Images: Image Stealth Hawk Alien Landscape
+		Explosion Sprite sheet http://rtype-2014-minetta.googlecode.com/svn/trunk/img/

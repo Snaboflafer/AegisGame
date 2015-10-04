@@ -29,7 +29,7 @@ end
 
 function GameEndedState:start()
 	State.start(self)
-	self.closeTimer = 5
+	self.closeTimer = 2
 end
 
 function GameEndedState:stop()

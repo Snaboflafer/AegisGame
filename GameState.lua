@@ -217,7 +217,7 @@ function GameState:update()
 			self.effect:play("explosion", playerX, playerY)
 
 			if math.abs(self.player.velocityY) < 50 then
-				General:setState(GameEndedState) 
+				General:setState(MenuState)
 			end
 		end
 		
