@@ -24,7 +24,6 @@ require("Sprite")
 require("Bullet")
 player = require("Player")
 enemy = require("Enemy")
-wrappingSprite  = require("wrappingSprite")
 require("Text")
 require("Effect")
 
