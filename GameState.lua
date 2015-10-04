@@ -6,7 +6,7 @@ function GameState:load()
 	State:load()
 	
 	self.camera = General:newCamera(0,0)
-	self.camera:setBounds(-32, -32, General.screenW + 32, General.screenH + 32)
+	self.camera:setBounds(-32, -32, General.screenW + 32, General.screenH)
 	GameState:add(self.camera)
 	
 	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
@@ -25,13 +25,13 @@ function GameState:load()
 	--Create floor block
 	--May need to change to responsive sizing
 
-	self.floorBlock1 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
-	self.floorBlock1:setCollisionBox(0, 0, self.floorBlock1.width, self.floorBlock1.height)
+	self.floorBlock1 = WrappingSprite:new(0, General.screenH-128, "images/floor_snow_1.png")
+	self.floorBlock1:setCollisionBox(0, 30, self.floorBlock1.width, self.floorBlock1.height-30)
 	self.floorBlock1.immovable = true
 	self.wrappingSprites:add(self.floorBlock1)
 
-	self.floorBlock2 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
-	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
+	self.floorBlock2 = WrappingSprite:new(256, General.screenH-128, "images/floor_snow_1.png")
+	self.floorBlock2:setCollisionBox(0, 30, self.floorBlock2.width, self.floorBlock2.height-30)
 	self.floorBlock2.immovable = true
 	self.wrappingSprites:add(self.floorBlock2)
 	
@@ -77,7 +77,7 @@ function GameState:load()
 		curEnemy:setAnimations()
 		curEnemy:setPointValue(100)
 		curEnemy:setCollisionBox(7, 26, 44, 19)
-		curEnemy:lockToScreen()
+		curEnemy:lockToScreen(Sprite.UPDOWN)
 		self.enemies:add(curEnemy)
 	end
 	GameState:add(self.enemies)

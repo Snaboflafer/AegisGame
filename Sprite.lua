@@ -254,6 +254,9 @@ end
 --[[Set the collision area of the sprite
 --]]
 function Sprite:setCollisionBox(X, Y, W, H)
+	self.x = self.x + X - self.offsetX
+	self.y = self.y + Y - self.offsetY
+	
 	self.offsetX = X
 	self.offsetY = Y
 	self.width = W
