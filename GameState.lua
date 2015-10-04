@@ -15,26 +15,26 @@ function GameState:load()
 
 	self.wrappingSprites = Group:new()
 
-	local spriteBg = Sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
-	spriteBg.scrollFactorY = .3
-	spriteBg.scrollFactorX = .3
-	self.wrappingSprites:add(spriteBg)
-	--local SpriteBg2 = Sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
-	--GameState:add(SpriteBg2)
+	self.spriteBg = Sprite:new(0, -130, "images/StealthHawk-Alien-Landscape-33.jpg",General.screenW, General.screenH)
+	self.wrappingSprites:add(self.spriteBg)
+
+	local SpriteBg2 = Sprite:new(800,-130,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
+	GameState:add(SpriteBg2)
 
 	--Create floor block
 	--May need to change to responsive sizing
 
-	self.floorBlock1 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
+	self.floorBlock1 = Sprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
 	self.floorBlock1:setCollisionBox(0, 0, self.floorBlock1.width, self.floorBlock1.height)
 	self.floorBlock1.immovable = true
 	self.wrappingSprites:add(self.floorBlock1)
 
-	self.floorBlock2 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
+	self.floorBlock2 = Sprite:new(self.floorBlock1.width, General.screenH-130, "images/FloorBlock.png",800,130)
 	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
 	self.floorBlock2.immovable = true
 	self.wrappingSprites:add(self.floorBlock2)
-	
+
+	self.wrappingSprites:add(self.floorBlock3)
 	GameState:add(self.wrappingSprites)
 
 	
@@ -67,9 +67,10 @@ function GameState:load()
 	
 	-- Flag set to false as no enemies are destroyed yet
 	enemyDestroyed = false;
-	
+
 	self.enemies = Group:new()
-	for i=1,1,1 do
+	--[[	
+		for i=1,1,1 do
 		local curEnemy = {}
 		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
 		curEnemy = enemy:new(General.screenW - 64, (General.screenH - self.floorBlock1.height)* math.random())
@@ -81,7 +82,7 @@ function GameState:load()
 		self.enemies:add(curEnemy)
 	end
 	GameState:add(self.enemies)
-
+	--]]
 	--add bullets
 	self.bullets = Group:new()
 	for i=1,2,1 do
@@ -145,9 +146,15 @@ function GameState:update()
 		end
 	end
 	
-	for k,v in pairs(self.bullets.members) do
-		if v.x < -10 or v.y < -10 or v.x > General.screenW + 10 or v.y > General.screenH + 10 then
-			v.active = false
+	for k,v in pairs(self.wrappingSprites.members) do
+		-- if right side of wrapping sprite goes off left side of screen
+		print("v.x = " .. v.x)
+		print("v.width = " .. v.width)
+		print("Camera x position = " .. General.camera.x)
+		if (v.x + v.width) < 
+			General.camera.x then
+			--love.event.push('quit')
+			v.x = v.x + 2 * v.width
 		end
 	end
 
@@ -185,7 +192,6 @@ end
 
 function GameState:draw()
 	State.draw(self)
-
  	love.graphics.setFont(love.graphics.newFont(10))
     love.graphics.setColor({255, 255, 255, 255})
 end
@@ -231,7 +237,8 @@ function GameState:checkCollisions()
 	end
 
 	--check for player:floor collision
-	if General:collide(self.floorBlock1, self.player) then
+	if General:collide(self.floorBlock1, self.player) 
+			or General:collide(self.floorBlock2, self.player) then
 		self.explosion:rewind()
 		self.explosion:play()
 		General:setState(GameEndedState)
