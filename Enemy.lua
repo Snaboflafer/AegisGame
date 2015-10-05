@@ -38,10 +38,11 @@ function Enemy:shootBullet(bullet, aimx, aimy)
 end
 
 function Enemy:update()
-	--math.randomseed(time*self.y)
 	self.accelerationX = (math.random() - 0.5)*1000
 	self.accelerationY = (math.random() - 0.5)*1000
+	
 	Sprite.update(self)
+	
 	if touchingU or touchingD then self.velocityY = -self.velocityY end
 	if touchingR or touchingL then self.velocityX = -self.velocityX end
 	
@@ -51,6 +52,10 @@ function Enemy:update()
 		self:playAnimation("down")
 	else
 		self:playAnimation("idle")
+	end
+	
+	if self:getScreenX() + self.width < 0 then
+		self:setExists(false)
 	end
 end
 

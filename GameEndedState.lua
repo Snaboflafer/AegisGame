@@ -1,16 +1,35 @@
 GameEndedState = {
 	title = "GAME OVER"
 }
-setmetatable(GameEndedState, State)
 GameEndedState.__index = GameEndedState
+setmetatable(GameEndedState, State)
 
 function GameEndedState:load()
-	State.load(self)
-	self.loaded = true
+	State:load()
+		
+	local txtHeader = "GAME OVER"
+	
+	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
+						txtHeader, "fonts/Commodore.ttf", 64)
+	headerText:setAlign(Text.CENTER)
+	headerText:setColor(240, 240, 240, 255)
+	headerText:setShadow(150, 150, 0, 255)
+	GameEndedState:add(headerText)
+	
+	local scoreHeaderText = Text:new(General.screenW * .5, General.screenH * .5,
+						"Score:", "fonts/Commodore.ttf", 48)
+	scoreHeaderText:setAlign(Text.CENTER)
+	GameEndedState:add(headerText)
+	
+	local scoreText = Text:new(General.screenW * .5, General.screenH * .5,
+						Data:getScore(), "fonts/Commodore.ttf", 48)
+	scoreText:setAlign(Text.CENTER)
+	GameEndedState:add(scoreText)
 end
 
 function GameEndedState:start()
 	State.start(self)
+	self.closeTimer = 2
 end
 
 function GameEndedState:stop()
@@ -19,7 +38,9 @@ end
 
 function GameEndedState:update()
 	State.update(self)
-    if State.time > 5 then
+	
+	self.closeTimer = self.closeTimer - General.elapsed
+    if self.closeTimer <= 0 then
     	--patchwork fix for GameState improper closing bug
     	love.event.push('quit')
 		--General:setState(HighScoreState)
@@ -28,16 +49,10 @@ end
 
 function GameEndedState:draw()
 	State.draw(self)
-	love.graphics.setFont(General.headerFont)
-	love.graphics.print(
-		self.title,
-		Utility:mid(General.headerFont:getWidth(self.title), General.screenW),
-		Utility:mid(General.headerFont:getHeight(self.title), General.screenH)
-	)
 end
 function GameEndedState:keypressed(key)
 	--patchwork fix for GameState improper closing bug
-	love.event.push('quit')
+	--love.event.push('quit')
     --General:setState(HighScoreState)
 end
 

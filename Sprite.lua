@@ -37,7 +37,6 @@ Sprite = {
 	imageFile = "[NO IMAGE]",	--Filename for image
 	image = love.graphics.newImage("/images/err_noImage.png"), --Image of sprite
 	lockSides = 0,	--Set to true to prevent sprite from moving offscreen
-	visible = true,
 	animated = false,
 	animations = {},	--List of animations registered for sprite
 	curAnim = nil,		--Table for current animation
@@ -55,10 +54,24 @@ Sprite = {
 	immovable = false,	--Object cannot be pushed by objects during collision
 	massless = false,	--Object won't push objects during collision
 	bounceFactor = 0,	--Percentage of speed retained after collision
-	alive = false,
-	visible = false,	--Whether the sprite should draw
-	active = false		--Whether the sprite should update
+	exists = true,		--Whether the sprite has any calls done on it
+	active = true,		--Whether the sprite should update
+	visible = true,		--Whether the sprite should draw
+	solid = true		--Whether the sprite responds to collisions
 }
+
+function Sprite:setActive(Active)
+	self.active = Active
+end
+function Sprite:setExists(Exists)
+	self.exists = Exists
+end
+function Sprite:setSolid(Solid)
+	self.solid = Solid
+end
+function Sprite:setVisible(Visible)
+	self.visible = Visible
+end
 
 function Sprite:setPosition(X, Y)
 	self.x = X
@@ -139,7 +152,7 @@ end
 
 -- updates velocity and position of sprite
 function Sprite:update()
-	if not self.active then
+	if not self.active or not self.exists then
 		return
 	end
 	
@@ -180,7 +193,7 @@ function Sprite:update()
 	self.x = self.x + self.velocityX * General.elapsed
 	self.y = self.y + self.velocityY * General.elapsed
 	
-	--Temporary screen bounding collisions
+	--Lock to screen handling
 	if (self.lockSides > Sprite.NONE) then
 		local camera = General:getCamera()
 	
@@ -217,7 +230,7 @@ end
 --[[Draw sprite to screen
 --]]
 function Sprite:draw()
-	if not self.visible then
+	if not self.visible or not self.exists then
 		return
 	end
 	
@@ -247,6 +260,9 @@ end
 --[[Set the collision area of the sprite
 --]]
 function Sprite:setCollisionBox(X, Y, W, H)
+	self.x = self.x + X - self.offsetX
+	self.y = self.y + Y - self.offsetY
+	
 	self.offsetX = X
 	self.offsetY = Y
 	self.width = W
@@ -298,6 +314,18 @@ function Sprite:resetImage()
 	self.animated = false
 	self.width = nil
 	self.height = nil
+end
+function Sprite:setScale(X, Y)
+	if X == 0 then
+		X = .00001
+	end
+	if Y == 0 then
+		Y = .00001
+	end
+	self.width = (X / self.scaleX) * self.width
+	self.height = (Y / self.scaleY) * self.height
+	self.scaleX = X
+	self.scaleY = Y
 end
 
 
@@ -398,19 +426,31 @@ function Sprite:lockToScreen(value)
 end
 
 function Sprite:getLeft()
-	return self.x - self.offsetX
+	--return self.x - self.offsetX
+	return self.x
 end
 function Sprite:getRight()
-	return self.x + self.offsetX + self.width
+	--return self.x + self.offsetX + self.width
+	return self.x + self.width
 end
 function Sprite:getTop()
-	return self.y - self.offsetY
+	--return self.y - self.offsetY
+	return self.y
 end
 function Sprite:getBottom()
-	return self.y + self.offsetY + self.height
+	--return self.y + self.offsetY + self.height
+	return self.y + self.height
 end
 function Sprite:getCenter()
-	return self.x + self.offsetX + self.width/2, self.y + self.offsetY + self.height/2
+	--return self.x + self.offsetX + self.width/2, self.y + self.offsetY + self.height/2
+	return self.x + self.width/2, self.y + self.height/2
+end
+
+function Sprite:getScreenX()
+	return self.x - (General:getCamera().x * self.scrollFactorX)
+end
+function Sprite:getScreenY()
+	return self.y - (General:getCamera().y * self.scrollFactorY)
 end
 	
 function Sprite:getType()

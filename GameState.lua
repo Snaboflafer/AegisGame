@@ -6,47 +6,49 @@ function GameState:load()
 	State:load()
 	
 	self.camera = General:newCamera(0,0)
-	self.camera:setBounds(-32, -32, General.screenW + 32, General.screenH + 32)
+	self.camera:setBounds(-64, -32, General.screenW + 32, General.screenH)
 	GameState:add(self.camera)
 	
 	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
-	self.cameraFocus.velocityX = 50
+	self.cameraFocus:setVisible(false)
 
 
 	self.wrappingSprites = Group:new()
 
-	local SpriteBg = Sprite:new(0,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
-	SpriteBg.scrollFactorY = .3
-	SpriteBg.scrollFactorX = .3
-	self.wrappingSprites:add(spriteBg)
-	--local SpriteBg2 = Sprite:new(800,0,"images/StealthHawk-Alien-Landscape-33.jpg", General.screenW, General.screenH)
-	--GameState:add(SpriteBg2)
+	--Create background
+	for i=0, 1, 1 do 
+		local spriteBg = Sprite:new(i * 960, -64,
+						"images/StealthHawk-Alien-Landscape-33.jpg")
+		spriteBg.scrollFactorX = .3
+		spriteBg.scrollFactorY = .3
+		self.wrappingSprites:add(spriteBg)
+	end
 
-	--Create floor block
-	--May need to change to responsive sizing
-
-	self.floorBlock1 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
-	self.floorBlock1:setCollisionBox(0, 0, self.floorBlock1.width, self.floorBlock1.height)
-	self.floorBlock1.immovable = true
-	self.wrappingSprites:add(self.floorBlock1)
-
-	self.floorBlock2 = WrappingSprite:new(0, General.screenH-130, "images/FloorBlock.png",800,130)
-	self.floorBlock2:setCollisionBox(0, 0, self.floorBlock2.width, self.floorBlock2.height)
-	self.floorBlock2.immovable = true
-	self.wrappingSprites:add(self.floorBlock2)
+	--Create floor
+	self.ground = Group:new()
+	for i=0, 4, 1 do 
+		local floorBlock = Sprite:new(i * 256, General.screenH- 128, "images/floor_snow_1.png")
+		floorBlock:setCollisionBox(0,30, 256, 198)
+		floorBlock.immovable = true
+		self.ground:add(floorBlock)
+		--self.wrappingSprites:add(floorBlock)
+	end
+	--self.wrappingSprites:add(self.ground) (Nested groups not yet fully supported)
 	
 	GameState:add(self.wrappingSprites)
-
+	GameState:add(self.ground)
+	
 	
 	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
-	self.collisionSprite:setCollisionBox(1,1,254,62)
+	self.collisionSprite:setCollisionBox(0,0,256,64)
 	self.collisionSprite:lockToScreen(Sprite.ALL)
+	self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
 
 
 	self.effect = Effect:new("images/explosion.png")
 	self.effect:initialize("explosion", "images/explosion.png",64,64)
-	self.effect:play("explosion",0,0)
+	self.effect:play("explosion",-128,-128)
 
 	GameState:add(self.effect)
 
@@ -56,7 +58,7 @@ function GameState:load()
 	self.player:loadSpriteSheet("images/player_ship.png",128,64)
 	self.player:setAnimations()
 	self.player:setCollisionBox(26, 15, 84, 35)
-	self.player:lockToScreen(Sprite.UPDOWN)
+	self.player:lockToScreen(Sprite.ALL)
 	self.camera:setTarget(self.player)
 	--self.camera:setDeadzone(128,32)
 	GameState:add(self.player)
@@ -67,20 +69,21 @@ function GameState:load()
 	
 	-- Flag set to false as no enemies are destroyed yet
 	enemyDestroyed = false;
-	
+
 	self.enemies = Group:new()
-	for i=1,5,1 do
+	for i=1, 10, 1 do
 		local curEnemy = {}
 		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
-		curEnemy = enemy:new(General.screenW - 64, (General.screenH - self.floorBlock1.height)* math.random())
+		curEnemy = enemy:new(-256, (General.screenH - 256)* math.random())
 		curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
 		curEnemy:setAnimations()
 		curEnemy:setPointValue(100)
 		curEnemy:setCollisionBox(7, 26, 44, 19)
-		curEnemy:lockToScreen()
+		curEnemy:lockToScreen(Sprite.UPDOWN)
 		self.enemies:add(curEnemy)
 	end
 	GameState:add(self.enemies)
+	self.spawnTimer = 1
 
 	--add bullets
 	self.bullets = Group:new()
@@ -119,7 +122,7 @@ function GameState:load()
 end
 function GameState:start()
 	State.start(self)
-	self.bgmMusic:play()
+	--self.bgmMusic:play()
 end
 function GameState:stop()
 	State.stop(self)
@@ -128,7 +131,7 @@ end
 
 function GameState:update()
 
-	--update bullets
+	--[[ update bullets
 	for k,v in pairs(self.enemies.members) do
 		for k1, v1 in pairs(self.bullets.members) do 
 			if v1.active == false then
@@ -144,93 +147,137 @@ function GameState:update()
 			v.active = false
 		end
 	end
+	-]]
 	
-	for k,v in pairs(self.bullets.members) do
-		if v.x < -10 or v.y < -10 or v.x > General.screenW + 10 or v.y > General.screenH + 10 then
-			v.active = false
+	--Loop scenery groups
+	for k,v in pairs(self.wrappingSprites.members) do
+		-- if right side of wrapping sprite goes off left side of screen
+		local screenX = v:getScreenX()
+		--if (v.x + v.width) < General.camera.x then
+		if screenX + v.width < 0 then
+			v.x = v.x + Group.getSize(self.wrappingSprites) * v.width
 		end
 	end
+	for k,v in pairs(self.ground.members) do
+		-- if right side of wrapping sprite goes off left side of screen
+		local screenX = v:getScreenX()
+		--if (v.x + v.width) < General.camera.x then
+		if screenX + v.width < 0 then
+			v.x = v.x + Group.getSize(self.ground) * v.width
+		end
+	end
+
+	-- Try adding a new enemy
+	self.spawnTimer = self.spawnTimer - General.elapsed
+	if self.spawnTimer < 0 then
+		GameState:tryNewEnemy()
+		self.spawnTimer = .5
+	end
+
 	State:update()
+	
+	
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
 
-	self:checkCollisions()
+	--check for player:enemy collisions
+	for k,enemy in pairs(self.enemies.members) do
+		if General:collide(enemy, self.player) then
+
+			-- Destroy animation
+			local x, y = enemy:getCenter()
+			self.effect:play("explosion", x, y)
+
+			self.explosion:rewind()
+			self.explosion:play()
+			self.player:updateScore(enemy:getPointValue())
+
+			enemy:setExists(false)
+				
+			self.fuelTimer = self.fuelTimer + 1
+			if not self.player.enableControls and self.fuelTimer > 0 then
+				self.player.accelerationY = 0
+				self.player.enableControls = true
+				self.player.velocityY = 0
+				self.cameraFocus.dragX = 0
+				self.cameraFocus.velocityX = 300
+			end
+		end
+	end
+	
+	--check for player:floor collision
+	if General:collide(self.player, self.ground) then
+		--self.explosion:rewind()
+		self.explosion:play()
+		
+		if self.fuelTimer <= 0 then
+			GameState:updateHighScores("Player", self.player:getScore())
+			Data:setScore(self.player:getScore())
+			local playerX, playerY = self.player:getCenter()
+			self.effect:play("explosion", playerX, playerY)
+
+			if math.abs(self.player.velocityY) < 50 then
+				General:setState(MenuState)
+			end
+		end
+		
+	end
 
 	self.cameraFocus.y = self.player.y
-
 	
 	self.instructionTimer = self.instructionTimer - General.elapsed
-	self.fuelTimer = self.fuelTimer - General.elapsed * .05
+	if self.fuelTimer > 0 then
+		self.fuelTimer = self.fuelTimer - General.elapsed
+		self.cameraFocus.velocityX = 300 + self.player:getScore()/5
+
+	else
+		self.fuelTimer = 0
+	end
 
 	highScoreText:setLabel("Score: " .. self.player:getScore())
 	timeText:setLabel("Time: " .. math.ceil(self.fuelTimer * 10)/10)
 
 	if self.instructionTimer <= 0 then
-			instructionText:setLabel("")
+		instructionText:setLabel("")
 	end
 	
 	if self.fuelTimer <= 0 then
-		GameState:updateHighScores("Player", self.player:getScore())
-    
-		GameEndedState.title = "GAME OVER"
-		General:setState(GameEndedState) 
-    
-	end
-	--]]
+		self.player.accelerationY = 200
+		self.player.dragX = 1
+		self.player.enableControls = false
+		self.player.bounceFactor = .2
+		self.cameraFocus.dragX = .5
+    end
 end
 
 function GameState:draw()
 	State.draw(self)
-
  	love.graphics.setFont(love.graphics.newFont(10))
     love.graphics.setColor({255, 255, 255, 255})
 end
 
-function GameState:checkCollisions()
-
-	--check for player:enemy collisions
-	for k,enemy in pairs(self.enemies.members) do
-		if General:collide(enemy, self.player) then
-			-- Enemy was destroyed
-
-			-- Destroy animation
-			x, y = enemy:getCenter()
-			self.effect:play("explosion", x, y)
-
-			wasDestroyed = true
-			self.explosion:rewind()
-			self.explosion:play()
-			self.player:updateScore(enemy:getPointValue())
-			
-			--table.remove(self.enemies.members, k)
-			enemy.x = General.screenW * math.random()
-			enemy.y = (General.screenH - self.floorBlock1.height) * math.random()
-			self.fuelTimer = self.fuelTimer + .5
+function GameState:tryNewEnemy() 
+	if math.random() > .5 then
+		--Random chance to spawn
+		return
+	end
+	
+	for k, e in pairs(self.enemies.members) do
+		--Find first non-existing enemy
+		if not e.exists then
+			GameState:generateEnemy(e)
+			return
 		end
 	end
-
-	--check for player:floor collision
-	if General:collide(self.floorBlock1, self.player) then
-		self.explosion:rewind()
-		self.explosion:play()
-		General:setState(GameEndedState)
-	end
-
-	--check for enemy:floor collision
-	for k,enemy in pairs(self.enemies.members) do
-		if General:collide(enemy, self.floorBlock1) then
-			-- Enemy was destroyed
-			--wasDestroyed = true
-			--self.explosion:rewind()
-			--self.explosion:play()
-			--table.remove(self.enemies.members, k)
-			--enemy.x = General.screenW * math.random()
-			--enemy.y = (General.screenH - self.floorBlock.height) * math.random()
-			--self.fuelTimer = self.fuelTimer + .5
-		end
-	end
-
 end
+
+function GameState:generateEnemy(enemy)
+	enemy:setExists(true)
+	local cameraX, cameraY = self.camera:getPosition()
+	enemy.x = cameraX + General.screenW
+	--enemy.y = (General.screenH - 256) * math.random()
+end
+
 
 function GameState:keyreleased(key)
 	if key == "escape" then

@@ -1,5 +1,6 @@
 Player = {
-	score = 0
+	score = 0,
+	enableControls = true
 }
 
 thump = love.audio.newSource("sounds/thump.mp3")
@@ -35,62 +36,60 @@ function Player:changeMagnitude(m)
 	self.momentArm = math.sqrt(self.magnitude^2/2)
 end
 function Player:update()
-	if love.keyboard.isDown('w') and love.keyboard.isDown('d') then
-        self:playAnimation("up")
-        self.velocityX = self.momentArm
-		self.velocityY = -self.momentArm
-	elseif love.keyboard.isDown('d') and love.keyboard.isDown('s') then
-		self:playAnimation("down")
-        self.velocityX = self.momentArm
-		self.velocityY = self.momentArm
-	elseif love.keyboard.isDown('s') and love.keyboard.isDown('a') then
-		self:playAnimation("down")
-        self.velocityX = -self.momentArm
-		self.velocityY = self.momentArm
-	elseif love.keyboard.isDown('a') and love.keyboard.isDown('w') then
-        self:playAnimation("up")
-        self.velocityX = -self.momentArm
-		self.velocityY = -self.momentArm
-	elseif love.keyboard.isDown('w') then
-        self:playAnimation("up")
-		self.velocityX = 0
-		self.velocityY = -self.magnitude
-	elseif love.keyboard.isDown('s') then
-		self:playAnimation("down")
-        self.velocityX = 0
-		self.velocityY = self.magnitude
-	elseif love.keyboard.isDown('a') then
-		self:playAnimation("up")
-        self.velocityX = -self.magnitude
-		self.velocityY = 0
-	elseif love.keyboard.isDown('d') then
-		self:playAnimation("down")
-        self.velocityX = self.magnitude
-		self.velocityY = 0
-	else
-		self:playAnimation("idle")
-		self.velocityX = 0;
-		self.velocityY = 0;
-    end
-	--Keep up with screen scrolling
-	self.velocityX = self.velocityX + GameState.cameraFocus.velocityX
+	if self.enableControls then
+		if love.keyboard.isDown('w') and love.keyboard.isDown('d') then
+			self:playAnimation("up")
+			self.velocityX = self.momentArm
+			self.velocityY = -self.momentArm
+		elseif love.keyboard.isDown('d') and love.keyboard.isDown('s') then
+			self:playAnimation("down")
+			self.velocityX = self.momentArm
+			self.velocityY = self.momentArm
+		elseif love.keyboard.isDown('s') and love.keyboard.isDown('a') then
+			self:playAnimation("down")
+			self.velocityX = -self.momentArm
+			self.velocityY = self.momentArm
+		elseif love.keyboard.isDown('a') and love.keyboard.isDown('w') then
+			self:playAnimation("up")
+			self.velocityX = -self.momentArm
+			self.velocityY = -self.momentArm
+		elseif love.keyboard.isDown('w') then
+			self:playAnimation("up")
+			self.velocityX = 0
+			self.velocityY = -self.magnitude
+		elseif love.keyboard.isDown('s') then
+			self:playAnimation("down")
+			self.velocityX = 0
+			self.velocityY = self.magnitude
+		elseif love.keyboard.isDown('a') then
+			self:playAnimation("up")
+			self.velocityX = -self.magnitude
+			self.velocityY = 0
+		elseif love.keyboard.isDown('d') then
+			self:playAnimation("down")
+			self.velocityX = self.magnitude
+			self.velocityY = 0
+		else
+			self:playAnimation("idle")
+			self.velocityX = 0;
+			self.velocityY = 0;
+		end
+		--Keep up with screen scrolling
+		self.velocityX = self.velocityX + GameState.cameraFocus.velocityX
+	end
 	
-	if (self.touching == Sprite.UP) then
-		thump:play()
-		self.y = self.y + 10
-	end
-	if (self.touching == Sprite.DOWN) then
-		thump:play()
-		self.y = self.y - 10
-	end
-	if (self.touching == Sprite.LEFT) then
-		thump:play()
-		self.x = self.x + 10
-	end
-	if (self.touching == Sprite.RIGHT) then
-		thump:play()
-		self.x = self.x - 10
-	end
+	--if (self.touching == Sprite.UP) then
+	--	thump:play()
+	--end
+	--if (self.touching == Sprite.DOWN) then
+	--	thump:play()
+	--end
+	--if (self.touching == Sprite.LEFT) then
+	--	thump:play()
+	--end
+	--if (self.touching == Sprite.RIGHT) then
+	--	thump:play()
+	--end
 
 	Sprite.update(self)
 end

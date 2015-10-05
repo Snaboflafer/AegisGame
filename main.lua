@@ -10,6 +10,7 @@ time = 0
 
 require("General")
 require("Utility")
+require("Data")
 require("Camera")
 require("State")
 require("TitleState")
@@ -24,7 +25,6 @@ require("Sprite")
 require("Bullet")
 player = require("Player")
 enemy = require("Enemy")
-wrappingSprite  = require("wrappingSprite")
 require("Text")
 require("Effect")
 
@@ -32,10 +32,6 @@ function love.load()
 	General:init()
 	--Camera:newCamera(General.screenW/2,General.screenH/2)
 
-	--TitleState:load()
-	--MenuState:load()
-	--HighScoreState:load()
-	--GameState:load()
 	debugText = Text:new(0,0, "fonts/lucon.ttf", 12)
 	debugText.visible = false
 	
@@ -66,7 +62,7 @@ function love.update(dt)
 	debugStr = debugStr .. "Frame time = " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
 	--debugStr = debugStr .. math.floor(1/General.elapsed) .. "FPS\n"
 	debugStr = debugStr .. math.floor(10/frameTimes[1])/10 .. " FPS\n"
-	debugStr = debugStr .. "Speed x" .. General.timeScale .. "\n"
+	debugStr = debugStr .. "Speed x" .. math.floor(10 * General.timeScale) / 10 .. "\n"
 
 	if TitleState.loaded == true then 
 		debugStr = debugStr .. "TitleState (" .. tostring(TitleState) .. ") is loaded\n"
@@ -83,12 +79,16 @@ function love.update(dt)
 	if HighScoreState.loaded == true then 
 		debugStr = debugStr .. "HighScoreState (" .. tostring(HighScoreState) .. ") is loaded\n"
 	end
+	if GameEndedState.loaded == true then 
+		debugStr = debugStr .. "GameEndedState (" .. tostring(GameEndedState) .. ") is loaded\n"
+	end
 	debugStr = debugStr .. "All loaded states:\n"
 	if General.loadedStates ~= nil then
 		for i=1, General.loadedStates:getSize(), 1 do
 			debugStr = debugStr .. "\t(" .. tostring(General.loadedStates.members[i]) .. ")\n"
 		end
 	end
+	debugStr = debugStr .. "Active state:\n\t(" .. tostring(General.activeState) .. ")\n"
 	
 	
 	--Get debug for all members of active state
@@ -117,10 +117,16 @@ end
 function love.keypressed(key)
 	General.activeState:keypressed(key)
 	
-	if key == "up" then
+	if key == "down" then
 		debugText.y = debugText.y - 14
 	end
-	if key == "down" then
+	if key == "up" then
 		debugText.y = debugText.y + 14
+	end
+	if key == "pageup" then
+		General.timeScale = General.timeScale - .5
+	end
+	if key == "pagedown" then
+		General.timeScale = General.timeScale + .5
 	end
 end

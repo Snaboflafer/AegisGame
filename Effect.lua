@@ -15,7 +15,7 @@ function Effect:initialize(Name, ImageFile, Width, Height)
 end
 
 function Effect:play(Name, X, Y)
-	self:setPosition(X - self.width / 2, Y - self.height / 2)
+	self:setPosition(X, Y - self.height / 2)
 	self:playAnimation(Name, true)
 
 end

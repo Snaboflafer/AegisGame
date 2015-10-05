@@ -26,10 +26,6 @@ function HighScoreState:load()
 	scoresText:setAlign(Text.LEFT)
 	HighScoreState:add(scoresText)
 	
-	self.width = General.headerFont:getWidth(self.name)
-	self.height = General.headerFont:getHeight(self.name)
-	self.subWidth = 300
-	self.subHeight = 20
 end
 
 function HighScoreState:start()
