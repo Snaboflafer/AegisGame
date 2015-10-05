@@ -34,8 +34,6 @@ function Enemy:shootBullet(bullet, aimx, aimy)
 	local distance = math.sqrt((aimx - self.x)^2 + (aimy - self.y)^2)
 	local vx = (aimx - self.x)/distance*100
 	local vy = (aimy - self.y)/distance*100
-	print(vx)
-	print(vy)
 	bullet:reset(self.x, self.y, vx, vy)
 end
 
