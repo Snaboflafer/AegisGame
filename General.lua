@@ -181,7 +181,10 @@ function General:setState(NewState, CloseOld)
 	if CloseOld == nil then
 		CloseOld = true
 	end
-	if CloseOld then
+	if CloseOld and self.loadedStates ~= nil then
+		--for i=1, self.loadedStates:getSize() do
+		--	General:closeState(self.loadedStates.members[i], true)
+		--end
 		if self.activeState ~= nil then
 			--There is a current state to close
 			General:closeState(self.activeState, true)

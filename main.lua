@@ -20,6 +20,7 @@ require("MenuState")
 require("PauseState")
 require("GameEndedState")
 require("Group")
+require("Emitter")
 require("Button")
 require("Sprite")
 require("Bullet")
@@ -82,7 +83,7 @@ function love.update(dt)
 	if GameEndedState.loaded == true then 
 		debugStr = debugStr .. "GameEndedState (" .. tostring(GameEndedState) .. ") is loaded\n"
 	end
-	debugStr = debugStr .. "All loaded states:\n"
+	debugStr = debugStr .. "Registered loaded states:\n"
 	if General.loadedStates ~= nil then
 		for i=1, General.loadedStates:getSize(), 1 do
 			debugStr = debugStr .. "\t(" .. tostring(General.loadedStates.members[i]) .. ")\n"
