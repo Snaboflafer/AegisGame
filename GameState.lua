@@ -275,7 +275,7 @@ function GameState:generateEnemy(enemy)
 	enemy:setExists(true)
 	local cameraX, cameraY = self.camera:getPosition()
 	enemy.x = cameraX + General.screenW
-	--enemy.y = (General.screenH - 256) * math.random()
+	enemy.y = (General.screenH - 256) * math.random()
 end
 
 
