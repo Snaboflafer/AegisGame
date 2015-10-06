@@ -19,8 +19,8 @@ Emitter = {
 function Emitter:new(X, Y)
 	s = Group:new()
 	setmetatable(s, self)
-	setmetatable(s, Group)
-	
+	setmetatable(self, Group)
+	self.__index = self
 	s.x = X or 0
 	s.y = Y or 0
 	
@@ -33,7 +33,7 @@ end
 	Delay		Delay for sequential launch between particles
 --]]
 function Emitter:start(LaunchAll, Lifetime, Delay)
-	self.launchAll = launchAll
+	self.launchAll = LaunchAll
 	self.lifetime = Lifetime
 	self.emitDelay = Delay
 	self.emitTimer = 0
@@ -49,7 +49,8 @@ function Emitter:addParticle(NewParticle)
 end
 
 function Emitter:update()
-	for i=1, self.members:getSize() do
+
+	for i=1, self:getSize() do
 		if self.members[i].lifetime > self.lifetime then
 			self.members[i].exists = false
 		end
@@ -64,19 +65,17 @@ function Emitter:update()
 	if self.launchAll then
 		self.enabled = false
 		
-		for i=1, self.members:getSize(), 1 do
-			self:emit(self.members[i])
+		for i=1, self:getSize(), 1 do
+			self:emitParticle(self.members[i])
 		end
 	else
 		self.emitTimer = self.emitTimer - General.elapsed
-		
 		if self.emitTimer > 0 then
 			return
 		end
 		
-		
 		self:emitParticle()
-		
+		self.emitTimer = self.emitDelay
 	end
 end
 
@@ -86,13 +85,13 @@ end
 
 function Emitter:emitParticle()
 	local i = 1
-	while i <= self.members:getSize() do
+	while i <= self:getSize() do
 		if not self.members[i].exists then
 			break
 		end
 		i = i + 1
 	end
-	if i == self.members:getSize() then
+	if i >= self:getSize() then
 		--No available particles
 		return
 	end

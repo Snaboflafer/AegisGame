@@ -82,10 +82,14 @@ function GameState:load()
 		curEnemy:setPointValue(100)
 		curEnemy:setCollisionBox(7, 26, 44, 19)
 		curEnemy:lockToScreen(Sprite.UPDOWN)
-		self.enemies:add(curEnemy)
 		--create enemy bullets
 		local bullet = Sprite:new(-20, -20, "images/bullet_2.png")
 		self.enemyBullets:add(bullet)
+		local emitter = Emitter:new()
+		emitter:addParticle(bullet)
+		curEnemy:setEmitter(emitter)
+		self.enemies:add(curEnemy)
+		GameState:add(emitter)
 	end
 
 	GameState:add(self.enemies)
@@ -211,33 +215,6 @@ function GameState:update()
 		end
 	end
 
-	for k,bullet in pairs(self.playerBullets.members) do
-		for k,enemy in pairs(self.enemies.members) do 
-			if General:collide(bullet, self.player) then
-
-				-- Destroy animation
-				local x, y = bullet:getCenter()
-				self.effect:play("explosion", x, y)
-
-				self.explosion:rewind()
-				self.explosion:play()
-				self.player:updateScore(enemy:getPointValue())
-
-				bullet:setExists(false)
-					
-				self.fuelTimer = self.fuelTimer + 1
-				if not self.player.enableControls and self.fuelTimer > 0 then
-					self.player.accelerationY = 0
-					self.player.enableControls = true
-					self.player.velocityY = 0
-					self.cameraFocus.dragX = 0
-					self.cameraFocus.velocityX = 300
-				end
-			end
-		end
-	end
-
-	for 
 	--check for player:enemy collisions
 	for k,enemy in pairs(self.enemies.members) do
 		if General:collide(enemy, self.player) then
@@ -285,7 +262,7 @@ function GameState:update()
 	
 	self.instructionTimer = self.instructionTimer - General.elapsed
 	if self.fuelTimer > 0 then
-		self.fuelTimer = self.fuelTimer - General.elapsed
+		--self.fuelTimer = self.fuelTimer - General.elapsed
 		self.cameraFocus.velocityX = 300 + self.player:getScore()/5
 
 	else

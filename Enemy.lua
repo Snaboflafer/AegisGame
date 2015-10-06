@@ -12,7 +12,6 @@ function Enemy:new(X,Y,ImageFile)
 	
 	s.maxVelocityX = 150
 	s.maxVelocityY = 150
-	
 	return s
 end
 
@@ -20,6 +19,12 @@ function Enemy:setAnimations()
 	self:addAnimation("idle", {1,2}, .1, true)
 	self:addAnimation("up", {3,4}, .1, true)
 	self:addAnimation("down", {5,6}, .1, true)
+end
+
+function Enemy:setEmitter(newEmitter)
+	self.emitter = newEmitter
+	self.emitter:start(false, 1, .1)
+	self.emitter:setSpeedRange(200,200)
 end
 
 function Enemy:setPointValue(V)
@@ -30,11 +35,11 @@ function Enemy:getPointValue()
 	return self.pointValue
 end
 
-function Enemy:shootBullet(bullet, aimx, aimy)
-	local distance = math.sqrt((aimx - self.x)^2 + (aimy - self.y)^2)
-	local vx = (aimx - self.x)/distance*100
-	local vy = (aimy - self.y)/distance*100
-	bullet:reset(self.x, self.y, vx, vy)
+function Enemy:shootBullet(aimx, aimy)
+	self.emitter:setPosition(self.x, self.y)
+	local dx = aimx - self.x
+	local dy = aimy - self.y
+	self.emitter:setAngle(math.atan(dy/dx), 0)
 end
 
 function Enemy:update()
