@@ -34,8 +34,8 @@ end
 --]]
 function Emitter:start(LaunchAll, Lifetime, Delay)
 	self.launchAll = launchAll
-	self.lifetime = Lifetime
-	self.emitDelay = Delay
+	self.lifetime = Lifetime or 120
+	self.emitDelay = Delay or 0
 	self.emitTimer = 0
 	self.enabled = true
 end
@@ -122,7 +122,7 @@ function Emitter:setPosition(X, Y)
 end
 function Emitter:setAngle(Angle, Range)
 	self.emitAngle = Angle
-	self.angleRange = Range
+	self.angleRange = Range or 0
 end
 function Emitter:setSpeedRange(Min, Max)
 	self.velocityMin = Min
