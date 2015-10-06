@@ -9,7 +9,6 @@ function Enemy:new(X,Y,ImageFile)
 	setmetatable(s, self)
 	setmetatable(self, Sprite)
 	self.__index = self
-	
 	s.maxVelocityX = 150
 	s.maxVelocityY = 150
 	
@@ -41,10 +40,6 @@ function Enemy:update()
 	self.accelerationX = (math.random() - 0.5)*1000
 	self.accelerationY = (math.random() - 0.5)*1000
 	
-	Sprite.update(self)
-	
-	if touchingU or touchingD then self.velocityY = -self.velocityY end
-	if touchingR or touchingL then self.velocityX = -self.velocityX end
 	
 	if self.velocityY < 50 then
 		self:playAnimation("up")
@@ -57,6 +52,8 @@ function Enemy:update()
 	if self:getScreenX() + self.width < 0 then
 		self:setExists(false)
 	end
+
+	Sprite.update(self)
 end
 
 function Enemy:getType()
