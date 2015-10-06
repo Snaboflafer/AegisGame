@@ -57,7 +57,9 @@ Sprite = {
 	exists = true,		--Whether the sprite has any calls done on it
 	active = true,		--Whether the sprite should update
 	visible = true,		--Whether the sprite should draw
-	solid = true		--Whether the sprite responds to collisions
+	solid = true,		--Whether the sprite responds to collisions
+	lifetime = 0,
+	health = 0
 }
 
 function Sprite:setActive(Active)
@@ -155,6 +157,8 @@ function Sprite:update()
 	if not self.active or not self.exists then
 		return
 	end
+	
+	self.lifetime = self.lifetime + General.elapsed
 	
 	self.touchingPrev = self.touching
 	self.touching = Sprite.NONE
