@@ -119,10 +119,10 @@ function love.keypressed(key)
 	General.activeState:keypressed(key)
 	
 	if key == "down" then
-		debugText.y = debugText.y - 14
+		debugText.y = debugText.y - 140
 	end
 	if key == "up" then
-		debugText.y = debugText.y + 14
+		debugText.y = debugText.y + 140
 	end
 	if key == "pageup" then
 		General.timeScale = General.timeScale - .5

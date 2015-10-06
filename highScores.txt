@@ -1,10 +1,10 @@
 Player
+5600
+Player
+5600
+Player
 3800
-lua
-900
 Player
-900
+3000
 Player
-900
-Player
-900
+3000
