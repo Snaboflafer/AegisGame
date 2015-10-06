@@ -6,7 +6,8 @@ Group = {
 	exists = true,
 	active = true,
 	visible = true,
-	solid = true
+	solid = true,
+	showDebug = false
 }
 
 function Group:new()

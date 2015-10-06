@@ -54,6 +54,9 @@ function Emitter:update()
 		if self.members[i].lifetime > self.lifetime then
 			self.members[i].exists = false
 		end
+		if not self.members[i]:onScreen() then
+			self.members[i].exists = false
+		end
 	end
 	Group.update(self)
 	
@@ -91,22 +94,22 @@ function Emitter:emitParticle()
 		end
 		i = i + 1
 	end
-	if i >= self:getSize() then
+	if i > self:getSize() then
 		--No available particles
 		return
 	end
 
 	local launchParticle = self.members[i]
 	
-	launchParticle.lifetime = 0
-	launchParticle.x = self.x
-	launchParticle.y = self.y
-	launchParticle.accelerationY = self.gravity
-	launchParticle.dragX = self.drag
-	launchParticle.dragY = self.drag
-	launchParticle.exists = true
-	launchParticle.alive = true
-	launchParticle.visible = true
+	self.members[i].lifetime = 0
+	self.members[i].x = self.x
+	self.members[i].y = self.y
+	self.members[i].accelerationY = self.gravity
+	self.members[i].dragX = self.drag
+	self.members[i].dragY = self.drag
+	self.members[i].exists = true
+	self.members[i].alive = true
+	self.members[i].visible = true
 
 	local velocity = math.random(self.velocityMin, self.velocityMax)
 	local angle = ((math.pi / 180 ) * math.random(self.emitAngle-self.angleRange,

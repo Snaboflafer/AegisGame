@@ -59,7 +59,8 @@ Sprite = {
 	visible = true,		--Whether the sprite should draw
 	solid = true,		--Whether the sprite responds to collisions
 	lifetime = 0,
-	health = 0
+	health = 0,
+	showDebug = false
 }
 
 function Sprite:setActive(Active)
@@ -449,6 +450,15 @@ function Sprite:getCenter()
 	--return self.x + self.offsetX + self.width/2, self.y + self.offsetY + self.height/2
 	return self.x + self.width/2, self.y + self.height/2
 end
+function Sprite:onScreen()
+	if self.x + self.width < 0 or self.x > General.screenW then
+		if self.y + self.height < 0 or self.y > General.screenH then
+			return false
+		end
+	else
+		return true
+	end
+end
 
 function Sprite:getScreenX()
 	return self.x - (General:getCamera().x * self.scrollFactorX)
@@ -469,11 +479,14 @@ function Sprite:getDebug()
 	debugStr = debugStr .. "\t Size = " .. self.width .. ", " .. self.height .. "\n"
 	debugStr = debugStr .. "\t velocity = " .. math.floor(10 * self.velocityX)/10 .. ", " .. math.floor(10 * self.velocityY)/10 .. "\n"
 	debugStr = debugStr .. "\t acceleration = " .. math.floor(10 * self.accelerationX)/10 .. ", " .. math.floor(10 * self.accelerationY)/10 .. "\n"
-	debugStr = debugStr .. "\t Touching = " .. self.touching .. "\n"
-	debugStr = debugStr .. "\t Screen Lock = " .. self.lockSides .. "\n"
+	if self.touching ~= Sprite.NONE then
+		debugStr = debugStr .. "\t Touching = " .. self.touching .. "\n"
+	end
+	if self.lockSides ~= Sprite.NONE then
+		debugStr = debugStr .. "\t Screen Lock = " .. self.lockSides .. "\n"
+	end
 	if self.animated then
-		debugStr = debugStr .. "\t Anim Quad Index = " .. self.curAnim.frames[self.curAnimFrame] .. "\n"
-		debugStr = debugStr .. "\t Anim name = " .. self.curAnim.name .. "\n"
+		debugStr = debugStr .. "\t Animation: \"" .. self.curAnim.name .. "\" (Frame " .. self.curAnim.frames[self.curAnimFrame] .. ")\n"
 	end
 	
 	return debugStr

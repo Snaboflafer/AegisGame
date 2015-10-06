@@ -37,7 +37,7 @@ function love.load()
 	debugText.visible = false
 	
 	
-	frameTimes = {}	--First value is average
+	frameTimes = {60}	--First value is average
 	frameStartTime = os.time()
 	
 	General:setState(TitleState)
@@ -94,7 +94,9 @@ function love.update(dt)
 	
 	--Get debug for all members of active state
 	for k,v in pairs(General.activeState.members) do
-		debugStr = debugStr .. v:getDebug()	
+		if v.showDebug then
+			debugStr = debugStr .. v:getDebug()	
+		end
 	end
 
 	debugText:setLabel(debugStr)
