@@ -71,28 +71,9 @@ function GameState:load()
 	enemyDestroyed = false;
 
 	self.enemies = {}
-	--GameState:makeNewEnemyGroup(50)
+	self.enemyBullets = {}
+	GameState:makeNewEnemyGroup(50)
 
-	--create enemies
-	self.enemies = Group:new()
-	self.enemyBullets = Group:new()
-	for i=1, 10, 1 do
-		local curEnemy = {}
-		--curEnemy = enemy:new(General.screenW - 64, General.screenH * math.random(), "images/enemy_1.png",64,64)
-		curEnemy = enemy:new(-256, (General.screenH - 256)* math.random())
-		curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
-		curEnemy:setAnimations()
-		curEnemy:setPointValue(100)
-		curEnemy:setCollisionBox(7, 26, 44, 19)
-		curEnemy:lockToScreen(Sprite.UPDOWN)
-		self.enemies:add(curEnemy)
-		--create enemy bullets
-		local bullet = Sprite:new(-20, -20, "images/bullet_2.png")
-		self.enemyBullets:add(bullet)
-	end
-
-	GameState:add(self.enemies)
-	GameState:add(self.enemyBullets)
 	self.spawnTimer = 1
 
 	--add player bullets
@@ -135,6 +116,7 @@ function GameState:makeNewEnemyGroup(numEnemies,yPosition)
 	--local xPosition = cameraX + General.screenW
 	local yPosition = yPosition or General.screenH/3
 	table.insert(self.enemies, Group:new())
+	table.insert(self.enemyBullets, Group:new())
 		for i=1, numEnemies or 10, 1 do
 			local curEnemy = {}
 			local xPosition = cameraX + General.screenW
@@ -147,8 +129,11 @@ function GameState:makeNewEnemyGroup(numEnemies,yPosition)
 			curEnemy:setCollisionBox(7, 26, 44, 19)
 			curEnemy:lockToScreen(Sprite.UPDOWN)
 			self.enemies[table.getn(self.enemies)]:add(curEnemy)
+			local bullet = Sprite:new(-20, -20, "images/bullet_2.png")
+			self.enemyBullets[table.getn(self.enemyBullets)]:add(bullet)
 		end
 		GameState:add(self.enemies[table.getn(self.enemies)])
+		GameState:add(self.enemyBullets[table.getn(self.enemyBullets)])
 end
 
 function GameState:start()
@@ -207,33 +192,8 @@ function GameState:update()
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
 
-	--check for player:bullet collisions
-	for k,bullet in pairs(self.enemyBullets.members) do
-		if General:collide(bullet, self.player) then
-
-			-- Destroy animation
-			local x, y = bullet:getCenter()
-			self.effect:play("explosion", x, y)
-
-			self.explosion:rewind()
-			self.explosion:play()
-			self.player:updateScore(enemy:getPointValue())
-
-			bullet:setExists(false)
-				
-			self.fuelTimer = self.fuelTimer + 1
-			if not self.player.enableControls and self.fuelTimer > 0 then
-				self.player.accelerationY = 0
-				self.player.enableControls = true
-				self.player.velocityY = 0
-				self.cameraFocus.dragX = 0
-				self.cameraFocus.velocityX = 300
-			end
-		end
-	end
-
-	for k,bullet in pairs(self.playerBullets.members) do
-		for k,enemy in pairs(self.enemies.members) do 
+	for j,enemyBulletGroup in pairs(self.enemyBullets) do
+		for k,bullet in pairs(self.enemyBullets[j].members) do
 			if General:collide(bullet, self.player) then
 
 				-- Destroy animation
@@ -253,6 +213,34 @@ function GameState:update()
 					self.player.velocityY = 0
 					self.cameraFocus.dragX = 0
 					self.cameraFocus.velocityX = 300
+				end
+			end
+		end
+	end
+
+	for k,bullet in pairs(self.playerBullets.members) do
+		for j,enemyGroup in pairs(self.enemies) do
+			for k,enemy in pairs(self.enemies[j].members) do
+				if General:collide(bullet, self.player) then
+
+					-- Destroy animation
+					local x, y = bullet:getCenter()
+					self.effect:play("explosion", x, y)
+
+					self.explosion:rewind()
+					self.explosion:play()
+					self.player:updateScore(enemy:getPointValue())
+
+					bullet:setExists(false)
+						
+					self.fuelTimer = self.fuelTimer + 1
+					if not self.player.enableControls and self.fuelTimer > 0 then
+						self.player.accelerationY = 0
+						self.player.enableControls = true
+						self.player.velocityY = 0
+						self.cameraFocus.dragX = 0
+						self.cameraFocus.velocityX = 300
+					end
 				end
 			end
 		end
