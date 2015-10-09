@@ -25,7 +25,7 @@ require("Button")
 require("Sprite")
 require("Bullet")
 player = require("Player")
-enemy = require("Enemy")
+require("Enemy")
 require("Text")
 require("Effect")
 
@@ -65,22 +65,22 @@ function love.update(dt)
 	debugStr = debugStr .. math.floor(10/frameTimes[1])/10 .. " FPS\n"
 	debugStr = debugStr .. "Speed x" .. math.floor(10 * General.timeScale) / 10 .. "\n"
 
-	if TitleState.loaded == true then 
+	if TitleState.loaded then 
 		debugStr = debugStr .. "TitleState (" .. tostring(TitleState) .. ") is loaded\n"
 	end
-	if GameState.loaded == true then 
+	if GameState.loaded then 
 		debugStr = debugStr .. "GameState (" .. tostring(GameState) .. ") is loaded\n"
 	end
-	if PauseState.loaded == true then 
+	if PauseState.loaded then 
 		debugStr = debugStr .. "PauseState (" .. tostring(PauseState) .. ") is loaded\n"
 	end
-	if MenuState.loaded == true then
+	if MenuState.loaded then
 		debugStr = debugStr .. "MenuState (" .. tostring(MenuState) .. ") is loaded\n" 
 	end
-	if HighScoreState.loaded == true then 
+	if HighScoreState.loaded then 
 		debugStr = debugStr .. "HighScoreState (" .. tostring(HighScoreState) .. ") is loaded\n"
 	end
-	if GameEndedState.loaded == true then 
+	if GameEndedState.loaded then 
 		debugStr = debugStr .. "GameEndedState (" .. tostring(GameEndedState) .. ") is loaded\n"
 	end
 	debugStr = debugStr .. "Registered loaded states:\n"

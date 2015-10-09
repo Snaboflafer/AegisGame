@@ -451,8 +451,11 @@ function Sprite:getCenter()
 	return self.x + self.width/2, self.y + self.height/2
 end
 function Sprite:onScreen()
-	if self.x + self.width < 0 or self.x > General.screenW then
-		if self.y + self.height < 0 or self.y > General.screenH then
+	local camera = General:getCamera()
+	if self.x - (General:getCamera().x * self.scrollFactorX) + self.width < 0 or
+		self.x - (General:getCamera().x * self.scrollFactorX) > General.screenW then
+		if self.y - (General:getCamera().y * self.scrollFactorY) + self.height < 0 or
+			self.y - (General:getCamera().y * self.scrollFactorY) > General.screenH then
 			return false
 		end
 	else

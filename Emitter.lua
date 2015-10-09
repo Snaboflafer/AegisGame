@@ -5,15 +5,18 @@ Emitter = {
 	gravity = 0,
 	drag = 0,
 	emitAngle = 0,
-	angleRange = 360,
+	angleRange = 2*math.pi,
 	velocityMin = 0,
 	velocityMax = 100,
 	emitDelay = 0,
-	emitTimer = 1,
+	emitTimer = 0,
 	emitCount = 1,
 	launchAll = true,
 	enabled = false,
-	lifetime = 120
+	lifetime = 120,
+	parent = nil,
+	parentOffsetX = 0,
+	parentOffsetY = 0
 }
 
 function Emitter:new(X, Y)
@@ -21,6 +24,7 @@ function Emitter:new(X, Y)
 	setmetatable(s, self)
 	setmetatable(self, Group)
 	self.__index = self
+	
 	s.x = X or 0
 	s.y = Y or 0
 	
@@ -33,6 +37,9 @@ end
 	Delay		Delay for sequential launch between particles
 --]]
 function Emitter:start(LaunchAll, Lifetime, Delay)
+	if LaunchAll == nil then
+		LaunchAll = true
+	end
 	self.launchAll = launchAll
 	self.lifetime = Lifetime or 120
 	self.emitDelay = Delay or 0
@@ -45,11 +52,11 @@ function Emitter:stop()
 end
 
 function Emitter:addParticle(NewParticle)
+	NewParticle.exists = false
 	self:add(NewParticle)
 end
 
 function Emitter:update()
-
 	for i=1, self:getSize() do
 		if self.members[i].lifetime > self.lifetime then
 			self.members[i].exists = false
@@ -58,6 +65,7 @@ function Emitter:update()
 			self.members[i].exists = false
 		end
 	end
+	
 	Group.update(self)
 	
 	--Emission
@@ -69,7 +77,7 @@ function Emitter:update()
 		self.enabled = false
 		
 		for i=1, self:getSize(), 1 do
-			self:emitParticle(self.members[i])
+			self:emitParticle()
 		end
 	else
 		self.emitTimer = self.emitTimer - General.elapsed
@@ -87,35 +95,32 @@ function Emitter:draw()
 end
 
 function Emitter:emitParticle()
-	local i = 1
-	while i <= self:getSize() do
-		if not self.members[i].exists then
-			break
-		end
-		i = i + 1
+	if self.parent ~= nil then
+		self.x = self.parent.x + self.parentOffsetX
+		self.y = self.parent.y + self.parentOffsetY
 	end
-	if i > self:getSize() then
-		--No available particles
+
+	
+	local particle = self:getFirstAvailable(true)
+	
+	if particle == nil then
 		return
 	end
-
-	local launchParticle = self.members[i]
 	
-	self.members[i].lifetime = 0
-	self.members[i].x = self.x
-	self.members[i].y = self.y
-	self.members[i].accelerationY = self.gravity
-	self.members[i].dragX = self.drag
-	self.members[i].dragY = self.drag
-	self.members[i].exists = true
-	self.members[i].alive = true
-	self.members[i].visible = true
+	particle.lifetime = 0
+	particle.x = self.x
+	particle.y = self.y
+	particle.accelerationY = self.gravity
+	particle.dragX = self.drag
+	particle.dragY = self.drag
+	particle.exists = true
+	particle.alive = true
+	particle.visible = true
 
 	local velocity = math.random(self.velocityMin, self.velocityMax)
-	local angle = ((math.pi / 180 ) * math.random(self.emitAngle-self.angleRange,
-							  self.emitAngle+self.angleRange)) % 360
-	launchParticle.velocityX = velocity * math.cos(angle)
-	launchParticle.velocityY = -velocity * math.sin(angle)
+	local angle = math.random(self.emitAngle - self.angleRange, self.emitAngle + self.angleRange)
+	particle.velocityX = velocity * math.cos(angle)
+	particle.velocityY = -velocity * math.sin(angle)
 end
 
 function Emitter:setPosition(X, Y)
@@ -124,6 +129,13 @@ function Emitter:setPosition(X, Y)
 end
 function Emitter:setAngle(Angle, Range)
 	self.emitAngle = Angle
+	self.angleRange = Range % (2*math.pi) or 0
+end
+function Emitter:setTarget(TargetX, TargetY, Range)
+	local dx = TargetX - self.x
+	local dy = self.y - TargetY
+	self.emitAngle = math.atan2(dy, dx)
+	
 	self.angleRange = Range or 0
 end
 function Emitter:setSpeedRange(Min, Max)
@@ -135,4 +147,13 @@ function Emitter:setParticleGravity(Gravity)
 end
 function Emitter:setParticleDrag()
 	self.drag = Drag
+end
+function Emitter:setParent(Object, offsetX, offsetY)
+	self.parent = Object
+	self.parentOffsetX = 0
+	self.parentOffsetY = 0
+end
+
+function Emitter:getType()
+	return "Emitter"
 end
