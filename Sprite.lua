@@ -44,6 +44,7 @@ Sprite = {
 	curImageQuad = 1,	--Index for the current current graphic in the image file
 	animTimer = 0,		--Timer measuring between animation frames
 	animFinished = false,	--Whether the current animation has finished
+	animMustFinish = false,	--Whether an animation must finish before another can be played
 	curFrameImage = nil,
 	quadFrameCount = 1,
 	imageQuads = {},
@@ -166,7 +167,11 @@ function Sprite:update()
 	
 	--Apply either drag or acceleration to velocity
 	if self.accelerationX == 0 then
-		self.velocityX = self.velocityX - self.dragX * Utility:signOf(self.velocityX)
+		if self.dragX > math.abs(self.velocityX) then
+			self.velocityX = 0
+		else
+			self.velocityX = self.velocityX - self.dragX * Utility:signOf(self.velocityX)
+		end
 	else
 		self.velocityX = self.velocityX + self.accelerationX * General.elapsed
 	end
@@ -177,7 +182,11 @@ function Sprite:update()
 
 	--Apply either drag or acceleration to velocity
 	if self.accelerationY == 0 then
-		self.velocityY = self.velocityY - self.dragY * Utility:signOf(self.velocityY)
+		if self.dragY > math.abs(self.velocityY) then
+			self.velocityY = 0
+		else
+			self.velocityY = self.velocityY - self.dragY * Utility:signOf(self.velocityY)
+		end
 	else
 		self.velocityY = self.velocityY + self.accelerationY * General.elapsed
 	end
@@ -206,22 +215,22 @@ function Sprite:update()
 		
 		local locks = self.lockSides
 		
-		if (self.y < camera.y) and
+		if (self.y < camera.y * self.scrollFactorY) and
 			(locks % Sprite.ALL == 0 or locks % Sprite.UP == 0 or locks % Sprite.UPDOWN == 0) then
-			self.y = camera.y
+			self.y = camera.y * self.scrollFactorY
 			self.touching = Sprite.UP
-		elseif (self.y + self.height > camera.y + camera.height)
+		elseif (self.y + self.height > camera.y * self.scrollFactorY + camera.height)
 			and (locks % Sprite.ALL == 0 or locks % Sprite.DOWN == 0 or locks % Sprite.UPDOWN == 0) then
-			self.y = camera.y + camera.height - self.height
+			self.y = camera.y * self.scrollFactorY + camera.height - self.height
 			self.touching = Sprite.DOWN
 		end
-		if (self.x < camera.x)
+		if (self.x < camera.x * self.scrollFactorX)
 			and (locks % Sprite.ALL == 0 or locks % Sprite.LEFT == 0 or locks % Sprite.SIDES == 0) then
-			self.x = camera.x
+			self.x = camera.x * self.scrollFactorX
 			self.touching = Sprite.LEFT
-		elseif (self.x + self.width > camera.x + camera.width)
+		elseif (self.x + self.width > camera.x * self.scrollFactorX + camera.width)
 			and (locks % Sprite.ALL == 0 or locks % Sprite.RIGHT == 0 or locks % Sprite.SIDES == 0) then
-			self.x = camera.x + camera.width - self.width
+			self.x = camera.x * self.scrollFactorX + camera.width - self.width
 			self.touching = Sprite.RIGHT
 		end
 	end
@@ -361,7 +370,14 @@ end
 	AName	Name of animation to play
 	Restart	Force animation to restart from beginning
 --]]
-function Sprite:playAnimation(AName,Restart)
+function Sprite:playAnimation(AName,Restart,MustFinish)
+	if Restart == nil then
+		Restart = false
+	end
+	if MustFinish == nil then
+		MustFinish = false
+	end
+
 	if self.curAnim ~= nil then
 		--Cancel if trying to play the active animation, but neither forced restart nor finished
 		if not Restart and (AName == self.curAnim.name) and not self.animFinished then
@@ -373,6 +389,12 @@ function Sprite:playAnimation(AName,Restart)
 			return
 		end
 	end
+	
+	if self.animMustFinish and not self.animFinished then
+		--Let current locked animation finish
+		return
+	end
+	
 	--Check that animation exists
 	if (self.animations[AName] == nil) then
 		self:resetImage()
@@ -386,9 +408,17 @@ function Sprite:playAnimation(AName,Restart)
 	self.curAnimFrame = 1
 	self.animTimer = self.curAnim.frameTime
 	self.animFinished = false
+	self.animMustFinish = MustFinish
+end
+--[[ Restart the currently running animation
+]]
+function Sprite:restartAnimation()
+	self.curAnimFrame = 1
+	self.animTimer = self.curAnim.frameTime
+	self.animFinished = false
 end
 --[[Determine the current frame for an animated sprite
---]]
+]]
 function Sprite:updateAnimation()
 	if (not self.animated) or (self.curAnim == nil) then
 		--Cancel if not animating

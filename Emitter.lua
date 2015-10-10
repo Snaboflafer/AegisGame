@@ -174,6 +174,10 @@ function Emitter:emitParticle()
 	particle.exists = true
 	particle.alive = true
 	particle.visible = true
+	
+	if particle.animated then
+		particle:restartAnimation()
+	end
 
 	--Calculate random velocity and angle
 	local velocity = math.random(self.velocityMin, self.velocityMax)
@@ -196,7 +200,11 @@ end
 ]]
 function Emitter:setAngle(Angle, Range)
 	self.emitAngle = Angle * (math.pi/180)
-	self.angleRange = (Range % 180) * (math.pi/180) or 0
+	if Range == nil then
+		self.angleRange = 0
+	else
+		self.angleRange = (Range % 180) * (math.pi/180) or 0
+	end
 end
 --[[ Set angle by specifying a target position
 	TargetX		X position of target

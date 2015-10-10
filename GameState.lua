@@ -62,19 +62,37 @@ function GameState:load()
 	
 	--Set up particles
 	self.emitters = Group:new()
-	self.emitters.showDebug = true
+	--self.emitters.showDebug = true
 	GameState:add(self.emitters)
 
 	--Create player
 	self.player = Player:new(100, 100)
-	self.player:loadSpriteSheet("images/player_ship.png",128,64)
+	self.player:loadSpriteSheet("images/sprites/player_fly.png",160,80)
 	self.player:setAnimations()
-	self.player:setCollisionBox(26, 15, 84, 35)
+	self.player:setCollisionBox(46, 34, 91, 20)
 	self.player:lockToScreen(Sprite.ALL)
 	self.player.showDebug = true
 	--self.camera:setTarget(self.player)
 	--self.camera:setDeadzone(128,32)
 	GameState:add(self.player)
+	
+	local jetLocations = {{-15, -16},{-21, 26}}
+	for i=1, table.getn(jetLocations) do
+			local jetTrail = Emitter:new(spawnX, spawnY)
+		for j=1, 20 do
+			local curParticle = Sprite:new(spawnX, spawnY)
+			curParticle:loadSpriteSheet("images/particles/player_trail.png", 8,3)
+			curParticle:addAnimation("idle", {1,2,3,4}, .08, false)
+			curParticle:playAnimation("idle")
+			jetTrail:addParticle(curParticle)
+		end
+		jetTrail:setSpeed(70, 150)
+		jetTrail:setAngle(180)
+		jetTrail:lockParent(self.player, jetLocations[i][1], jetLocations[i][2])
+		jetTrail:start(false, .3, 0)
+		self.emitters:add(jetTrail)
+	end
+
 	self.fuelTimer = 10
 
 	
@@ -343,7 +361,7 @@ function GameState:generateEnemies()
 	--currentTrigger = 2
 	if State.time > currentTrigger then
 		currentTrigger = currentTrigger + 5
-		GameState:spawnEnemyGroup(2)
+		GameState:spawnEnemyGroup(math.random(1,4))
 	end
 end
 
