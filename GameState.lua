@@ -1,5 +1,5 @@
 GameState = {
-	CAMERASCROLLSPEED = 100
+	CAMERASCROLLSPEED = 200
 }	
 GameState.__index = GameState
 setmetatable(GameState, State)
@@ -62,6 +62,7 @@ function GameState:load()
 	
 	--Set up particles
 	self.emitters = Group:new()
+	self.emitters.showDebug = true
 	GameState:add(self.emitters)
 
 	--Create player
@@ -82,12 +83,10 @@ function GameState:load()
 
 	--Create enemies
 	self.enemies = Group:new()
+	GameState:add(self.enemies)
 	--self.enemies.showDebug = true
 	self.enemyBullets = Group:new()
-	self.enemyBullets.showDebug = true
-	GameState:add(self.enemies)
-	GameState:add(self.enemyBullets)
-
+	--Don't add bullets directly to state, will let particle emitters handle them
 
 	--add player bullets
 	self.playerBullets = Group:new()
@@ -124,17 +123,23 @@ function GameState:load()
 	self.explosion = love.audio.newSource("sounds/explosion.wav")
 end
 
-function GameState:spawnEnemyGroup(numEnemies, SpawnY)
+--[[ Spawn a group of enemies past the screen edge
+	NumEnemies	Number of enemies to spawn
+	SpawnY		Height to spawn enemies at
+]]
+function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 	local cameraX, cameraY = self.camera:getPosition()
 	local spawnY = SpawnY or General.screenH/3
 	
-	
-	for i=1, numEnemies or 10, 1 do
+	for i=1, NumEnemies or 5 do
+		--Calculate location
 		local spawnX = cameraX + General.screenW + (i * 128)
 		local spawnY = spawnY + 256 * (math.random()-.5)
 
+		--Attempt to recycle an enemy
 		local curEnemy = self.enemies:getFirstAvailable(true)
 		if curEnemy == nil then
+			--None found, need to create a new enemy
 			curEnemy = {}
 			curEnemy = Enemy:new(spawnX, spawnY)
 			curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
@@ -143,27 +148,44 @@ function GameState:spawnEnemyGroup(numEnemies, SpawnY)
 			curEnemy:setCollisionBox(7, 26, 44, 19)
 			curEnemy:lockToScreen(Sprite.UPDOWN)
 
-			--Set up enemy gun
+			--Create enemy gun
 			local enemyGun = Emitter:new(spawnX, spawnY)
-			
-			for j=1, 3 do
+			for j=1, 2 do
+				--Create bullets
 				local curBullet = Sprite:new(spawnX, spawnY, "images/bullet_2.png")
 				enemyGun:addParticle(curBullet)
 				self.enemyBullets:add(curBullet)
 			end
-			curEnemy:setGun(enemyGun)
+			enemyGun:setSpeed(100, 150)
+			enemyGun:lockParent(curEnemy, 0)
+			--enemyGun:lockTarget(self.player)		(Use this to target the player)
+			enemyGun:setAngle(180, .1)
+			enemyGun:addDelay(2 + math.random() * i)
+			enemyGun:start(false, 3, 2, -1)
+			--curEnemy:addChild(enemyGun)
 
+			--Thruster particles
+			local enemyThruster = Emitter:new(spawnX, spawnY)
+			for j=1, 5 do
+				local curParticle = Sprite:new(spawnX, spawnY, "images/particles/thruster_small.png")
+				enemyThruster:addParticle(curParticle)
+			end
+			enemyThruster:setSpeed(50, 60)
+			enemyThruster:setAngle(0, 30)
+			enemyThruster:lockParent(curEnemy, curEnemy.width-4, curEnemy.height/2 - 3)
+			enemyThruster:start(false, .2, 0)
+
+			--Register emitter, so that it will be updated
+			self.emitters:add(enemyThruster)
+			
 			self.emitters:add(enemyGun)
 			self.enemies:add(curEnemy)
 		else
+			--Found an available enemy, respawn it
 			curEnemy:respawn(spawnX, spawnY)
 		end
 
 	end
-	
-	--self.enemies:add(enemyGroup)
-	--GameState:add(enemyGroup)
-	--self.enemyBullets:add(bulletGroup)
 end
 
 function GameState:start()
@@ -320,31 +342,13 @@ local currentTrigger = 2
 function GameState:generateEnemies()
 	--currentTrigger = 2
 	if State.time > currentTrigger then
-		currentTrigger = currentTrigger + 2
+		currentTrigger = currentTrigger + 5
 		GameState:spawnEnemyGroup(2)
 	end
 end
 
 function GameState:draw()
 	State.draw(self)
-end
-
-function GameState:tryNewEnemy() 
-	if math.random() > .5 then
-		--Random chance to spawn
-		return
-	end
-	
-	for k, e in pairs(self.enemies.members) do
-		--Find first non-existing enemy
-		if not e.exists then
-			enemy:setExists(true)
-			local cameraX, cameraY = self.camera:getPosition()
-			enemy.x = cameraX + General.screenW + 128
-			enemy.y = (General.screenH - 256) * math.random()
-			return
-		end
-	end
 end
 
 function GameState:keyreleased(key)

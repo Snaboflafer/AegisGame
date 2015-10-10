@@ -2,9 +2,6 @@
 Enemy = {
 	pointValue = 0,
 	massless = true,
-	emitterGun = nil,
-	emitterThruster = nil,
-	attackTimer = .1
 }
 
 function Enemy:new(X,Y,ImageFile)
@@ -13,8 +10,8 @@ function Enemy:new(X,Y,ImageFile)
 	setmetatable(self, Sprite)
 	self.__index = self
 	
-	s.maxVelocityX = 150
-	s.maxVelocityY = 150
+	s.maxVelocityX = 50
+	s.maxVelocityY = 50
 	
 	return s
 end
@@ -35,11 +32,6 @@ function Enemy:setAnimations()
 	self:addAnimation("down", {5,6}, .1, true)
 end
 
-function Enemy:setGun(BulletEmitter)
-	self.emitterGun = BulletEmitter
-	self.emitterGun:setSpeedRange(300,500)
-end
-
 function Enemy:setPointValue(V)
 	self.pointValue = V
 end
@@ -49,23 +41,8 @@ function Enemy:getPointValue()
 end
 
 function Enemy:update()
-	self.attackTimer = self.attackTimer - General.elapsed
-	if self.attackTimer <= 0 then
-		self.attackTimer = .1
-		--local aimX, aimY = GameState.player:getCenter()
-		--local dx = self.x - aimX
-		--local dy = aimY - self.y
-		self.emitterGun:setPosition(self.x, self.y)
-		--self.emitterGun:setAngle(math.atan(dy/dx), 0)
-
-		local playerX, playerY = GameState.player:getCenter()
-		self.emitterGun:setTarget(playerX, playerY, 0)
-		self.emitterGun:start(false, 5)
-	end
-
-	--self:shootBullet(GameState.player:getCenter())
-	self.accelerationX = (math.random() - 0.5)*1000
-	self.accelerationY = (math.random() - 0.5)*1000
+	self.accelerationX = (math.random() - .5)*500
+	self.accelerationY = (math.random() - .5)*1000
 	
 	
 	if self.velocityY < 50 then
