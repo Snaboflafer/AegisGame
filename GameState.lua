@@ -7,7 +7,7 @@ setmetatable(GameState, State)
 function GameState:load()
 	State:load()
 
-
+	isInvincible = false
 	--Create camera
 	self.camera = General:newCamera(0,0)
 	self.camera:setBounds(-64, -32, General.screenW + 32, General.screenH)
@@ -132,7 +132,7 @@ function GameState:load()
 	
 
 	instructionText = Text:new(General.screenW/2, General.screenH*.5,
-		"Weapons are offline!\nRam enemy ships before\nyou lose power!","fonts/04b09.ttf", 36)
+		"Space to fire! \n Defeat the empire pawns\n for great justice","fonts/04b09.ttf", 36)
 	instructionText:setAlign(Text.CENTER)
 	instructionText:setColor(255,200,0,255)
 	instructionText:setShadow(200,0,0,255)
@@ -142,9 +142,9 @@ function GameState:load()
 
 	waveText = Text:new(General.screenW/2, General.screenH*.5,
 		"End of wave!","fonts/04b09.ttf", 36)
-	instructionText:setAlign(Text.CENTER)
-	instructionText:setColor(255,200,0,255)
-	instructionText:setShadow(200,0,0,255)
+	waveText:setAlign(Text.CENTER)
+	waveText:setColor(255,200,0,255)
+	waveText:setShadow(200,0,0,255)
 	self.waveTimer = 3
 	waveText:setVisible(false)
 
@@ -274,7 +274,9 @@ function GameState:update()
 			self.explosion:play()
 
 			bullet:setExists(false)
-			self.fuelTimer = 0
+			if isInvincible == false then
+				self.fuelTimer = 0
+			end
 		end
 	end
 
@@ -312,8 +314,9 @@ function GameState:update()
 			self.player:updateScore(enemy:getPointValue())
 
 			enemy:setExists(false)
-				
-			self.fuelTimer = 0
+			if isInvincible == false then	
+				self.fuelTimer = 0
+			end
 		end
 	end
 	
@@ -363,16 +366,17 @@ function GameState:update()
 end
 
 local currentTrigger = 1
+local waveStart = 0
 function GameState:generateEnemies()
 
 	local enemyGroups = {
-		{1000, "enemy", 1},
-		{1200, "enemy", 1},
-		{1400, "enemy", 1},
-		{1500, "text", 0}
+		{1000, "enemy", 3},
+		{2000, "enemy", 5},
+		{3000, "enemy", 15},
+		{4500, "text", 0}
 	}
 
-	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger][1] then
+	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger][1] + waveStart then
 		if enemyGroups[currentTrigger][2] == "enemy" then
 			GameState:spawnEnemyGroup(enemyGroups[currentTrigger][3])
 			currentTrigger = currentTrigger + 1
@@ -380,7 +384,9 @@ function GameState:generateEnemies()
 		elseif enemyGroups[currentTrigger][2] == "text" then
 			if GameState:isWaveClear() == true then
 				waveText:setVisible(true)
-				currentTrigger = currentTrigger + 1
+				currentTrigger = 1
+				waveStart = self.player.x
+				self.waveTimer = 3
 			end
 		end
 	end
@@ -406,9 +412,18 @@ function GameState:keypressed(Key)
 	self.player:keypressed(Key)
 end
 
-function GameState:keyreleased(Key)
+function GameState:keyreleased(key)
+
 	if key == "escape" then
 		General:setState(PauseState,false)
+	end
+
+	if key == 'i' then
+		if isInvincible == true then
+			isInvincible = false
+		else
+			isInvincible = true
+		end
 	end
 
 	--Temporary until input manager
