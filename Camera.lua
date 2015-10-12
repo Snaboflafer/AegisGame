@@ -13,6 +13,9 @@ Camera = {
 	}
 }
 
+function Camera:getXPosition()
+	return self.x
+end
 
 function Camera:new(X, Y)
 	s = {}
