@@ -28,6 +28,7 @@ player = require("Player")
 require("Enemy")
 require("Text")
 require("Effect")
+require("ReadLevel")
 
 function love.load()
 	General:init()

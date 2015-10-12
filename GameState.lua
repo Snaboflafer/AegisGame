@@ -6,7 +6,9 @@ setmetatable(GameState, State)
 
 function GameState:load()
 	State:load()
+	ReadLevel:loadTable("level_1.txt")
 
+	self.isAlive = true
 	isInvincible = false
 	--Create camera
 	self.camera = General:newCamera(0,0)
@@ -19,7 +21,6 @@ function GameState:load()
 
 	self.camera:setTarget(self.cameraFocus)
 	GameState:add(self.cameraFocus)
-
 
 	self.wrappingSprites = Group:new()
 
@@ -110,9 +111,6 @@ function GameState:load()
 		self.emitters:add(jetTrail)
 	end
 
-	self.fuelTimer = 10
-
-	
 	-- Flag set to false as no enemies are destroyed yet
 	enemyDestroyed = false;
 
@@ -123,13 +121,11 @@ function GameState:load()
 	self.enemyBullets = Group:new()
 	--Don't add bullets directly to state, will let particle emitters handle them
 
-
 	--Hud
 	self.hud = Group:new()
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
-	
 
 	instructionText = Text:new(General.screenW/2, General.screenH*.5,
 		"Space to fire! \n Defeat the empire pawns\n for great justice","fonts/04b09.ttf", 36)
@@ -275,7 +271,8 @@ function GameState:update()
 
 			bullet:setExists(false)
 			if isInvincible == false then
-				self.fuelTimer = 0
+				self.isAlive = false
+
 			end
 		end
 	end
@@ -315,7 +312,7 @@ function GameState:update()
 
 			enemy:setExists(false)
 			if isInvincible == false then	
-				self.fuelTimer = 0
+				self.isAlive = false
 			end
 		end
 	end
@@ -325,7 +322,7 @@ function GameState:update()
 		--self.explosion:rewind()
 		self.explosion:play()
 		
-		if self.fuelTimer <= 0 then
+		if self.isAlive == false then
 			GameState:updateHighScores("Player", self.player:getScore())
 			Data:setScore(self.player:getScore())
 			local playerX, playerY = self.player:getCenter()
@@ -335,7 +332,6 @@ function GameState:update()
 				General:setState(MenuState)
 			end
 		end
-		
 	end
 
 	self.cameraFocus.y = self.player.y
@@ -356,7 +352,7 @@ function GameState:update()
 		end
 	end
 	
-	if self.fuelTimer <= 0 then
+	if self.isAlive == false then
 		self.player.accelerationY = 200
 		self.player.dragX = 1
 		self.player.enableControls = false
@@ -369,14 +365,11 @@ local currentTrigger = 1
 local waveStart = 0
 function GameState:generateEnemies()
 
-	local enemyGroups = {
-		{1000, "enemy", 3},
-		{2000, "enemy", 5},
-		{3000, "enemy", 15},
-		{4500, "text", 0}
-	}
+	local enemyGroups = ReadLevel:getLevel()
 
 	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger][1] + waveStart then
+			print(enemyGroups[currentTrigger][2]) 
+
 		if enemyGroups[currentTrigger][2] == "enemy" then
 			GameState:spawnEnemyGroup(enemyGroups[currentTrigger][3])
 			currentTrigger = currentTrigger + 1
