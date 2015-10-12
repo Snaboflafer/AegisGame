@@ -6,7 +6,7 @@ setmetatable(GameState, State)
 
 function GameState:load()
 	State:load()
-	
+
 
 	--Create camera
 	self.camera = General:newCamera(0,0)
@@ -130,7 +130,19 @@ function GameState:load()
 	instructionText:setColor(255,200,0,255)
 	instructionText:setShadow(200,0,0,255)
 	self.instructionTimer = 6
+
 	self.hud:add(instructionText)
+
+	waveText = Text:new(General.screenW/2, General.screenH*.5,
+		"End of wave!","fonts/04b09.ttf", 36)
+	instructionText:setAlign(Text.CENTER)
+	instructionText:setColor(255,200,0,255)
+	instructionText:setShadow(200,0,0,255)
+	self.waveTimer = 3
+	waveText:setVisible(false)
+
+	
+	self.hud:add(waveText)
 	
 	GameState:add(self.hud)
 	
@@ -347,6 +359,13 @@ function GameState:update()
 	if self.instructionTimer <= 0 then
 		instructionText:setLabel("")
 	end
+
+	if waveText.visible == true then
+		self.waveTimer = self.waveTimer - General.elapsed
+		if self.waveTimer <= 0 then
+			waveText:setVisible(false)
+		end
+	end
 	
 	if self.fuelTimer <= 0 then
 		self.player.accelerationY = 200
@@ -356,13 +375,40 @@ function GameState:update()
 		self.cameraFocus.dragX = .5
     end
 end
-local currentTrigger = 2
+
+local currentTrigger = 1
 function GameState:generateEnemies()
-	--currentTrigger = 2
-	if State.time > currentTrigger then
-		currentTrigger = currentTrigger + 5
-		GameState:spawnEnemyGroup(math.random(1,4))
+
+	local enemyGroups = {
+		{1000, "enemy", 1},
+		{1200, "enemy", 1},
+		{1400, "enemy", 1},
+		{1500, "text", 0}
+	}
+
+	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger][1] then
+		if enemyGroups[currentTrigger][2] == "enemy" then
+			GameState:spawnEnemyGroup(enemyGroups[currentTrigger][3])
+			currentTrigger = currentTrigger + 1
+
+		elseif enemyGroups[currentTrigger][2] == "text" then
+			if GameState:isWaveClear() == true then
+				waveText:setVisible(true)
+				currentTrigger = currentTrigger + 1
+			end
+		end
 	end
+end
+
+
+function GameState:isWaveClear()
+	clear = true
+	for key, enemy in pairs(self.enemies.members) do
+		if enemy.exists == true then
+			clear = false
+		end
+	end
+	return clear
 end
 
 function GameState:draw()
