@@ -232,7 +232,6 @@ function GameState:stop()
 end
 
 function GameState:update()
-
 	GameState:generateEnemies()
 
 	--Loop scenery groups
@@ -425,8 +424,11 @@ end
 
 --updates the high scores checking against the score passed
 function GameState:updateHighScores(name, score)
-   local file = io.open("highScores.txt", "rb") -- r read mode and b binary mode
-    if not file then return nil end
+    local file = {}
+    for line in love.filesystem.lines("highScores.txt") do
+    	table.insert(file,line)
+    end
+    local filePosition = 1
     local content = ""
     local readName = ""
     local readScore = ""
@@ -434,19 +436,21 @@ function GameState:updateHighScores(name, score)
     local newHighScore = false
 	--checks each high score against the new score, putting the new score if it exceeds the high score
 	repeat
-		readName = file:read "*L" --next line with whitespace
-	    readScore = file:read "*n" --next number
-	    file:read "*L" --kill newline
+		readName = file[filePosition] --next line with whitespace
+		filePosition = filePosition + 1
+	    readScore = tonumber(file[filePosition])--next number
+	    filePosition = filePosition + 1
 	    if newHighScore == false and score > readScore then
 	    	content = content .. name .. "\n" .. score .. "\n"
+	    	print("in new high score loop")
 	    	scoresPut = scoresPut + 1
 	    	newHighScore = true
+	    	print(newHighScore)
 	    	if scoresPut >= 5 then break end
 	    end
-	    content = content .. readName .. readScore .. "\n"
+	    content = content .. readName .. "\n" .. readScore .. "\n"
 	    scoresPut = scoresPut + 1
 	until scoresPut >= 5
-	file:close()
 	content = content:gsub("^%s*(.-)%s*$", "%1") --remove leading and trailing whitespace
 	hFile = io.open("highScores.txt", "w+") --write the file.
 	hFile:write(content)
