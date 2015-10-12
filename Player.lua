@@ -1,4 +1,6 @@
 Player = {
+	weapons = {},
+	activeWeapon = 1,
 	score = 0,
 	enableControls = true
 }
@@ -13,8 +15,17 @@ function Player:new(X,Y,ImageFile)
 	
 	s.magnitude = 400
 	s.momentArm = math.sqrt(s.magnitude^2/2)
+	s.weapons = {}
 
 	return s
+end
+
+function Player:addWeapon(GunEmitter)
+	--if self.weapons == nil then
+	--	self.weapons = Group:new()
+	--end
+	--self.weapons:add(GunEmitter)
+	self.weapons[1] = GunEmitter
 end
 
 function Player:setAnimations()
@@ -42,6 +53,7 @@ function Player:changeMagnitude(m)
 end
 function Player:update()
 	if self.enableControls then
+		self.weapons[self.activeWeapon]:setPosition(self.x+self.width/2, self.y+12)
 		if love.keyboard.isDown('w') and love.keyboard.isDown('d') then
 			self.velocityX = self.momentArm
 			self.velocityY = -self.momentArm
@@ -97,6 +109,18 @@ function Player:update()
 	end
 	
 	Sprite.update(self)
+end
+
+function Player:keypressed(Key)
+	if Key == " " then
+		self.weapons[self.activeWeapon]:restart()
+	end
+end
+
+function Player:keyreleased(Key)
+	if Key == " " then
+		self.weapons[self.activeWeapon]:stop()
+	end
 end
 
 function Player:getType()

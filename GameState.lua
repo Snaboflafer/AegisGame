@@ -50,7 +50,7 @@ function GameState:load()
 	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(0,0,256,64)
 	self.collisionSprite:lockToScreen(Sprite.ALL)
-	--self.collisionSprite:setExists(false)
+	self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
 
 
@@ -76,11 +76,27 @@ function GameState:load()
 	--self.camera:setDeadzone(128,32)
 	GameState:add(self.player)
 	
+	local playerGun = Emitter:new(0,0)
+	self.playerBullets = Group:new()
+	for i=1, 5 do
+		local curParticle = Sprite:new(0,0,"images/particles/laser.png")
+		playerGun:addParticle(curParticle)
+		self.playerBullets:add(curParticle)
+	end
+	playerGun:setSpeed(1000)
+	playerGun:setAngle(0,0)
+	--playerGun:lockParent(self.player)
+	playerGun:start(false, 3, .3, -1)
+	playerGun:stop()
+	self.emitters:add(playerGun)
+	self.player:addWeapon(playerGun)
+	
+	
 	local jetLocations = {{-15, -16},{-21, 26}}
 	for i=1, table.getn(jetLocations) do
-			local jetTrail = Emitter:new(spawnX, spawnY)
+		local jetTrail = Emitter:new(0, 0)
 		for j=1, 20 do
-			local curParticle = Sprite:new(spawnX, spawnY)
+			local curParticle = Sprite:new(0, 0)
 			curParticle:loadSpriteSheet("images/particles/player_trail.png", 8,3)
 			curParticle:addAnimation("idle", {1,2,3,4}, .08, false)
 			curParticle:playAnimation("idle")
@@ -106,13 +122,6 @@ function GameState:load()
 	self.enemyBullets = Group:new()
 	--Don't add bullets directly to state, will let particle emitters handle them
 
-	--add player bullets
-	self.playerBullets = Group:new()
-	for i=1,50,1 do
-		local bullet = Sprite:new(-20, -20, "images/bullet_1.png")
-		self.playerBullets:add(bullet)
-	end
-	GameState:add(self.playerBullets)
 
 	--Hud
 	self.hud = Group:new()
@@ -120,9 +129,6 @@ function GameState:load()
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
 	
-	timeText = Text:new(General.screenW * .5 - 128, 24, "Time: ","fonts/04b09.ttf", 32)
-	timeText:setAlign(Text.LEFT)
-	self.hud:add(timeText)
 
 	instructionText = Text:new(General.screenW/2, General.screenH*.5,
 		"Weapons are offline!\nRam enemy ships before\nyou lose power!","fonts/04b09.ttf", 36)
@@ -254,17 +260,17 @@ function GameState:update()
 			self.explosion:play()
 
 			bullet:setExists(false)
+			self.fuelTimer = 0
 		end
 	end
 
-	--[[
+	
 	for k,bullet in pairs(self.playerBullets.members) do
-		for j,enemyGroup in pairs(self.enemies) do
-			for k,enemy in pairs(self.enemies[j].members) do
-				if General:collide(bullet, self.player) then
+		for j,enemy in pairs(self.enemies.members) do
+				if General:collide(bullet, enemy) then
 
 					-- Destroy animation
-					local x, y = bullet:getCenter()
+					local x, y = enemy:getCenter()
 					self.effect:play("explosion", x, y)
 
 					self.explosion:rewind()
@@ -272,20 +278,12 @@ function GameState:update()
 					self.player:updateScore(enemy:getPointValue())
 
 					bullet:setExists(false)
+					enemy:setExists(false)
 						
-					self.fuelTimer = self.fuelTimer + 1
-					if not self.player.enableControls and self.fuelTimer > 0 then
-						self.player.accelerationY = 0
-						self.player.enableControls = true
-						self.player.velocityY = 0
-						self.cameraFocus.dragX = 0
-						self.cameraFocus.velocityX = 300
-					end
 				end
-			end
 		end
 	end
-	--]]
+	
 
 	--check for player:enemy collisions
 	for j,enemy in pairs(self.enemies.members) do
@@ -301,14 +299,7 @@ function GameState:update()
 
 			enemy:setExists(false)
 				
-			self.fuelTimer = self.fuelTimer + 1
-			if not self.player.enableControls and self.fuelTimer > 0 then
-				self.player.accelerationY = 0
-				self.player.enableControls = true
-				self.player.velocityY = 0
-				self.cameraFocus.dragX = 0
-				self.cameraFocus.velocityX = self.CAMERASCROLLSPEED
-			end
+			self.fuelTimer = 0
 		end
 	end
 	
@@ -333,16 +324,9 @@ function GameState:update()
 	self.cameraFocus.y = self.player.y
 	
 	self.instructionTimer = self.instructionTimer - General.elapsed
-	if self.fuelTimer > 0 then
-		self.fuelTimer = self.fuelTimer - General.elapsed*.1
-		self.cameraFocus.velocityX = self.CAMERASCROLLSPEED + self.player:getScore()/20
-
-	else
-		self.fuelTimer = 0
-	end
+	self.cameraFocus.velocityX = self.CAMERASCROLLSPEED + self.player:getScore()/20
 
 	highScoreText:setLabel("Score: " .. self.player:getScore())
-	timeText:setLabel("Time: " .. math.ceil(self.fuelTimer * 10)/10)
 
 	if self.instructionTimer <= 0 then
 		instructionText:setLabel("")
@@ -369,10 +353,18 @@ function GameState:draw()
 	State.draw(self)
 end
 
-function GameState:keyreleased(key)
+function GameState:keypressed(Key)
+	--Temporary until input manager
+	self.player:keypressed(Key)
+end
+
+function GameState:keyreleased(Key)
 	if key == "escape" then
 		General:setState(PauseState,false)
 	end
+
+	--Temporary until input manager
+	self.player:keyreleased(Key)
 end
 
 --updates the high scores checking against the score passed
