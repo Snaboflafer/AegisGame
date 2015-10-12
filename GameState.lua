@@ -412,13 +412,13 @@ function GameState:keypressed(Key)
 	self.player:keypressed(Key)
 end
 
-function GameState:keyreleased(key)
+function GameState:keyreleased(Key)
 
-	if key == "escape" then
+	if Key == "escape" then
 		General:setState(PauseState,false)
 	end
 
-	if key == 'i' then
+	if Key == 'i' then
 		if isInvincible == true then
 			isInvincible = false
 		else
