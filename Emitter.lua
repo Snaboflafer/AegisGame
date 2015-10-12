@@ -11,6 +11,7 @@ Emitter = {
 	emitDelay = 0,		--Time delay between emissions (does not apply if launchAll==true)
 	emitTimer = 0,		--Counter for counting delay between emissions
 	emitCount = -1,		--Number of particles to launch in burst. Use -1 for all
+	emitSound = nil,
 	launchAll = true,	--Launch all particles at once, or sequentially
 	enabled = false,	--Whether the emitter is on or off
 	lifetime = 30,		--How long each particle lasts after emission
@@ -184,6 +185,11 @@ function Emitter:emitParticle()
 	local angle = self.emitAngle + (2 * math.random()-1) * self.angleRange
 	particle.velocityX = velocity * math.cos(angle)
 	particle.velocityY = -velocity * math.sin(angle)
+	
+	if self.emitSound ~= nil then
+		self.emitSound:rewind()
+		self.emitSound:play()
+	end
 end
 
 --[[ Move the emitter to a location
@@ -239,6 +245,11 @@ end
 ]]
 function Emitter:setParticleDrag()
 	self.drag = Drag
+end
+--[[ Set the sound to play when a particle is emitted
+]]
+function Emitter:setSound(SoundPath)
+	self.emitSound = love.audio.newSource(SoundPath)
 end
 
 --[[ Lock a parent object for the emitter. Emitter will turn
