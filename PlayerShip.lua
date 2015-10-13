@@ -31,7 +31,7 @@ function PlayerShip:changeMagnitude(m)
 end
 function PlayerShip:update()
 	if self.enableControls then
-		self.weapons[self.activeWeapon]:setPosition(self.x+66, self.y+12)
+		--self.weapons[self.activeWeapon]:setPosition(self.x+66, self.y+12)
 		if love.keyboard.isDown('w') and love.keyboard.isDown('d') then
 			self.velocityX = self.momentArm
 			self.velocityY = -self.momentArm

@@ -14,7 +14,7 @@ function GameState:load()
 	isInvincible = false
 	--Create camera
 	self.camera = General:newCamera(0,0)
-	self.camera:setBounds(-64, -32, General.screenW + 32, General.screenH)
+	self.camera:setBounds(0, -32, General.screenW + 32, General.screenH)
 	GameState:add(self.camera)
 	
 	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
@@ -72,8 +72,6 @@ function GameState:load()
 	self.playerShip:setCollisionBox(46, 34, 91, 20)
 	self.playerShip:lockToScreen(Sprite.ALL)
 	self.playerShip.showDebug = true
-	--self.camera:setTarget(self.player)
-	--self.camera:setDeadzone(128,32)
 	GameState:add(self.playerShip)
 	
 	local playerGun = Emitter:new(0,0)
@@ -85,7 +83,7 @@ function GameState:load()
 	end
 	playerGun:setSpeed(1000)
 	playerGun:setAngle(0,0)
-	--playerGun:lockParent(self.player)
+	playerGun:lockParent(self.playerShip, false)
 	playerGun:setSound("sounds/laser.wav")
 	playerGun:start(false, 3, .3, -1)
 	playerGun:stop()
@@ -105,17 +103,15 @@ function GameState:load()
 		end
 		jetTrail:setSpeed(70, 150)
 		jetTrail:setAngle(180)
-		jetTrail:lockParent(self.playerShip, jetLocations[i][1], jetLocations[i][2])
+		jetTrail:lockParent(self.playerShip, true, jetLocations[i][1], jetLocations[i][2])
 		jetTrail:start(false, .3, 0)
 		self.emitters:add(jetTrail)
 	end
 
-	self.fuelTimer = 10
-	
 	self.playerMech = PlayerMech:new(100,100)
-	self.playerMech:loadSpriteSheet("images/sprites/player_mech.png",246,246)
+	self.playerMech:loadSpriteSheet("images/sprites/player_mech.png",256,256)
 	self.playerMech:setAnimations()
-	self.playerMech:setCollisionBox(94, 55, 64, 140)
+	self.playerMech:setCollisionBox(92, 58, 64, 144)
 	self.playerMech:lockToScreen(Sprite.ALL)
 	self.playerMech.showDebug = true
 	--self.camera:setTarget(self.player)
@@ -208,7 +204,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 				self.enemyBullets:add(curBullet)
 			end
 			enemyGun:setSpeed(100, 150)
-			enemyGun:lockParent(curEnemy, 0)
+			enemyGun:lockParent(curEnemy, true, 0)
 			--enemyGun:lockTarget(self.player)		(Use this to target the player)
 			enemyGun:setAngle(180, .1)
 			enemyGun:addDelay(2 + math.random() * i)
@@ -223,7 +219,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			end
 			enemyThruster:setSpeed(50, 60)
 			enemyThruster:setAngle(0, 30)
-			enemyThruster:lockParent(curEnemy, curEnemy.width-4, curEnemy.height/2 - 3)
+			enemyThruster:lockParent(curEnemy, true, curEnemy.width-4, curEnemy.height/2 - 3)
 			enemyThruster:start(false, .2, 0)
 
 			--Register emitter, so that it will be updated
@@ -456,6 +452,7 @@ function GameState:togglePlayerMode(ForceMode)
 		self.player = self.playerMech
 		self.playerShip:setExists(false)
 		self.camera:setTarget(self.player)
+		self.camera:setDeadzone(General.screenW, 0, -64, 0)
 	else
 		self.playerShip.x = self.playerMech.x
 		self.playerShip.y = self.playerMech.y
@@ -464,6 +461,7 @@ function GameState:togglePlayerMode(ForceMode)
 		self.player = self.playerShip
 		self.playerMech:setExists(false)
 		self.camera:setTarget(self.cameraFocus)
+		self.camera:setDeadzone(0,0,0,0)
 		self.cameraFocus.x = .75 * General.screenW + self.camera.x
 	end
 	self.player:setExists(true)

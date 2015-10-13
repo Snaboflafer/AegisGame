@@ -29,6 +29,7 @@ require("PlayerShip")
 require("PlayerMech")
 require("Enemy")
 require("Text")
+require("Timer")
 require("Effect")
 require("ReadLevel")
 

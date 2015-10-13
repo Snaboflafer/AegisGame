@@ -18,6 +18,7 @@ Emitter = {
 	parent = nil,		--(Optional) Parent object. See lockParent() for info
 	parentOffsetX = 0,
 	parentOffsetY = 0,
+	autoEnable = false,	--Turn off/on with parent
 	target = nil,		--(Optional) Target object. See lockTarget() for info
 	targetOffsetX = 0,
 	targetOffsetY = 0
@@ -99,7 +100,7 @@ function Emitter:update()
 	
 	--Check enabled status
 	if not self.enabled then
-		if self.parent ~= nil then
+		if self.parent ~= nil and self.autoEnable then
 			if self.parent.exists then
 				--Restart if parent exists
 				self:restart()
@@ -142,7 +143,7 @@ end
 ]]
 function Emitter:emitParticle()
 	if self.parent ~= nil then
-		if not self.parent.exists then
+		if not self.parent.exists and self.autoEnable then
 			--Stop if the parent no longer exists
 			self:stop()
 			return
@@ -252,15 +253,16 @@ function Emitter:setSound(SoundPath)
 	self.emitSound = love.audio.newSource(SoundPath)
 end
 
---[[ Lock a parent object for the emitter. Emitter will turn
-	on/off if parent exists or not. Emitter will sync it's position
-	to the parent object, with given offset.
+--[[ Lock a parent object for the emitter.  Emitter will sync
+	its position to the parent object, with given offset.
 	Parent	Object to lock as this emitter's parent
+	AutoEnable	Turn on/off if the parent exists or not
 	OffsetX	X offset relative to parent location to lock to (defaults to center)
 	OffsetY Y offset relative ot parent location to lock to (defaults to center)
 ]]
-function Emitter:lockParent(Parent, OffsetX, OffsetY)
+function Emitter:lockParent(Parent, AutoEnable, OffsetX, OffsetY)
 	self.parent = Parent
+	self.autoEnable = AutoEnable
 	self.parentOffsetX = OffsetX or Parent.width/2
 	self.parentOffsetY = OffsetY or Parent.height/2
 end

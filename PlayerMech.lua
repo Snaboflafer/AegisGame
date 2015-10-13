@@ -8,7 +8,7 @@ function PlayerMech:new(X,Y,ImageFile)
 	setmetatable(self, Player)
 	self.__index = self
 	
-	s.dragX = 10
+	s.dragX = 20
 	s.accelerationY = 2000
 	s.maxVelocityX = 400
 	
@@ -16,7 +16,7 @@ function PlayerMech:new(X,Y,ImageFile)
 end
 
 function PlayerMech:setAnimations()
-	self:addAnimation("idle", {1,2}, 0, false)
+	self:addAnimation("idle", {1}, .5, true)
 	self:playAnimation("idle")
 end
 
@@ -36,9 +36,8 @@ function PlayerMech:update()
 		end
 		--Keep up with screen scrolling
 		--self.velocityX = self.velocityX + GameState.cameraFocus.velocityX
-		
-		
 	end
+	self:playAnimation("idle")
 	
 	
 	Player.update(self)

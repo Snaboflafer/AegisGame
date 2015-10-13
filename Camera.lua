@@ -7,10 +7,7 @@ Camera = {
 	zoom = 1,
 	bounds = nil,
 	target = nil,
-	deadzone = {
-		width = 0,
-		height = 0
-	}
+	deadzone = nil
 }
 
 function Camera:new(X, Y)
@@ -24,8 +21,10 @@ function Camera:new(X, Y)
 	s.width = General.screenW
 	s.height = General.screenH
 	s.deadzone = {
-		width = 0,
-		height = 0
+		up = 0,
+		down = 0,
+		left = 0,
+		right = 0
 	}
 	
 	return s
@@ -38,18 +37,19 @@ function Camera:update()
 		local midY = self.y + self.height/2
 		local targetX, targetY = self.target:getCenter()
 		
+		
 		--Move camera if target is outside deadzone
-		if targetX < midX - self.deadzone.width then
+		if targetX < midX - self.deadzone.left then
 			self.x = self.x - (midX - targetX)*General.elapsed
 		end
-		if targetX > midX + self.deadzone.width then
+		if targetX > midX + self.deadzone.right then
 			self.x = self.x  + (targetX - midX)*General.elapsed
 		end
 
-		if targetY < midY - self.deadzone.height then
+		if targetY < midY - self.deadzone.up then
 			self.y = self.y - (midY - targetY)*General.elapsed
 		end
-		if targetY > midY + self.deadzone.height then
+		if targetY > midY + self.deadzone.down then
 			self.y = self.y  + (targetY - midY)*General.elapsed
 		end
 	end
@@ -76,17 +76,22 @@ function Camera:draw()
 end
 
 function Camera:setBounds(L, T, R, B)
-	self.bounds = {top = T or 0, 
-				bottom = B or General.screenH, 
-				left = L or 0, 
-				right = R}
-end
-function Camera:setDeadzone(W, H)
-	self.deadzone = {
-		width = W,
-		height = H
+	self.bounds = {
+		top = T or 0, 
+		bottom = B or General.screenH, 
+		left = L or 0, 
+		right = R
 	}
 end
+function Camera:setDeadzone(L, U, R, D)
+	self.deadzone = {
+		up = U or 0,
+		down = D or 0,
+		left = L or 0,
+		right = R or 0
+	}
+end
+
 function Camera:setTarget(TargetObject)
 	self.target = TargetObject
 end
