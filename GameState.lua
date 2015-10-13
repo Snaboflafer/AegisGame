@@ -8,7 +8,7 @@ setmetatable(GameState, State)
 
 function GameState:load()
 	State:load()
-	ReadLevel:loadTable("level_1.txt")
+	LevelManager:parseJSON("game.json")
 
 	self.isAlive = true
 	isInvincible = false
@@ -27,8 +27,7 @@ function GameState:load()
 
 	--Create background
 	for i=0, 1, 1 do 
-		local spriteBg = Sprite:new(i * 960, -64,
-						"images/StealthHawk-Alien-Landscape-33.jpg")
+		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getLevelBackground(1))
 		spriteBg.scrollFactorX = .3
 		spriteBg.scrollFactorY = .3
 		self.wrappingSprites:add(spriteBg)
@@ -37,7 +36,7 @@ function GameState:load()
 	--Create floor
 	self.ground = Group:new()
 	for i=0, 4, 1 do 
-		local floorBlock = Sprite:new(i * 256, General.screenH- 128, "images/floor_snow_1.png")
+		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLevelFloor(1))
 		floorBlock:setCollisionBox(0,30, 256, 198)
 		floorBlock.immovable = true
 		self.ground:add(floorBlock)
@@ -165,7 +164,7 @@ function GameState:load()
 	GameState:add(self.hud)
 	
 	--Do music
-	self.bgmMusic = love.audio.newSource("sounds/music_Mines_Synth2.ogg")
+	self.bgmMusic = love.audio.newSource(LevelManager:getLevelMusic(1))
     self.bgmMusic:setLooping(true)
 	self.bgmMusic:setVolume(.2)
 	self.bgmMusic:play()
@@ -351,16 +350,15 @@ local currentTrigger = 1
 local waveStart = 0
 function GameState:generateEnemies()
 
-	local enemyGroups = ReadLevel:getLevel()
+	local enemyGroups = LevelManager:getTriggers(1)
 
-	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger][1] + waveStart then
-			print(enemyGroups[currentTrigger][2]) 
+	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
 
-		if enemyGroups[currentTrigger][2] == "enemy" then
-			GameState:spawnEnemyGroup(enemyGroups[currentTrigger][3])
+		if enemyGroups[currentTrigger]["type"] == "enemy" then
+			GameState:spawnEnemyGroup(enemyGroups[currentTrigger]["number"])
 			currentTrigger = currentTrigger + 1
 
-		elseif enemyGroups[currentTrigger][2] == "text" then
+		elseif enemyGroups[currentTrigger]["type"] == "text" then
 			if GameState:isWaveClear() == true then
 				waveText:setVisible(true)
 				currentTrigger = 1
