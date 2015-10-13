@@ -1,5 +1,7 @@
 GameState = {
-	CAMERASCROLLSPEED = 200
+	CAMERASCROLLSPEED = 200,
+	playerGroundMode = false,
+	score = 0
 }	
 GameState.__index = GameState
 setmetatable(GameState, State)
@@ -16,8 +18,6 @@ function GameState:load()
 	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
 	self.cameraFocus:setVisible(false)
 	self.cameraFocus.showDebug = true
-
-	self.camera:setTarget(self.cameraFocus)
 	GameState:add(self.cameraFocus)
 
 
@@ -62,19 +62,18 @@ function GameState:load()
 	
 	--Set up particles
 	self.emitters = Group:new()
-	--self.emitters.showDebug = true
-	GameState:add(self.emitters)
 
-	--Create player
-	self.player = Player:new(100, 100)
-	self.player:loadSpriteSheet("images/sprites/player_fly.png",160,80)
-	self.player:setAnimations()
-	self.player:setCollisionBox(46, 34, 91, 20)
-	self.player:lockToScreen(Sprite.ALL)
-	self.player.showDebug = true
+	
+	--Create player (flying)
+	self.playerShip = PlayerShip:new(100, 100)
+	self.playerShip:loadSpriteSheet("images/sprites/player_ship.png",160,80)
+	self.playerShip:setAnimations()
+	self.playerShip:setCollisionBox(46, 34, 91, 20)
+	self.playerShip:lockToScreen(Sprite.ALL)
+	self.playerShip.showDebug = true
 	--self.camera:setTarget(self.player)
 	--self.camera:setDeadzone(128,32)
-	GameState:add(self.player)
+	GameState:add(self.playerShip)
 	
 	local playerGun = Emitter:new(0,0)
 	self.playerBullets = Group:new()
@@ -90,10 +89,10 @@ function GameState:load()
 	playerGun:start(false, 3, .3, -1)
 	playerGun:stop()
 	self.emitters:add(playerGun)
-	self.player:addWeapon(playerGun)
+	self.playerShip:addWeapon(playerGun, 1)
 	
 	
-	local jetLocations = {{-15, -16},{-21, 26}}
+	local jetLocations = {{-22, -16},{-26, 25}}
 	for i=1, table.getn(jetLocations) do
 		local jetTrail = Emitter:new(0, 0)
 		for j=1, 20 do
@@ -105,13 +104,23 @@ function GameState:load()
 		end
 		jetTrail:setSpeed(70, 150)
 		jetTrail:setAngle(180)
-		jetTrail:lockParent(self.player, jetLocations[i][1], jetLocations[i][2])
+		jetTrail:lockParent(self.playerShip, jetLocations[i][1], jetLocations[i][2])
 		jetTrail:start(false, .3, 0)
 		self.emitters:add(jetTrail)
 	end
 
 	self.fuelTimer = 10
-
+	
+	self.playerMech = PlayerMech:new(100,100)
+	self.playerMech:loadSpriteSheet("images/sprites/player_mech.png",246,246)
+	self.playerMech:setAnimations()
+	self.playerMech:setCollisionBox(94, 55, 64, 140)
+	self.playerMech:lockToScreen(Sprite.ALL)
+	self.playerMech.showDebug = true
+	--self.camera:setTarget(self.player)
+	--self.camera:setDeadzone(128,32)
+	GameState:add(self.playerMech)
+	GameState:togglePlayerMode(true)
 	
 	-- Flag set to false as no enemies are destroyed yet
 	enemyDestroyed = false;
@@ -124,9 +133,13 @@ function GameState:load()
 	--Don't add bullets directly to state, will let particle emitters handle them
 
 
+	--Put particles on top of everything else
+	GameState:add(self.emitters)
+
+	
 	--Hud
 	self.hud = Group:new()
-	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
+	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
 	
@@ -283,20 +296,20 @@ function GameState:update()
 	
 	for k,bullet in pairs(self.playerBullets.members) do
 		for j,enemy in pairs(self.enemies.members) do
-				if General:collide(bullet, enemy) then
+			if General:collide(bullet, enemy) then
 
-					-- Destroy animation
-					local x, y = enemy:getCenter()
-					self.effect:play("explosion", x, y)
+				-- Destroy animation
+				local x, y = enemy:getCenter()
+				self.effect:play("explosion", x, y)
 
-					self.explosion:rewind()
-					self.explosion:play()
-					self.player:updateScore(enemy:getPointValue())
+				self.explosion:rewind()
+				self.explosion:play()
+				self.score = self.score + enemy:getPointValue()
 
-					bullet:setExists(false)
-					enemy:setExists(false)
-						
-				end
+				bullet:setExists(false)
+				enemy:setExists(false)
+					
+			end
 		end
 	end
 	
@@ -311,7 +324,6 @@ function GameState:update()
 
 			self.explosion:rewind()
 			self.explosion:play()
-			self.player:updateScore(enemy:getPointValue())
 
 			enemy:setExists(false)
 			if isInvincible == false then	
@@ -323,11 +335,11 @@ function GameState:update()
 	--check for player:floor collision
 	if General:collide(self.player, self.ground) then
 		--self.explosion:rewind()
-		self.explosion:play()
+		--self.explosion:play()
 		
 		if self.fuelTimer <= 0 then
-			GameState:updateHighScores("Player", self.player:getScore())
-			Data:setScore(self.player:getScore())
+			GameState:updateHighScores("Player", self.score)
+			Data:setScore(self.score)
 			local playerX, playerY = self.player:getCenter()
 			self.effect:play("explosion", playerX, playerY)
 
@@ -341,9 +353,9 @@ function GameState:update()
 	self.cameraFocus.y = self.player.y
 	
 	self.instructionTimer = self.instructionTimer - General.elapsed
-	self.cameraFocus.velocityX = self.CAMERASCROLLSPEED + self.player:getScore()/20
+	self.cameraFocus.velocityX = self.CAMERASCROLLSPEED + self.score/20
 
-	highScoreText:setLabel("Score: " .. self.player:getScore())
+	highScoreText:setLabel("Score: " .. self.score)
 
 	if self.instructionTimer <= 0 then
 		instructionText:setLabel("")
@@ -408,6 +420,10 @@ function GameState:draw()
 end
 
 function GameState:keypressed(Key)
+	if Key == "lshift" then
+		self:togglePlayerMode()
+	end
+
 	--Temporary until input manager
 	self.player:keypressed(Key)
 end
@@ -416,9 +432,7 @@ function GameState:keyreleased(Key)
 
 	if Key == "escape" then
 		General:setState(PauseState,false)
-	end
-
-	if Key == 'i' then
+	elseif Key == 'i' then
 		if isInvincible == true then
 			isInvincible = false
 		else
@@ -428,6 +442,34 @@ function GameState:keyreleased(Key)
 
 	--Temporary until input manager
 	self.player:keyreleased(Key)
+end
+
+function GameState:togglePlayerMode(ForceMode)
+	if ForceMode ~= nil then
+		self.playerGroundMode = ForceMode
+	else
+		self.playerGroundMode = not self.playerGroundMode
+	end
+
+	if self.playerGroundMode then
+		self.playerMech.x = self.playerShip.x
+		self.playerMech.y = self.playerShip.y
+		self.playerMech.velocityX = self.playerShip.velocityX
+		self.playerMech.velocityY = self.playerShip.velocityY
+		self.player = self.playerMech
+		self.playerShip:setExists(false)
+		self.camera:setTarget(self.player)
+	else
+		self.playerShip.x = self.playerMech.x
+		self.playerShip.y = self.playerMech.y
+		self.playerShip.velocityX = self.playerMech.velocityX
+		self.playerShip.velocityY = self.playerMech.velocityY
+		self.player = self.playerShip
+		self.playerMech:setExists(false)
+		self.camera:setTarget(self.cameraFocus)
+		self.cameraFocus.x = .75 * General.screenW + self.camera.x
+	end
+	self.player:setExists(true)
 end
 
 --updates the high scores checking against the score passed
