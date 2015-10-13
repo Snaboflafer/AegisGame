@@ -500,6 +500,10 @@ function Sprite:getScreenY()
 	return self.y - (General:getCamera().y * self.scrollFactorY)
 end
 	
+function Sprite:getPosition()
+	return self.x, self.y
+end
+
 function Sprite:getType()
 	return "Sprite"
 end

@@ -1,12 +1,16 @@
 GameState = {
-	CAMERASCROLLSPEED = 200
+	CAMERASCROLLSPEED = 200,
+	playerGroundMode = false,
+	score = 0
 }	
 GameState.__index = GameState
 setmetatable(GameState, State)
 
 function GameState:load()
 	State:load()
+	ReadLevel:loadTable("level_1.txt")
 
+	self.isAlive = true
 	isInvincible = false
 	--Create camera
 	self.camera = General:newCamera(0,0)
@@ -16,10 +20,7 @@ function GameState:load()
 	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
 	self.cameraFocus:setVisible(false)
 	self.cameraFocus.showDebug = true
-
-	self.camera:setTarget(self.cameraFocus)
 	GameState:add(self.cameraFocus)
-
 
 	self.wrappingSprites = Group:new()
 
@@ -62,19 +63,18 @@ function GameState:load()
 	
 	--Set up particles
 	self.emitters = Group:new()
-	--self.emitters.showDebug = true
-	GameState:add(self.emitters)
 
-	--Create player
-	self.player = Player:new(100, 100)
-	self.player:loadSpriteSheet("images/sprites/player_fly.png",160,80)
-	self.player:setAnimations()
-	self.player:setCollisionBox(46, 34, 91, 20)
-	self.player:lockToScreen(Sprite.ALL)
-	self.player.showDebug = true
+	
+	--Create player (flying)
+	self.playerShip = PlayerShip:new(100, 100)
+	self.playerShip:loadSpriteSheet("images/sprites/player_ship.png",160,80)
+	self.playerShip:setAnimations()
+	self.playerShip:setCollisionBox(46, 34, 91, 20)
+	self.playerShip:lockToScreen(Sprite.ALL)
+	self.playerShip.showDebug = true
 	--self.camera:setTarget(self.player)
 	--self.camera:setDeadzone(128,32)
-	GameState:add(self.player)
+	GameState:add(self.playerShip)
 	
 	local playerGun = Emitter:new(0,0)
 	self.playerBullets = Group:new()
@@ -90,10 +90,10 @@ function GameState:load()
 	playerGun:start(false, 3, .3, -1)
 	playerGun:stop()
 	self.emitters:add(playerGun)
-	self.player:addWeapon(playerGun)
+	self.playerShip:addWeapon(playerGun, 1)
 	
 	
-	local jetLocations = {{-15, -16},{-21, 26}}
+	local jetLocations = {{-22, -16},{-26, 25}}
 	for i=1, table.getn(jetLocations) do
 		local jetTrail = Emitter:new(0, 0)
 		for j=1, 20 do
@@ -105,13 +105,23 @@ function GameState:load()
 		end
 		jetTrail:setSpeed(70, 150)
 		jetTrail:setAngle(180)
-		jetTrail:lockParent(self.player, jetLocations[i][1], jetLocations[i][2])
+		jetTrail:lockParent(self.playerShip, jetLocations[i][1], jetLocations[i][2])
 		jetTrail:start(false, .3, 0)
 		self.emitters:add(jetTrail)
 	end
 
 	self.fuelTimer = 10
-
+	
+	self.playerMech = PlayerMech:new(100,100)
+	self.playerMech:loadSpriteSheet("images/sprites/player_mech.png",246,246)
+	self.playerMech:setAnimations()
+	self.playerMech:setCollisionBox(94, 55, 64, 140)
+	self.playerMech:lockToScreen(Sprite.ALL)
+	self.playerMech.showDebug = true
+	--self.camera:setTarget(self.player)
+	--self.camera:setDeadzone(128,32)
+	GameState:add(self.playerMech)
+	GameState:togglePlayerMode(true)
 	
 	-- Flag set to false as no enemies are destroyed yet
 	enemyDestroyed = false;
@@ -124,12 +134,15 @@ function GameState:load()
 	--Don't add bullets directly to state, will let particle emitters handle them
 
 
+	--Put particles on top of everything else
+	GameState:add(self.emitters)
+
+	
 	--Hud
 	self.hud = Group:new()
-	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.player:getScore(),"fonts/04b09.ttf", 18)
+	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
-	
 
 	instructionText = Text:new(General.screenW/2, General.screenH*.5,
 		"Space to fire! \n Defeat the empire pawns\n for great justice","fonts/04b09.ttf", 36)
@@ -236,7 +249,6 @@ function GameState:stop()
 end
 
 function GameState:update()
-
 	GameState:generateEnemies()
 
 	--Loop scenery groups
@@ -275,7 +287,8 @@ function GameState:update()
 
 			bullet:setExists(false)
 			if isInvincible == false then
-				self.fuelTimer = 0
+				self.isAlive = false
+
 			end
 		end
 	end
@@ -283,20 +296,20 @@ function GameState:update()
 	
 	for k,bullet in pairs(self.playerBullets.members) do
 		for j,enemy in pairs(self.enemies.members) do
-				if General:collide(bullet, enemy) then
+			if General:collide(bullet, enemy) then
 
-					-- Destroy animation
-					local x, y = enemy:getCenter()
-					self.effect:play("explosion", x, y)
+				-- Destroy animation
+				local x, y = enemy:getCenter()
+				self.effect:play("explosion", x, y)
 
-					self.explosion:rewind()
-					self.explosion:play()
-					self.player:updateScore(enemy:getPointValue())
+				self.explosion:rewind()
+				self.explosion:play()
+				self.score = self.score + enemy:getPointValue()
 
-					bullet:setExists(false)
-					enemy:setExists(false)
-						
-				end
+				bullet:setExists(false)
+				enemy:setExists(false)
+					
+			end
 		end
 	end
 	
@@ -311,11 +324,10 @@ function GameState:update()
 
 			self.explosion:rewind()
 			self.explosion:play()
-			self.player:updateScore(enemy:getPointValue())
 
 			enemy:setExists(false)
 			if isInvincible == false then	
-				self.fuelTimer = 0
+				self.isAlive = false
 			end
 		end
 	end
@@ -323,27 +335,27 @@ function GameState:update()
 	--check for player:floor collision
 	if General:collide(self.player, self.ground) then
 		--self.explosion:rewind()
-		self.explosion:play()
+		--self.explosion:play()
 		
-		if self.fuelTimer <= 0 then
-			GameState:updateHighScores("Player", self.player:getScore())
-			Data:setScore(self.player:getScore())
+		if self.isAlive == false then
+			Data:setScore(self.score)
 			local playerX, playerY = self.player:getCenter()
 			self.effect:play("explosion", playerX, playerY)
 
 			if math.abs(self.player.velocityY) < 50 then
+				--has to be in here to avoid double counting high score
+				GameState:updateHighScores("Player", self.score)
 				General:setState(MenuState)
 			end
 		end
-		
 	end
 
 	self.cameraFocus.y = self.player.y
 	
 	self.instructionTimer = self.instructionTimer - General.elapsed
-	self.cameraFocus.velocityX = self.CAMERASCROLLSPEED + self.player:getScore()/20
+	self.cameraFocus.velocityX = self.CAMERASCROLLSPEED + self.score/20
 
-	highScoreText:setLabel("Score: " .. self.player:getScore())
+	highScoreText:setLabel("Score: " .. self.score)
 
 	if self.instructionTimer <= 0 then
 		instructionText:setLabel("")
@@ -356,7 +368,7 @@ function GameState:update()
 		end
 	end
 	
-	if self.fuelTimer <= 0 then
+	if self.isAlive == false then
 		self.player.accelerationY = 200
 		self.player.dragX = 1
 		self.player.enableControls = false
@@ -369,14 +381,11 @@ local currentTrigger = 1
 local waveStart = 0
 function GameState:generateEnemies()
 
-	local enemyGroups = {
-		{1000, "enemy", 3},
-		{2000, "enemy", 5},
-		{3000, "enemy", 15},
-		{4500, "text", 0}
-	}
+	local enemyGroups = ReadLevel:getLevel()
 
 	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger][1] + waveStart then
+			print(enemyGroups[currentTrigger][2]) 
+
 		if enemyGroups[currentTrigger][2] == "enemy" then
 			GameState:spawnEnemyGroup(enemyGroups[currentTrigger][3])
 			currentTrigger = currentTrigger + 1
@@ -408,6 +417,10 @@ function GameState:draw()
 end
 
 function GameState:keypressed(Key)
+	if Key == "lshift" then
+		self:togglePlayerMode()
+	end
+
 	--Temporary until input manager
 	self.player:keypressed(Key)
 end
@@ -416,9 +429,7 @@ function GameState:keyreleased(Key)
 
 	if Key == "escape" then
 		General:setState(PauseState,false)
-	end
-
-	if Key == 'i' then
+	elseif Key == 'i' then
 		if isInvincible == true then
 			isInvincible = false
 		else
@@ -430,10 +441,41 @@ function GameState:keyreleased(Key)
 	self.player:keyreleased(Key)
 end
 
+function GameState:togglePlayerMode(ForceMode)
+	if ForceMode ~= nil then
+		self.playerGroundMode = ForceMode
+	else
+		self.playerGroundMode = not self.playerGroundMode
+	end
+
+	if self.playerGroundMode then
+		self.playerMech.x = self.playerShip.x
+		self.playerMech.y = self.playerShip.y
+		self.playerMech.velocityX = self.playerShip.velocityX
+		self.playerMech.velocityY = self.playerShip.velocityY
+		self.player = self.playerMech
+		self.playerShip:setExists(false)
+		self.camera:setTarget(self.player)
+	else
+		self.playerShip.x = self.playerMech.x
+		self.playerShip.y = self.playerMech.y
+		self.playerShip.velocityX = self.playerMech.velocityX
+		self.playerShip.velocityY = self.playerMech.velocityY
+		self.player = self.playerShip
+		self.playerMech:setExists(false)
+		self.camera:setTarget(self.cameraFocus)
+		self.cameraFocus.x = .75 * General.screenW + self.camera.x
+	end
+	self.player:setExists(true)
+end
+
 --updates the high scores checking against the score passed
 function GameState:updateHighScores(name, score)
-   local file = io.open("highScores.txt", "rb") -- r read mode and b binary mode
-    if not file then return nil end
+    local file = {}
+    for line in love.filesystem.lines("highScores.txt") do
+    	table.insert(file,line)
+    end
+    local filePosition = 1
     local content = ""
     local readName = ""
     local readScore = ""
@@ -441,21 +483,21 @@ function GameState:updateHighScores(name, score)
     local newHighScore = false
 	--checks each high score against the new score, putting the new score if it exceeds the high score
 	repeat
-		readName = file:read "*L" --next line with whitespace
-	    readScore = file:read "*n" --next number
-	    file:read "*L" --kill newline
+		readName = file[filePosition] --next line with whitespace
+		filePosition = filePosition + 1
+		print("current file position:" .. filePosition)
+		print (file[1])
+	    readScore = tonumber(file[filePosition])--next number
+	    filePosition = filePosition + 1
 	    if newHighScore == false and score > readScore then
 	    	content = content .. name .. "\n" .. score .. "\n"
 	    	scoresPut = scoresPut + 1
 	    	newHighScore = true
 	    	if scoresPut >= 5 then break end
 	    end
-	    content = content .. readName .. readScore .. "\n"
+	    content = content .. readName .. "\n" .. readScore .. "\n"
 	    scoresPut = scoresPut + 1
 	until scoresPut >= 5
-	file:close()
 	content = content:gsub("^%s*(.-)%s*$", "%1") --remove leading and trailing whitespace
-	hFile = io.open("highScores.txt", "w+") --write the file.
-	hFile:write(content)
-	hFile:close()
+	hFile = love.filesystem.write("highScores.txt", content) --write the file.
 end

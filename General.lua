@@ -154,9 +154,13 @@ function General:collide(Object1, Object2)
 		if dx > 0 then
 			if not obj1IM then Object1.x = Object2:getLeft() - obj1W end
 			if not obj2IM then Object2.x = Object1:getRight() end
+			Object1.touching = Sprite.RIGHT
+			Object2.touching = Sprite.LEFT
 		else
 			if not obj1IM then Object1.x = Object2:getRight() end
 			if not obj2IM then Object2.x = Object1:getLeft() - obj2W end
+			Object1.touching = Sprite.LEFT
+			Object2.touching = Sprite.RIGHT
 		end
 		Object1.velocityX = -Object1.velocityX * Object1.bounceFactor
 		Object2.velocityX = -Object2.velocityX * Object2.bounceFactor
@@ -165,9 +169,13 @@ function General:collide(Object1, Object2)
 		if dy > 0 then
 			if not obj1IM then Object1.y = Object2:getTop() - obj1H end
 			if not obj2IM then Object2.y = Object1:getBottom() end
+			Object1.touching = Sprite.DOWN
+			Object2.touching = Sprite.UP
 		else
 			if not obj1IM then Object1.y = Object2:getBottom() end
 			if not obj2IM then Object2.y = Object1:getTop() - obj2H end
+			Object1.touching = Sprite.UP
+			Object2.touching = Sprite.DOWN
 		end
 		Object1.velocityY = -Object1.velocityY * Object1.bounceFactor
 		Object2.velocityY = -Object2.velocityY * Object2.bounceFactor

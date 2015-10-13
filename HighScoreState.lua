@@ -44,21 +44,19 @@ function HighScoreState:draw()
 end
 
 function HighScoreState:readHighScores(path)
-    local file = io.open(path, "rb") -- r read mode and b binary mode
-    if not file then
-		love.audio.newSource("sounds/fail.wav"):play()
-		return "[Unable to read scores\n  from \"" .. path .. "\"]"
-	end
+    local file = {}
+    for line in love.filesystem.lines(path) do
+    	table.insert(file,line)
+    end
     local content = ""
     local name = ""
     local score = ""
-	repeat
+	for n = 1,table.getn(file),2 do
+		print(file[n])
+	    name = file[n]
+	    score = file[n+1]
 	    content = content .. name .. " " .. score .. "\n"
-	    name = file:read "*l"
-	    score = file:read "*n"
-	    file:read "*L"
-	until score == nil
-	file:close()
+	end
     return content
 end
 
