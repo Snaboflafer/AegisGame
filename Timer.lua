@@ -53,5 +53,12 @@ end
 function Timer:draw()
 	--Empty draw, needed for state members
 end
+function Timer:destroy()
+	self.timeRemaining = nil
+	self.finished = nil
+	self.callbackObject = nil
+	self.callbackFunction = nil
+	self = nil
+end
 
 return Timer

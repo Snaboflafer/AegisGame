@@ -89,6 +89,10 @@ function PlayerShip:update()
 	Player.update(self)
 end
 
+function PlayerShip:collideGround()
+
+end
+
 function PlayerShip:getType()
 	return "PlayerShip"
 end

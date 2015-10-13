@@ -61,6 +61,8 @@ Sprite = {
 	solid = true,		--Whether the sprite responds to collisions
 	lifetime = 0,
 	health = 0,
+	maxhealth = 0,
+	attackPower = 0,
 	showDebug = false
 }
 

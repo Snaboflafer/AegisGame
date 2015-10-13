@@ -120,6 +120,9 @@ function GameState:load()
 	GameState:add(self.playerMech)
 	GameState:togglePlayerMode(true)
 	
+	--Attach main gun to mech to avoid crash (TEMP)
+	self.playerMech:addWeapon(playerGun, 1)
+	
 	-- Flag set to false as no enemies are destroyed yet
 	enemyDestroyed = false;
 
@@ -271,10 +274,10 @@ function GameState:update()
 	General:collide(self.player, self.collisionSprite)
 	
 	--Collisions with custom callback actions
-	General:collide(self.player, self.enemyBullets, GameState.resColPlayerEnBullets)
-	General:collide(self.playerBullets, self.enemies, GameState.resColPlayerBulletEnemy)
-	General:collide(self.player, self.enemies, GameState.resColPlayerEnemy)
-	General:collide(self.player, self.ground, GameState.resColPlayerGround)
+	General:collide(self.player, self.enemyBullets, self, GameState.resColPlayerEnBullets)
+	General:collide(self.playerBullets, self.enemies, self, GameState.resColPlayerBulletEnemy)
+	General:collide(self.player, self.enemies, self, GameState.resColPlayerEnemy)
+	General:collide(self.player, self.ground, self.player, self.player.collideGround, true)
 
 	self.cameraFocus.y = self.player.y
 	
@@ -302,12 +305,15 @@ function GameState:resColPlayerEnBullets(Player, Bullet)
 	local x, y = Bullet:getCenter()
 	self.effect:play("explosion", x, y)
 
+	self.camera:screenShake(.01, .2)
+	
 	self.explosion:rewind()
 	self.explosion:play()
 
 	Bullet:setExists(false)
 	if isInvincible == false then
 		self.isAlive = false
+		self.player:kill()
 	end
 end
 
@@ -322,7 +328,6 @@ function GameState:resColPlayerBulletEnemy(Bullet, Enemy)
 
 	Bullet:setExists(false)
 	Enemy:setExists(false)
-
 end
 
 function GameState:resColPlayerEnemy(Player, Enemy)
@@ -330,29 +335,15 @@ function GameState:resColPlayerEnemy(Player, Enemy)
 	local x, y = Enemy:getCenter()
 	self.effect:play("explosion", x, y)
 
+	self.camera:screenShake(.01, .5)
+	
 	self.explosion:rewind()
 	self.explosion:play()
 
 	Enemy:setExists(false)
 	if isInvincible == false then	
 		self.isAlive = false
-	end
-end
-
-function GameState:resColPlayerGround(Player, Ground)
-	--self.explosion:rewind()
-	--self.explosion:play()
-
-	if self.isAlive == false then
-		Data:setScore(self.score)
-		local playerX, playerY = self.player:getCenter()
-		self.effect:play("explosion", playerX, playerY)
-
-		if math.abs(self.player.velocityY) < 50 then
-			--has to be in here to avoid double counting high score
-			GameState:updateHighScores("Player", self.score)
-			General:setState(MenuState)
-		end
+		self.player:kill()
 	end
 end
 
@@ -449,6 +440,13 @@ function GameState:togglePlayerMode(ForceMode)
 		self.cameraFocus.x = .75 * General.screenW + self.camera.x
 	end
 	self.player:setExists(true)
+end
+
+function GameState:gameOver()
+	Data:setScore(self.score)
+
+	GameState:updateHighScores("Player", self.score)
+	General:setState(MenuState)
 end
 
 --updates the high scores checking against the score passed

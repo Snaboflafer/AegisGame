@@ -43,6 +43,12 @@ function PlayerMech:update()
 	Player.update(self)
 end
 
+function PlayerMech:collideGround()
+	if self.velocityY > 50 then
+		General.activeState.camera:screenShake(.01,.05)
+	end
+end
+
 function PlayerMech:getType()
 	return "PlayerMech"
 end

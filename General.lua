@@ -69,14 +69,23 @@ end
 --[[ Collide between two objects or group
 	Object1		First Sprite or Group object to collide
 	Object2		Second Sprite or Group object to collide
-	Callback	Function to call on collision. MUST be in current
-				 active state, is called with Object1 and Object2
-				 as arguments
+	CallbackTarget	(Optional) Target object of callback function
+	CallbackFunction	(Optional) Function to call during collision
+	PreCollide	(Optional) Do callback before basic collision
+				 resolution occurs, instead of after
 ]]
-function General:collide(Object1, Object2, Callback)
+function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, PreCollide)
 	if not Object1.solid or not Object1.exists then
 		return
 	end
+	
+	local callbackTarget = CallbackTarget
+	local callbackFunction = CallbackFunction
+	if PreCollide == nil then
+		PreCollide = false
+	end
+	
+	
 	
 	if Object1:getType() == "Group" then
 		--First object is a group
@@ -86,7 +95,7 @@ function General:collide(Object1, Object2, Callback)
 			--Collide within group
 			for k1,v1 in pairs(Object1.members) do
 				for k2,v2 in pairs(Object1.members) do
-					didCollide = didCollide or General:collide(Object1.members[k1], Object1.members[k2], Callback)
+					didCollide = didCollide or General:collide(Object1.members[k1], Object1.members[k2], CallbackTarget, CallbackFunction, PreCollide)
 				end
 			end
 		else
@@ -96,7 +105,7 @@ function General:collide(Object1, Object2, Callback)
 				return
 			end
 			for k,v in pairs(Object1.members) do
-				didCollide = didCollide or General:collide(v, Object2, Callback)
+				didCollide = didCollide or General:collide(v, Object2, CallbackTarget, CallbackFunction, PreCollide)
 			end
 		end
 		return didCollide
@@ -111,7 +120,7 @@ function General:collide(Object1, Object2, Callback)
 	if Object2:getType() == "Group" then
 		local didCollide = false
 		for k,v in pairs(Object2.members) do
-			didCollide = didCollide or General:collide(Object1, Object2.members[k], Callback)
+			didCollide = didCollide or General:collide(Object1, Object2.members[k], CallbackTarget, CallbackFunction, PreCollide)
 		end
 		return didCollide
 	end
@@ -137,6 +146,12 @@ function General:collide(Object1, Object2, Callback)
 		
 		--No collisions
 		return false
+	end
+	
+	--Collision occured, resolve:
+	
+	if PreCollide == true and callbackFunction ~= nil then
+		callbackFunction(callbackTarget, Object1, Object2)
 	end
 	
 	--Handle immovable and massless objects
@@ -188,8 +203,8 @@ function General:collide(Object1, Object2, Callback)
 		Object2.velocityY = -Object2.velocityY * Object2.bounceFactor
 	end
 	
-	if Callback ~= nil then
-		Callback(General.activeState, Object1, Object2)
+	if not PreCollide and callbackFunction ~= nil then
+		callbackFunction(callbackTarget, Object1, Object2)
 	end
 
 	return true

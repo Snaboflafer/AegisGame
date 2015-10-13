@@ -26,6 +26,11 @@ function Player:addWeapon(GunEmitter, Slot)
 	self.weapons[Slot] = GunEmitter
 end
 
+function Player:kill()
+	self.alive = false
+	Timer:new(2, GameState, GameState.gameOver)
+end
+
 function Player:updateScore(S)
 	self.score = self.score + S
 end
@@ -36,6 +41,10 @@ end
 
 function Player:update()
 	Sprite.update(self)
+end
+
+function Player:hitGround()
+	--Empty, extended by each mode
 end
 
 function Player:keypressed(Key)
