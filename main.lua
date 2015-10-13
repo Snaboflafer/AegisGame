@@ -31,7 +31,7 @@ require("Enemy")
 require("Text")
 require("Timer")
 require("Effect")
-require("ReadLevel")
+require("LevelManager")
 
 function love.load()
 	General:init()

@@ -1,0 +1,32 @@
+{  
+   "levels":[  
+      {  
+         "number":1,
+         "background":"images/StealthHawk-Alien-Landscape-33.jpg",
+         "floor": "images/floor_snow_1.png",
+         "music":"sounds/music_Mines_Synth2.ogg",
+         "triggers":[  
+            {  
+               "distance":1000,
+               "type":"enemy",
+               "number":3
+            },
+            {  
+               "distance":1500,
+               "type":"enemy",
+               "number":5
+            },
+            {  
+               "distance":2000,
+               "type":"enemy",
+               "number":10
+            },
+            {  
+               "distance":3000,
+               "type":"text",
+               "number":0
+            }
+         ]
+      }
+   ]
+}
