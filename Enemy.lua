@@ -2,6 +2,7 @@
 Enemy = {
 	pointValue = 0,
 	massless = true,
+	route = 0
 }
 
 function Enemy:new(X,Y,ImageFile)
@@ -9,22 +10,22 @@ function Enemy:new(X,Y,ImageFile)
 	setmetatable(s, self)
 	setmetatable(self, Sprite)
 	self.__index = self
-	
-	s.maxVelocityX = 50
-	s.maxVelocityY = 50
-	
+	s.route = math.floor(math.random()*3)
 	return s
 end
 
 function Enemy:respawn(SpawnX, SpawnY)
+	self.lifetime = 0
 	self.x = SpawnX
 	self.y = SpawnY
+	self.route = math.floor(math.random()*3)
 	self.velocityX = 0
 	self.velocityY = 0
 	self.accelerationX = 0
 	self.accelerationY = 0
 	self.exists = true
 end
+
 
 function Enemy:setAnimations()
 	self:addAnimation("idle", {1,2}, .1, true)
@@ -41,9 +42,23 @@ function Enemy:getPointValue()
 end
 
 function Enemy:update()
-	self.accelerationX = (math.random() - .5)*500
-	self.accelerationY = (math.random() - .5)*1000
-	
+	if self.route == 0 and self:onScreen() == true then
+		self.accelerationY = 400*math.cos(5*self.lifetime)
+	elseif self.route == 1 then
+		if self.lifetime < 2 and self:onScreen() == true then
+			self.accelerationY = -50
+		else
+			self.accelerationY = 15
+			self.accelerationX = -100
+		end
+	elseif self.route == 2 then
+		if self.lifetime < 2 and self:onScreen() == true then
+			self.accelerationY = 50
+		else
+			self.accelerationY = -15
+			self.accelerationX = -100
+		end
+	end
 	
 	if self.velocityY < 50 then
 		self:playAnimation("up")
