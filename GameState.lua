@@ -438,21 +438,19 @@ function GameState:updateHighScores(name, score)
 	repeat
 		readName = file[filePosition] --next line with whitespace
 		filePosition = filePosition + 1
+		print("current file position:" .. filePosition)
+		print (file[1])
 	    readScore = tonumber(file[filePosition])--next number
 	    filePosition = filePosition + 1
 	    if newHighScore == false and score > readScore then
 	    	content = content .. name .. "\n" .. score .. "\n"
-	    	print("in new high score loop")
 	    	scoresPut = scoresPut + 1
 	    	newHighScore = true
-	    	print(newHighScore)
 	    	if scoresPut >= 5 then break end
 	    end
 	    content = content .. readName .. "\n" .. readScore .. "\n"
 	    scoresPut = scoresPut + 1
 	until scoresPut >= 5
 	content = content:gsub("^%s*(.-)%s*$", "%1") --remove leading and trailing whitespace
-	hFile = io.open("highScores.txt", "w+") --write the file.
-	hFile:write(content)
-	hFile:close()
+	hFile = love.filesystem.write("highScores.txt", content) --write the file.
 end
