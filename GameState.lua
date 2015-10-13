@@ -18,6 +18,7 @@ function GameState:load()
 	GameState:add(self.camera)
 	
 	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
+	self.cameraFocus.velocityX = self.CAMERASCROLLSPEED
 	self.cameraFocus:setVisible(false)
 	self.cameraFocus.showDebug = true
 	GameState:add(self.cameraFocus)
@@ -145,7 +146,7 @@ function GameState:load()
 	instructionText:setAlign(Text.CENTER)
 	instructionText:setColor(255,200,0,255)
 	instructionText:setShadow(200,0,0,255)
-	self.instructionTimer = 6
+	Timer:new(6, instructionText, Text.hide)
 
 	self.hud:add(instructionText)
 
@@ -156,8 +157,6 @@ function GameState:load()
 	waveText:setShadow(200,0,0,255)
 	self.waveTimer = 3
 	waveText:setVisible(false)
-
-	
 	self.hud:add(waveText)
 	
 	GameState:add(self.hud)
@@ -270,92 +269,17 @@ function GameState:update()
 	
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
-
-	for k,bullet in pairs(self.enemyBullets.members) do
-		if General:collide(bullet, self.player) then
-
-			-- Destroy animation
-			local x, y = bullet:getCenter()
-			self.effect:play("explosion", x, y)
-
-			self.explosion:rewind()
-			self.explosion:play()
-
-			bullet:setExists(false)
-			if isInvincible == false then
-				self.isAlive = false
-
-			end
-		end
-	end
-
 	
-	for k,bullet in pairs(self.playerBullets.members) do
-		for j,enemy in pairs(self.enemies.members) do
-			if General:collide(bullet, enemy) then
-
-				-- Destroy animation
-				local x, y = enemy:getCenter()
-				self.effect:play("explosion", x, y)
-
-				self.explosion:rewind()
-				self.explosion:play()
-				self.score = self.score + enemy:getPointValue()
-
-				bullet:setExists(false)
-				enemy:setExists(false)
-					
-			end
-		end
-	end
-	
-
-	--check for player:enemy collisions
-	for j,enemy in pairs(self.enemies.members) do
-		if General:collide(enemy, self.player) then
-
-			-- Destroy animation
-			local x, y = enemy:getCenter()
-			self.effect:play("explosion", x, y)
-
-			self.explosion:rewind()
-			self.explosion:play()
-
-			enemy:setExists(false)
-			if isInvincible == false then	
-				self.isAlive = false
-			end
-		end
-	end
-	
-	--check for player:floor collision
-	if General:collide(self.player, self.ground) then
-		--self.explosion:rewind()
-		--self.explosion:play()
-		
-		if self.isAlive == false then
-			Data:setScore(self.score)
-			local playerX, playerY = self.player:getCenter()
-			self.effect:play("explosion", playerX, playerY)
-
-			if math.abs(self.player.velocityY) < 50 then
-				--has to be in here to avoid double counting high score
-				GameState:updateHighScores("Player", self.score)
-				General:setState(MenuState)
-			end
-		end
-	end
+	--Collisions with custom callback actions
+	General:collide(self.player, self.enemyBullets, GameState.resColPlayerEnBullets)
+	General:collide(self.playerBullets, self.enemies, GameState.resColPlayerBulletEnemy)
+	General:collide(self.player, self.enemies, GameState.resColPlayerEnemy)
+	General:collide(self.player, self.ground, GameState.resColPlayerGround)
 
 	self.cameraFocus.y = self.player.y
 	
-	self.instructionTimer = self.instructionTimer - General.elapsed
-	self.cameraFocus.velocityX = self.CAMERASCROLLSPEED + self.score/20
-
 	highScoreText:setLabel("Score: " .. self.score)
 
-	if self.instructionTimer <= 0 then
-		instructionText:setLabel("")
-	end
 
 	if waveText.visible == true then
 		self.waveTimer = self.waveTimer - General.elapsed
@@ -371,6 +295,65 @@ function GameState:update()
 		self.player.bounceFactor = .2
 		self.cameraFocus.dragX = .5
     end
+end
+
+function GameState:resColPlayerEnBullets(Player, Bullet)
+	-- Destroy animation
+	local x, y = Bullet:getCenter()
+	self.effect:play("explosion", x, y)
+
+	self.explosion:rewind()
+	self.explosion:play()
+
+	Bullet:setExists(false)
+	if isInvincible == false then
+		self.isAlive = false
+	end
+end
+
+function GameState:resColPlayerBulletEnemy(Bullet, Enemy)
+	-- Destroy animation
+	local x, y = Enemy:getCenter()
+	self.effect:play("explosion", x, y)
+
+	self.explosion:rewind()
+	self.explosion:play()
+	self.score = self.score + Enemy:getPointValue()
+
+	Bullet:setExists(false)
+	Enemy:setExists(false)
+
+end
+
+function GameState:resColPlayerEnemy(Player, Enemy)
+	-- Destroy animation
+	local x, y = Enemy:getCenter()
+	self.effect:play("explosion", x, y)
+
+	self.explosion:rewind()
+	self.explosion:play()
+
+	Enemy:setExists(false)
+	if isInvincible == false then	
+		self.isAlive = false
+	end
+end
+
+function GameState:resColPlayerGround(Player, Ground)
+	--self.explosion:rewind()
+	--self.explosion:play()
+
+	if self.isAlive == false then
+		Data:setScore(self.score)
+		local playerX, playerY = self.player:getCenter()
+		self.effect:play("explosion", playerX, playerY)
+
+		if math.abs(self.player.velocityY) < 50 then
+			--has to be in here to avoid double counting high score
+			GameState:updateHighScores("Player", self.score)
+			General:setState(MenuState)
+		end
+	end
 end
 
 local currentTrigger = 1
@@ -392,6 +375,7 @@ function GameState:generateEnemies()
 				currentTrigger = 1
 				waveStart = self.player.x
 				self.waveTimer = 3
+				self.cameraFocus.velocityX = self.cameraFocus.velocityX + 100
 			end
 		end
 	end

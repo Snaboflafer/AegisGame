@@ -66,7 +66,14 @@ function General:setWorldBounds(X,Y,Width,Height)
 	worldHeight = Height
 end
 
-function General:collide(Object1, Object2)
+--[[ Collide between two objects or group
+	Object1		First Sprite or Group object to collide
+	Object2		Second Sprite or Group object to collide
+	Callback	Function to call on collision. MUST be in current
+				 active state, is called with Object1 and Object2
+				 as arguments
+]]
+function General:collide(Object1, Object2, Callback)
 	if not Object1.solid or not Object1.exists then
 		return
 	end
@@ -79,7 +86,7 @@ function General:collide(Object1, Object2)
 			--Collide within group
 			for k1,v1 in pairs(Object1.members) do
 				for k2,v2 in pairs(Object1.members) do
-					didCollide = didCollide or General:collide(Object1.members[k1], Object1.members[k2])
+					didCollide = didCollide or General:collide(Object1.members[k1], Object1.members[k2], Callback)
 				end
 			end
 		else
@@ -89,7 +96,7 @@ function General:collide(Object1, Object2)
 				return
 			end
 			for k,v in pairs(Object1.members) do
-				didCollide = didCollide or General:collide(v, Object2)
+				didCollide = didCollide or General:collide(v, Object2, Callback)
 			end
 		end
 		return didCollide
@@ -104,7 +111,7 @@ function General:collide(Object1, Object2)
 	if Object2:getType() == "Group" then
 		local didCollide = false
 		for k,v in pairs(Object2.members) do
-			didCollide = didCollide or General:collide(Object1, Object2.members[k])
+			didCollide = didCollide or General:collide(Object1, Object2.members[k], Callback)
 		end
 		return didCollide
 	end
@@ -179,6 +186,10 @@ function General:collide(Object1, Object2)
 		end
 		Object1.velocityY = -Object1.velocityY * Object1.bounceFactor
 		Object2.velocityY = -Object2.velocityY * Object2.bounceFactor
+	end
+	
+	if Callback ~= nil then
+		Callback(General.activeState, Object1, Object2)
 	end
 
 	return true

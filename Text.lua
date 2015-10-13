@@ -51,6 +51,12 @@ function Text:setAlign(Align)
 	self.align = Align
 end
 
+function Text:hide()
+	self.visible = false
+end
+function Text:show()
+	self.visible = true
+end
 function Text:genFont()
 	self.font = love.graphics.newFont(self.typeFace, self.size)
 end

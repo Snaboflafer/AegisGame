@@ -1,10 +1,11 @@
 Timer = {
 	timeRemaining = 0,
 	finished = false,
-	callback = nil
+	callbackObject = nil,
+	callbackFunction = nil
 }
 
-function Timer:new(Time, Callback)
+function Timer:new(Time, CallbackObject, CallbackFunction)
 	s = {}
 	setmetatable(s, self)
 	self.__index = self
@@ -13,15 +14,17 @@ function Timer:new(Time, Callback)
 	
 	s.timeRemaining = Time
 	s.finished = false
-	s.callback = Callback
+	s.callbackObject = CallbackObject
+	s.callbackFunction = CallbackFunction
 	
 	return s
 end
 
-function Timer:start(Time, Callback)
+function Timer:start(Time, CallbackObject, CallbackFunction)
 	self.timeRemaining = Time
 	self.finished = false
-	self.callback = Callback
+	self.callbackObject = CallbackObject
+	self.callbackFunction = CallbackFunction
 	self.exists = true
 end
 
@@ -37,10 +40,13 @@ function Timer:update()
 			self.finished = true
 			self.exists = false
 			
-			if self.callback ~= nil then
+			if self.callbackFunction ~= nil then
 				--Do callback function if one specified
-				self.callback()
+				self.callbackFunction(self.callbackObject)
 			end
+			
+			--Purpose has been fulfilled, time for Seppuku
+			self = nil
 		end
 	end
 end
