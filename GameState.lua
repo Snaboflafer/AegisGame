@@ -322,12 +322,13 @@ function GameState:update()
 		self.explosion:play()
 		
 		if self.isAlive == false then
-			GameState:updateHighScores("Player", self.player:getScore())
 			Data:setScore(self.player:getScore())
 			local playerX, playerY = self.player:getCenter()
 			self.effect:play("explosion", playerX, playerY)
 
 			if math.abs(self.player.velocityY) < 50 then
+				--has to be in here to avoid double counting high score
+				GameState:updateHighScores("Player", self.player:getScore())
 				General:setState(MenuState)
 			end
 		end
