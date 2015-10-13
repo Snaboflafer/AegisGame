@@ -55,7 +55,7 @@ end
 
 function Player:keyreleased(Key)
 	if Key == " " then
-		--self.weapons[self.activeWeapon]:stop()
+		self.weapons[self.activeWeapon]:stop()
 	end
 end
 
