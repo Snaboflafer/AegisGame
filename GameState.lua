@@ -8,7 +8,9 @@ setmetatable(GameState, State)
 
 function GameState:load()
 	State:load()
+	ReadLevel:loadTable("level_1.txt")
 
+	self.isAlive = true
 	isInvincible = false
 	--Create camera
 	self.camera = General:newCamera(0,0)
@@ -19,7 +21,6 @@ function GameState:load()
 	self.cameraFocus:setVisible(false)
 	self.cameraFocus.showDebug = true
 	GameState:add(self.cameraFocus)
-
 
 	self.wrappingSprites = Group:new()
 
@@ -142,7 +143,6 @@ function GameState:load()
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
-	
 
 	instructionText = Text:new(General.screenW/2, General.screenH*.5,
 		"Space to fire! \n Defeat the empire pawns\n for great justice","fonts/04b09.ttf", 36)
@@ -249,7 +249,6 @@ function GameState:stop()
 end
 
 function GameState:update()
-
 	GameState:generateEnemies()
 
 	--Loop scenery groups
@@ -288,7 +287,8 @@ function GameState:update()
 
 			bullet:setExists(false)
 			if isInvincible == false then
-				self.fuelTimer = 0
+				self.isAlive = false
+
 			end
 		end
 	end
@@ -327,7 +327,7 @@ function GameState:update()
 
 			enemy:setExists(false)
 			if isInvincible == false then	
-				self.fuelTimer = 0
+				self.isAlive = false
 			end
 		end
 	end
@@ -337,17 +337,17 @@ function GameState:update()
 		--self.explosion:rewind()
 		--self.explosion:play()
 		
-		if self.fuelTimer <= 0 then
-			GameState:updateHighScores("Player", self.score)
+		if self.isAlive == false then
 			Data:setScore(self.score)
 			local playerX, playerY = self.player:getCenter()
 			self.effect:play("explosion", playerX, playerY)
 
 			if math.abs(self.player.velocityY) < 50 then
+				--has to be in here to avoid double counting high score
+				GameState:updateHighScores("Player", self.score)
 				General:setState(MenuState)
 			end
 		end
-		
 	end
 
 	self.cameraFocus.y = self.player.y
@@ -368,7 +368,7 @@ function GameState:update()
 		end
 	end
 	
-	if self.fuelTimer <= 0 then
+	if self.isAlive == false then
 		self.player.accelerationY = 200
 		self.player.dragX = 1
 		self.player.enableControls = false
@@ -381,14 +381,11 @@ local currentTrigger = 1
 local waveStart = 0
 function GameState:generateEnemies()
 
-	local enemyGroups = {
-		{1000, "enemy", 3},
-		{2000, "enemy", 5},
-		{3000, "enemy", 15},
-		{4500, "text", 0}
-	}
+	local enemyGroups = ReadLevel:getLevel()
 
 	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger][1] + waveStart then
+			print(enemyGroups[currentTrigger][2]) 
+
 		if enemyGroups[currentTrigger][2] == "enemy" then
 			GameState:spawnEnemyGroup(enemyGroups[currentTrigger][3])
 			currentTrigger = currentTrigger + 1
@@ -474,8 +471,11 @@ end
 
 --updates the high scores checking against the score passed
 function GameState:updateHighScores(name, score)
-   local file = io.open("highScores.txt", "rb") -- r read mode and b binary mode
-    if not file then return nil end
+    local file = {}
+    for line in love.filesystem.lines("highScores.txt") do
+    	table.insert(file,line)
+    end
+    local filePosition = 1
     local content = ""
     local readName = ""
     local readScore = ""
@@ -483,21 +483,21 @@ function GameState:updateHighScores(name, score)
     local newHighScore = false
 	--checks each high score against the new score, putting the new score if it exceeds the high score
 	repeat
-		readName = file:read "*L" --next line with whitespace
-	    readScore = file:read "*n" --next number
-	    file:read "*L" --kill newline
+		readName = file[filePosition] --next line with whitespace
+		filePosition = filePosition + 1
+		print("current file position:" .. filePosition)
+		print (file[1])
+	    readScore = tonumber(file[filePosition])--next number
+	    filePosition = filePosition + 1
 	    if newHighScore == false and score > readScore then
 	    	content = content .. name .. "\n" .. score .. "\n"
 	    	scoresPut = scoresPut + 1
 	    	newHighScore = true
 	    	if scoresPut >= 5 then break end
 	    end
-	    content = content .. readName .. readScore .. "\n"
+	    content = content .. readName .. "\n" .. readScore .. "\n"
 	    scoresPut = scoresPut + 1
 	until scoresPut >= 5
-	file:close()
 	content = content:gsub("^%s*(.-)%s*$", "%1") --remove leading and trailing whitespace
-	hFile = io.open("highScores.txt", "w+") --write the file.
-	hFile:write(content)
-	hFile:close()
+	hFile = love.filesystem.write("highScores.txt", content) --write the file.
 end
