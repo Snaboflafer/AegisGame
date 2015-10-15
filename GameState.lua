@@ -35,7 +35,7 @@ function GameState:load()
 
 	--Create floor
 	self.ground = Group:new()
-	for i=0, 4, 1 do 
+	for i=0, 4 do 
 		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLevelFloor(1))
 		floorBlock:setCollisionBox(0,30, 256, 198)
 		floorBlock.immovable = true
@@ -53,7 +53,7 @@ function GameState:load()
 	self.collisionSprite:lockToScreen(Sprite.ALL)
 	self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
-
+	
 
 	--Set up effects
 	self.effect = Effect:new("images/explosion.png")
@@ -109,22 +109,37 @@ function GameState:load()
 	end
 
 	self.playerMech = PlayerMech:new(100,100)
-	self.playerMech:loadSpriteSheet("images/sprites/player_mech.png",256,256)
+	self.playerMech:loadSpriteSheet("images/sprites/player_mech.png",192,192)
 	self.playerMech:setAnimations()
-	self.playerMech:setCollisionBox(92, 58, 64, 144)
+	self.playerMech:setCollisionBox(68, 44, 50, 104)
 	self.playerMech:lockToScreen(Sprite.ALL)
 	self.playerMech.showDebug = true
 	--self.camera:setTarget(self.player)
 	--self.camera:setDeadzone(128,32)
 	GameState:add(self.playerMech)
-	GameState:togglePlayerMode(true)
 	
 	--Attach main gun to mech to avoid crash (TEMP)
+	playerGun = Emitter:new(0,0)
+	for i=1, 5 do
+		local curParticle = Sprite:new(0,0,"images/particles/bullet_orange_16.png")
+		playerGun:addParticle(curParticle)
+		self.playerBullets:add(curParticle)
+	end
+	playerGun:setSpeed(500)
+	playerGun:setAngle(0,1)
+	playerGun:lockParent(self.playerMech, false, 107, 16)
+	playerGun:setSound("sounds/cannon.wav")
+	playerGun:setCallback(self.playerMech, PlayerMech.fireGun)
+	playerGun:start(false, 3, .5, -1)
+	playerGun:stop()
+	self.emitters:add(playerGun)
 	self.playerMech:addWeapon(playerGun, 1)
 	
-	-- Flag set to false as no enemies are destroyed yet
-	enemyDestroyed = false;
-
+	--Set as player first, then toggle to do camera setup
+	self.player = self.playerShip
+	GameState:togglePlayerMode("mech")
+	
+	
 	--Create enemies
 	self.enemies = Group:new()
 	GameState:add(self.enemies)
@@ -200,16 +215,16 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			local enemyGun = Emitter:new(spawnX, spawnY)
 			for j=1, 2 do
 				--Create bullets
-				local curBullet = Sprite:new(spawnX, spawnY, "images/bullet_2.png")
+				local curBullet = Sprite:new(spawnX, spawnY, "images/particles/bullet_red_16.png")
 				enemyGun:addParticle(curBullet)
 				self.enemyBullets:add(curBullet)
 			end
 			enemyGun:setSpeed(100, 150)
 			enemyGun:lockParent(curEnemy, true, 0)
 			--enemyGun:lockTarget(self.player)		(Use this to target the player)
-			enemyGun:setAngle(180, .1)
+			enemyGun:setAngle(180, 0)
 			enemyGun:addDelay(2 + math.random() * i)
-			enemyGun:start(false, 3, 2, -1)
+			enemyGun:start(false, 10, 2, -1)
 			--curEnemy:addChild(enemyGun)
 
 			--Thruster particles
@@ -271,6 +286,7 @@ function GameState:update()
 	
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
+	General:collide(self.enemies, self.ground)
 	
 	--Collisions with custom callback actions
 	General:collide(self.player, self.enemyBullets, self, GameState.resColPlayerEnBullets)
@@ -410,34 +426,21 @@ function GameState:keyreleased(Key)
 	self.player:keyreleased(Key)
 end
 
-function GameState:togglePlayerMode(ForceMode)
-	if ForceMode ~= nil then
-		self.playerGroundMode = ForceMode
-	else
-		self.playerGroundMode = not self.playerGroundMode
-	end
-
-	if self.playerGroundMode then
-		self.playerMech.x = self.playerShip.x
-		self.playerMech.y = self.playerShip.y
-		self.playerMech.velocityX = self.playerShip.velocityX
-		self.playerMech.velocityY = self.playerShip.velocityY
-		self.player = self.playerMech
-		self.playerShip:setExists(false)
-		self.camera:setTarget(self.player)
-		self.camera:setDeadzone(General.screenW, 0, -64, 0)
-	else
-		self.playerShip.x = self.playerMech.x
-		self.playerShip.y = self.playerMech.y
-		self.playerShip.velocityX = self.playerMech.velocityX
-		self.playerShip.velocityY = self.playerMech.velocityY
+function GameState:togglePlayerMode()
+	local playerMode = self.player.activeMode
+	
+	if playerMode == "mech" then
+		self.playerShip:enterMode(self.playerMech:exitMode())
 		self.player = self.playerShip
-		self.playerMech:setExists(false)
 		self.camera:setTarget(self.cameraFocus)
 		self.camera:setDeadzone(0,0,0,0)
 		self.cameraFocus.x = .75 * General.screenW + self.camera.x
+	elseif playerMode == "ship" then
+		self.playerMech:enterMode(self.playerShip:exitMode())
+		self.player = self.playerMech
+		self.camera:setTarget(self.player)
+		self.camera:setDeadzone(General.screenW, 0, -64, 0)
 	end
-	self.player:setExists(true)
 end
 
 function GameState:gameOver()

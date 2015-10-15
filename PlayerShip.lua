@@ -1,5 +1,6 @@
 PlayerShip = {
-	enableControls = true
+	enableControls = true,
+	activeMode = "ship"
 }
 
 function PlayerShip:new(X,Y,ImageFile)
@@ -87,6 +88,29 @@ function PlayerShip:update()
 	end
 	
 	Player.update(self)
+end
+
+function PlayerShip:enterMode(X, Y, VX, VY, HP)
+	self.x = X
+	self.y = Y
+	self.velocityX = VX
+	self.velocityY = VY
+	self.health = HP
+	self:setExists(true)
+end
+
+function PlayerShip:exitMode()
+	self.weapons[self.activeWeapon]:stop()
+	self:setExists(false)
+	return self.x, self.y, self.velocityX, self.velocityY, self.health
+end
+
+function PlayerShip:attackStart()
+	self.weapons[self.activeWeapon]:restart()
+end
+
+function PlayerShip:attackStop()
+	self.weapons[self.activeWeapon]:stop()
 end
 
 function PlayerShip:collideGround()

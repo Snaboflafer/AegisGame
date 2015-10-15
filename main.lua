@@ -118,6 +118,8 @@ function love.keyreleased(key)
 	
 	if key == "`" then
 		debugText.visible = not debugText.visible
+	elseif key == "p" then
+		General.timeScale = (math.floor(General.timeScale) + 1) % 2
 	end
 end
 

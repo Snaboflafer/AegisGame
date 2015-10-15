@@ -220,19 +220,23 @@ function Sprite:update()
 		if (self.y < camera.y * self.scrollFactorY) and
 			(locks % Sprite.ALL == 0 or locks % Sprite.UP == 0 or locks % Sprite.UPDOWN == 0) then
 			self.y = camera.y * self.scrollFactorY
+			self.velocityY = -self.velocityY * self.bounceFactor
 			self.touching = Sprite.UP
 		elseif (self.y + self.height > camera.y * self.scrollFactorY + camera.height)
 			and (locks % Sprite.ALL == 0 or locks % Sprite.DOWN == 0 or locks % Sprite.UPDOWN == 0) then
 			self.y = camera.y * self.scrollFactorY + camera.height - self.height
+			self.velocityY = -self.velocityY * self.bounceFactor
 			self.touching = Sprite.DOWN
 		end
 		if (self.x < camera.x * self.scrollFactorX)
 			and (locks % Sprite.ALL == 0 or locks % Sprite.LEFT == 0 or locks % Sprite.SIDES == 0) then
 			self.x = camera.x * self.scrollFactorX
+			self.velocityX = -self.velocityX * self.bounceFactor
 			self.touching = Sprite.LEFT
 		elseif (self.x + self.width > camera.x * self.scrollFactorX + camera.width)
 			and (locks % Sprite.ALL == 0 or locks % Sprite.RIGHT == 0 or locks % Sprite.SIDES == 0) then
 			self.x = camera.x * self.scrollFactorX + camera.width - self.width
+			self.velocityX = -self.velocityX * self.bounceFactor
 			self.touching = Sprite.RIGHT
 		end
 	end
@@ -392,7 +396,7 @@ function Sprite:playAnimation(AName,Restart,MustFinish)
 		end
 	end
 	
-	if self.animMustFinish and not self.animFinished then
+	if self.animMustFinish and not self.animFinished and not Restart then
 		--Let current locked animation finish
 		return
 	end

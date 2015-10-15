@@ -21,7 +21,9 @@ Emitter = {
 	autoEnable = false,	--Turn off/on with parent
 	target = nil,		--(Optional) Target object. See lockTarget() for info
 	targetOffsetX = 0,
-	targetOffsetY = 0
+	targetOffsetY = 0,
+	callbackObject = nil,
+	callbackFunction = nil
 }
 
 --[[Create a new Emitter at the given location
@@ -187,9 +189,14 @@ function Emitter:emitParticle()
 	particle.velocityX = velocity * math.cos(angle)
 	particle.velocityY = -velocity * math.sin(angle)
 	
+	--Play sound if specified
 	if self.emitSound ~= nil then
 		self.emitSound:rewind()
 		self.emitSound:play()
+	end
+	--Run callback if specified
+	if self.callbackFunction ~= nil then
+		self.callbackFunction(self.callbackObject)
 	end
 end
 
@@ -251,6 +258,11 @@ end
 ]]
 function Emitter:setSound(SoundPath)
 	self.emitSound = love.audio.newSource(SoundPath)
+end
+
+function Emitter:setCallback(CallbackObject, CallbackFunction)
+	self.callbackObject = CallbackObject
+	self.callbackFunction = CallbackFunction
 end
 
 --[[ Lock a parent object for the emitter.  Emitter will sync

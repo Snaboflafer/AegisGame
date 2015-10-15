@@ -2,7 +2,8 @@ Player = {
 	weapons = {},
 	activeWeapon = 1,
 	score = 0,
-	enableControls = true
+	enableControls = true,
+	activeMode = nil
 }
 
 thump = love.audio.newSource("sounds/thump.mp3")
@@ -49,13 +50,15 @@ end
 
 function Player:keypressed(Key)
 	if Key == " " then
-		self.weapons[self.activeWeapon]:restart()
+		--self.weapons[self.activeWeapon]:restart()
+		self:attackStart()
 	end
 end
 
 function Player:keyreleased(Key)
 	if Key == " " then
-		self.weapons[self.activeWeapon]:stop()
+		--self.weapons[self.activeWeapon]:stop()
+		self:attackStop()
 	end
 end
 
