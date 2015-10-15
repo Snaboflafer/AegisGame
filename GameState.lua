@@ -65,8 +65,9 @@ function GameState:load()
 
 	
 	--Create player (flying)
+	local image, height, width = LevelManager:getPlayerShip()
 	self.playerShip = PlayerShip:new(100, 100)
-	self.playerShip:loadSpriteSheet("images/sprites/player_ship.png",160,80)
+	self.playerShip:loadSpriteSheet(image, height, width)
 	self.playerShip:setAnimations()
 	self.playerShip:setCollisionBox(46, 34, 91, 20)
 	self.playerShip:lockToScreen(Sprite.ALL)
@@ -107,8 +108,10 @@ function GameState:load()
 		self.emitters:add(jetTrail)
 	end
 
+	image, height, width = LevelManager:getPlayerMech()
+
 	self.playerMech = PlayerMech:new(100,100)
-	self.playerMech:loadSpriteSheet("images/sprites/player_mech.png",192,192)
+	self.playerMech:loadSpriteSheet(image, height, width)
 	self.playerMech:setAnimations()
 	self.playerMech:setCollisionBox(68, 44, 50, 104)
 	self.playerMech:lockToScreen(Sprite.ALL)
@@ -120,14 +123,14 @@ function GameState:load()
 	--Attach main gun to mech to avoid crash (TEMP)
 	playerGun = Emitter:new(0,0)
 	for i=1, 5 do
-		local curParticle = Sprite:new(0,0,"images/particles/bullet_orange_16.png")
+		local curParticle = Sprite:new(0,0,LevelManager:getParticle("bullet-orange"))
 		playerGun:addParticle(curParticle)
 		self.playerBullets:add(curParticle)
 	end
 	playerGun:setSpeed(500)
 	playerGun:setAngle(0,1)
 	playerGun:lockParent(self.playerMech, false, 107, 16)
-	playerGun:setSound("sounds/cannon.wav")
+	playerGun:setSound(LevelManager:getSound("cannon"))
 	playerGun:setCallback(self.playerMech, PlayerMech.fireGun)
 	playerGun:start(false, 3, .5, -1)
 	playerGun:stop()
@@ -145,10 +148,8 @@ function GameState:load()
 	self.enemyBullets = Group:new()
 	--Don't add bullets directly to state, will let particle emitters handle them
 
-
 	--Put particles on top of everything else
 	GameState:add(self.emitters)
-
 	
 	--Hud
 	self.hud = Group:new()
@@ -181,7 +182,7 @@ function GameState:load()
     self.bgmMusic:setLooping(true)
 	self.bgmMusic:setVolume(.2)
 	self.bgmMusic:play()
-	self.explosion = love.audio.newSource("sounds/explosion.wav")
+	self.explosion = love.audio.newSource(LevelManager:getSound("explosion"))
 end
 
 --[[ Spawn a group of enemies past the screen edge
@@ -213,7 +214,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			local enemyGun = Emitter:new(spawnX, spawnY)
 			for j=1, 2 do
 				--Create bullets
-				local curBullet = Sprite:new(spawnX, spawnY, "images/particles/bullet_red_16.png")
+				local curBullet = Sprite:new(spawnX, spawnY, LevelManager:getParticle("bullet-red"))
 				enemyGun:addParticle(curBullet)
 				self.enemyBullets:add(curBullet)
 			end
@@ -228,7 +229,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			--Thruster particles
 			local enemyThruster = Emitter:new(spawnX, spawnY)
 			for j=1, 5 do
-				local curParticle = Sprite:new(spawnX, spawnY, "images/particles/thruster_small.png")
+				local curParticle = Sprite:new(spawnX, spawnY, LevelManager:getParticle("thruster"))
 				enemyThruster:addParticle(curParticle)
 			end
 			enemyThruster:setSpeed(50, 60)
