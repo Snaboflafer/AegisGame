@@ -10,6 +10,7 @@ function GameState:load()
 	State:load()
 	LevelManager:parseJSON("game.json")
 
+	currentLevel = 2
 	self.isAlive = true
 	isInvincible = false
 	--Create camera
@@ -27,16 +28,14 @@ function GameState:load()
 
 	--Create background
 	for i=0, 1, 1 do 
-		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getLevelBackground(1))
-		spriteBg.scrollFactorX = .3
-		spriteBg.scrollFactorY = .3
+		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getLevelBackground(currentLevel))
 		self.wrappingSprites:add(spriteBg)
 	end
 
 	--Create floor
 	self.ground = Group:new()
 	for i=0, 4 do 
-		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLevelFloor(1))
+		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLevelFloor(currentLevel))
 		floorBlock:setCollisionBox(0,30, 256, 198)
 		floorBlock.immovable = true
 		self.ground:add(floorBlock)
@@ -138,7 +137,6 @@ function GameState:load()
 	--Set as player first, then toggle to do camera setup
 	self.player = self.playerShip
 	GameState:togglePlayerMode("mech")
-	
 	
 	--Create enemies
 	self.enemies = Group:new()
@@ -366,7 +364,7 @@ local currentTrigger = 1
 local waveStart = 0
 function GameState:generateEnemies()
 
-	local enemyGroups = LevelManager:getTriggers(1)
+	local enemyGroups = LevelManager:getTriggers(currentLevel)
 
 	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
 

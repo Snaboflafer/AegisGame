@@ -11,6 +11,10 @@ function LevelManager:parseJSON(fileName)
 	LevelManager.jsonObject = JSON:decode(contents)
 end
 
+function LevelManager:getNumLevels()
+	return table.getn(LevelManager.jsonObject["levels"])
+end
+
 function LevelManager:getLevelBackground(levelNumber)
 	return LevelManager.jsonObject["levels"][levelNumber]["background"]
 end
