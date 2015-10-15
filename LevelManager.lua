@@ -39,7 +39,13 @@ end
 function LevelManager:getPlayerMech()
 	local mech = LevelManager.jsonObject["player"]["mech"]
 	return mech["image"], mech["height"], mech["width"]
-end 
+end
+
+function LevelManager:getEnemy()
+	local enemy = LevelManager.jsonObject["enemy"]
+	return enemy["image"], enemy["height"], enemy["width"]
+end
+
 
 function LevelManager:getSound(id)
 	return LevelManager.jsonObject["sounds"][id]["src"]
@@ -48,4 +54,3 @@ end
 function LevelManager:getParticle(id)
 	return LevelManager.jsonObject["particles"][id]["src"]
 end
-

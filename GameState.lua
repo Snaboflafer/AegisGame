@@ -96,7 +96,7 @@ function GameState:load()
 		local jetTrail = Emitter:new(0, 0)
 		for j=1, 20 do
 			local curParticle = Sprite:new(0, 0)
-			curParticle:loadSpriteSheet("images/particles/player_trail.png", 8,3)
+			curParticle:loadSpriteSheet(LevelManager:getParticle("trail"), 8,3)
 			curParticle:addAnimation("idle", {1,2,3,4}, .08, false)
 			curParticle:playAnimation("idle")
 			jetTrail:addParticle(curParticle)
@@ -193,6 +193,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 	local cameraX, cameraY = self.camera:getPosition()
 	local spawnY = SpawnY or General.screenH/3
 	
+	local image, height, width = LevelManager:getEnemy()
 	for i=1, NumEnemies or 5 do
 		--Calculate location
 		local spawnX = cameraX + General.screenW + (i * 128)
@@ -204,7 +205,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			--None found, need to create a new enemy
 			curEnemy = {}
 			curEnemy = Enemy:new(spawnX, spawnY)
-			curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
+			curEnemy:loadSpriteSheet(image, height, width)
 			curEnemy:setAnimations()
 			curEnemy:setPointValue(100)
 			curEnemy:setCollisionBox(7, 26, 44, 19)

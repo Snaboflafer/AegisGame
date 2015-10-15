@@ -24,7 +24,7 @@
          "music":"sounds/music_Mines_Synth2.ogg",
          "triggers":[  
             {  
-               "distance":1000,
+               "distance":500,
                "type":"enemy",
                "number":3
             },
@@ -52,9 +52,9 @@
          "music":"sounds/music_Mines_Synth2.ogg",
          "triggers":[  
             {  
-               "distance":1000,
+               "distance":500,
                "type":"enemy",
-               "number":300
+               "number":3
             },
             {  
                "distance":1500,
@@ -91,6 +91,9 @@
       },
       "thruster":{  
          "src":"images/particles/thruster_small.png"
+      },
+      "trail": {
+         "src": "images/particles/player_trail.png"
       }
    }
 }
