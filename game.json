@@ -54,7 +54,7 @@
             {  
                "distance":1000,
                "type":"enemy",
-               "number":300
+               "number":3
             },
             {  
                "distance":1500,
