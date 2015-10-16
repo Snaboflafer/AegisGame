@@ -11,6 +11,8 @@ Sprite = {
 	UPDOWN = 3,
 	SIDES = 12,
 	ALL = 15,
+	color = nil,
+	alpha = 255,
 	touching = 0,
 	touchingPrev = 0,
 	x = 0,	--Position
@@ -35,7 +37,7 @@ Sprite = {
 	scrollFactorX = 1,
 	scrollFactorY = 1,
 	imageFile = "[NO IMAGE]",	--Filename for image
-	image = love.graphics.newImage("/images/err_noImage.png"), --Image of sprite
+	image = nil, --Image of sprite
 	lockSides = 0,	--Set to true to prevent sprite from moving offscreen
 	animated = false,
 	animations = {},	--List of animations registered for sprite
@@ -59,11 +61,14 @@ Sprite = {
 	active = true,		--Whether the sprite should update
 	visible = true,		--Whether the sprite should draw
 	solid = true,		--Whether the sprite responds to collisions
+	alive = true,
 	lifetime = 0,
-	health = 0,
-	maxhealth = 0,
+	health = 1,
+	maxhealth = 1,
 	attackPower = 0,
-	showDebug = false
+	showDebug = false,
+	last = nil,
+	flickerDuration = 0
 }
 
 function Sprite:setActive(Active)
@@ -103,9 +108,12 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	if (ImageFile ~= nil) then
 		s.imageFile = ImageFile
 		s.image = love.graphics.newImage(s.imageFile)
+		s.width = Width or s.image:getWidth()
+		s.height = Height s.image:getHeight()
 	end
-	s.width = Width or s.image:getWidth()
-	s.height = Height s.image:getHeight()
+	
+	s.color = {255,255,255}
+	s.alpha = 255
 	
 	s.touching = Sprite.NONE
 	s.touchingPrev = Sprite.NONE
@@ -116,6 +124,11 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	s.alive = true
 	s.visible = true
 	s.active = true
+	
+	s.last = {
+		x = X,
+		y = Y
+	}
 	
 	return s
 end
@@ -147,6 +160,13 @@ function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 	end
 end
 
+function Sprite:createGraphic(Width, Height, Color, Alpha)
+	self.width = Width
+	self.height = Height
+	self.color = Color
+	self.alpha = Alpha
+end
+
 --[[Dispose of the object
 --]]
 function Sprite:destroy()
@@ -156,11 +176,51 @@ function Sprite:destroy()
 	self = nil
 end
 
+function Sprite:kill()
+	self.alive = false
+	self.exists = false
+end
+
+function Sprite:reset(X, Y)
+	self.exists = true
+	self.alive = true
+	self.x = X or self.x
+	self.y = Y or self.y
+	self.last.x = X or self.x
+	self.last.y = Y or self.y
+	self.velocityX = 0
+	self.velocityY = 0
+	self.touching = self.NONE
+end
+
+function Sprite:hurt(Damage)
+	self.health = self.health - Damage
+	if self.health <= 0 then
+		self:kill()
+	end
+end
+
+function Sprite:hardCollide(Object1, Object2)
+	Object1:hurt(Object2.attackPower)
+	Object2:hurt(Object1.attackPower)
+end
+
 -- updates velocity and position of sprite
 function Sprite:update()
 	if not self.active or not self.exists then
 		return
 	end
+	
+	if self.flickerDuration > 0 then
+		self.visible = not self.visible
+		self.flickerDuration = self.flickerDuration - General.elapsed
+		if self.flickerDuration <= 0 then
+			self.visible = true
+		end
+	end
+	
+	self.last.x = self.x
+	self.last.y = self.y
 	
 	self.lifetime = self.lifetime + General.elapsed
 	
@@ -256,7 +316,16 @@ function Sprite:draw()
 	
 	local camera = General:getCamera()
 	
-	if self.animated then
+	love.graphics.setColor(self.color, self.alpha)
+	if self.image == nil then
+		love.graphics.rectangle(
+			"fill",
+			self.x,
+			self.y,
+			self.width,
+			self.height
+		)
+	elseif self.animated then
 		love.graphics.draw(
 			self.image, self.imageQuads[self.curAnim.frames[self.curAnimFrame]],
 			self.x - (camera.x * self.scrollFactorX),
@@ -458,6 +527,10 @@ function Sprite:updateAnimation()
 			self.curImageQuad = self.curAnim.frames[self.curAnimFrame]
 		end
 	end
+end
+
+function Sprite:flicker(Duration)
+	self.flickerDuration = Duration
 end
 
 --[[Prevent sprite from moving offscreen during update()

@@ -51,7 +51,7 @@ function GameState:load()
 	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(0,0,256,64)
 	self.collisionSprite:lockToScreen(Sprite.ALL)
-	self.collisionSprite:setExists(false)
+	--self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
 	
 
@@ -78,6 +78,7 @@ function GameState:load()
 	self.playerBullets = Group:new()
 	for i=1, 5 do
 		local curParticle = Sprite:new(0,0,"images/particles/laser.png")
+		curParticle.attackPower = 1
 		playerGun:addParticle(curParticle)
 		self.playerBullets:add(curParticle)
 	end
@@ -118,10 +119,11 @@ function GameState:load()
 	--self.camera:setDeadzone(128,32)
 	GameState:add(self.playerMech)
 	
-	--Attach main gun to mech to avoid crash (TEMP)
+	--Attach gun to mech
 	playerGun = Emitter:new(0,0)
 	for i=1, 5 do
 		local curParticle = Sprite:new(0,0,"images/particles/bullet_orange_16.png")
+		curParticle.attackPower = 2
 		playerGun:addParticle(curParticle)
 		self.playerBullets:add(curParticle)
 	end
@@ -154,6 +156,16 @@ function GameState:load()
 	
 	--Hud
 	self.hud = Group:new()
+	
+	local hpBack = Sprite:new(10,10)
+	hpBack:createGraphic(62, 16, {127,127,127}, 255)
+	self.hud:add(hpBack)
+	self.hpBar = Sprite:new(10,10)
+	self.hpBar:createGraphic(62, 16, {255,59,0}, 255)
+	self.hud:add(self.hpBar)
+	local hpOverlay = Sprite:new(10, 10, "images/ui/hud_health.png")
+	self.hud:add(hpOverlay)
+	
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
@@ -176,6 +188,9 @@ function GameState:load()
 	waveText:setVisible(false)
 	self.hud:add(waveText)
 	
+	self.hud:setEach("scrollFactorX", 0)
+	self.hud:setEach("scrollFactorY", 0)
+	
 	GameState:add(self.hud)
 	
 	--Do music
@@ -183,7 +198,6 @@ function GameState:load()
     self.bgmMusic:setLooping(true)
 	self.bgmMusic:setVolume(.2)
 	self.bgmMusic:play()
-	self.explosion = love.audio.newSource("sounds/explosion.wav")
 end
 
 --[[ Spawn a group of enemies past the screen edge
@@ -216,6 +230,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			for j=1, 2 do
 				--Create bullets
 				local curBullet = Sprite:new(spawnX, spawnY, "images/particles/bullet_red_16.png")
+				curBullet.attackPower = 1
 				enemyGun:addParticle(curBullet)
 				self.enemyBullets:add(curBullet)
 			end
@@ -289,9 +304,9 @@ function GameState:update()
 	General:collide(self.enemies, self.ground)
 	
 	--Collisions with custom callback actions
-	General:collide(self.player, self.enemyBullets, self, GameState.resColPlayerEnBullets)
-	General:collide(self.playerBullets, self.enemies, self, GameState.resColPlayerBulletEnemy)
-	General:collide(self.player, self.enemies, self, GameState.resColPlayerEnemy)
+	General:collide(self.player, self.enemyBullets, nil, Sprite.hardCollide)
+	General:collide(self.playerBullets, self.enemies, nil, Sprite.hardCollide)
+	General:collide(self.player, self.enemies, nil, Sprite.hardCollide)
 	General:collide(self.player, self.ground, self.player, self.player.collideGround, true)
 
 	self.cameraFocus.y = self.player.y
@@ -315,52 +330,6 @@ function GameState:update()
     end
 end
 
-function GameState:resColPlayerEnBullets(Player, Bullet)
-	-- Destroy animation
-	local x, y = Bullet:getCenter()
-	self.effect:play("explosion", x, y)
-
-	self.camera:screenShake(.01, .2)
-	
-	self.explosion:rewind()
-	self.explosion:play()
-
-	Bullet:setExists(false)
-	if isInvincible == false then
-		self.isAlive = false
-		self.player:kill()
-	end
-end
-
-function GameState:resColPlayerBulletEnemy(Bullet, Enemy)
-	-- Destroy animation
-	local x, y = Enemy:getCenter()
-	self.effect:play("explosion", x, y)
-
-	self.explosion:rewind()
-	self.explosion:play()
-	self.score = self.score + Enemy:getPointValue()
-
-	Bullet:setExists(false)
-	Enemy:setExists(false)
-end
-
-function GameState:resColPlayerEnemy(Player, Enemy)
-	-- Destroy animation
-	local x, y = Enemy:getCenter()
-	self.effect:play("explosion", x, y)
-
-	self.camera:screenShake(.01, .5)
-	
-	self.explosion:rewind()
-	self.explosion:play()
-
-	Enemy:setExists(false)
-	if isInvincible == false then	
-		self.isAlive = false
-		self.player:kill()
-	end
-end
 
 local currentTrigger = 1
 local waveStart = 0

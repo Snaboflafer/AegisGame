@@ -6,6 +6,9 @@ function Effect:new(ImageFile)
 	setmetatable(s, self)
 	setmetatable(self, Sprite)
 	self.__index = self
+	
+	s.sfxExplosion = love.audio.newSource("sounds/explosion.wav")
+	
 	return s
 end
 
@@ -17,6 +20,8 @@ end
 function Effect:play(Name, X, Y)
 	self:setPosition(X, Y - self.height / 2)
 	self:playAnimation(Name, true)
+	self.sfxExplosion:rewind()
+	self.sfxExplosion:play()
 
 end
 

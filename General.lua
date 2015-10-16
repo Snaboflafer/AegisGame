@@ -86,8 +86,14 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 	end
 	
 	
-	
-	if Object1:getType() == "Group" then
+	--Handle groups and unresolvable collisions
+	if Object1 == Object2 or Object2 == nil then
+		--Cannot collide a single sprite against itself
+		return
+	elseif not Object1.solid or not Object2.solid or not Object1.exists or not Object2.exists then
+		--Can't collide against one object
+		return false
+	elseif Object1:getType() == "Group" then
 		--First object is a group
 		
 		local didCollide = false
@@ -109,15 +115,7 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 			end
 		end
 		return didCollide
-	elseif Object1 == Object2 or Object2 == nil then
-		--Cannot collide a single sprite against itself
-		return
-	elseif not Object2.solid or not Object2.exists then
-		--Cannot collide against Object2
-		return
-	end
-	
-	if Object2:getType() == "Group" then
+	elseif Object2:getType() == "Group" then
 		local didCollide = false
 		for k,v in pairs(Object2.members) do
 			didCollide = didCollide or General:collide(Object1, Object2.members[k], CallbackTarget, CallbackFunction, PreCollide)
@@ -125,10 +123,6 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 		return didCollide
 	end
 	
-	
-	if Object1 == Object2 or not Object1.solid or not Object2.solid then
-		return false
-	end
 	
 	local obj1X = Object1.x
 	local obj1Y = Object1.y
@@ -206,7 +200,7 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 	if not PreCollide and callbackFunction ~= nil then
 		callbackFunction(callbackTarget, Object1, Object2)
 	end
-
+	
 	return true
 	
 end

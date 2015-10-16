@@ -2,7 +2,8 @@
 Enemy = {
 	pointValue = 0,
 	massless = true,
-	route = 0
+	route = 0,
+	attackPower = 1
 }
 
 function Enemy:new(X,Y,ImageFile)
@@ -12,6 +13,11 @@ function Enemy:new(X,Y,ImageFile)
 	self.__index = self
 	s.route = math.floor(math.random()*3)
 	return s
+end
+
+function Enemy:kill()
+	GameState.effect:play("explosion", self.x, self.y)
+	Sprite.kill(self)
 end
 
 function Enemy:respawn(SpawnX, SpawnY)
