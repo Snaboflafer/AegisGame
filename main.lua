@@ -44,6 +44,7 @@ function love.load()
 	frameTimes = {60}	--First value is average
 	frameStartTime = os.time()
 	
+	currentLevel = 1
 	General:setState(TitleState)
 end
 

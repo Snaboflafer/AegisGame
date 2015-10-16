@@ -10,7 +10,6 @@ function GameState:load()
 	State:load()
 	LevelManager:parseJSON("game.json")
 
-	currentLevel = 2
 	self.isAlive = true
 	isInvincible = false
 	--Create camera
@@ -363,13 +362,15 @@ function GameState:resColPlayerEnemy(Player, Enemy)
 end
 
 local currentTrigger = 1
-local waveStart = 0
 function GameState:generateEnemies()
-
 	local enemyGroups = LevelManager:getTriggers(currentLevel)
+	currentTrigger = self:executeNextTrigger(currentTrigger,enemyGroups)
+	currentTrigger = self:checkForEndOfLevel(currentTrigger,enemyGroups)
+end
 
+local waveStart = 0
+function GameState:executeNextTrigger(currentTrigger, enemyGroups)
 	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
-
 		if enemyGroups[currentTrigger]["type"] == "enemy" then
 			GameState:spawnEnemyGroup(enemyGroups[currentTrigger]["number"])
 			currentTrigger = currentTrigger + 1
@@ -377,15 +378,30 @@ function GameState:generateEnemies()
 		elseif enemyGroups[currentTrigger]["type"] == "text" then
 			if GameState:isWaveClear() == true then
 				waveText:setVisible(true)
-				currentTrigger = 1
-				waveStart = self.player.x
-				self.waveTimer = 3
-				self.cameraFocus.velocityX = self.cameraFocus.velocityX + 100
+				currentTrigger = currentTrigger + 1
+				waveStart = GameState.player.x
+				GameState.waveTimer = 3
+				GameState.cameraFocus.velocityX = GameState.cameraFocus.velocityX + 100
 			end
 		end
 	end
+	return currentTrigger
 end
 
+function GameState:checkForEndOfLevel(currentTrigger,enemyGroups)
+	if currentTrigger > table.getn(enemyGroups) and waveText.visible == false then 
+		if (currentLevel >= LevelManager:getNumLevels()) then
+			waveText:setLabel("VICTORY")
+			waveText:setVisible(true)
+			GameState.waveTimer = 1000
+		else
+			currentLevel = currentLevel + 1
+			General:setState(GameState)
+			currentTrigger = 1
+		end
+	end
+	return currentTrigger
+end
 
 function GameState:isWaveClear()
 	clear = true
@@ -445,7 +461,6 @@ end
 
 function GameState:gameOver()
 	Data:setScore(self.score)
-
 	GameState:updateHighScores("Player", self.score)
 	General:setState(MenuState)
 end
