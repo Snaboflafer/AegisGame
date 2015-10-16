@@ -33,8 +33,6 @@ function Utility:updateHighScores(name, score)
 	repeat
 		readName = file[filePosition] --next line with whitespace
 		filePosition = filePosition + 1
-		print("current file position:" .. filePosition)
-		print (file[1])
 	    readScore = tonumber(file[filePosition])--next number
 	    filePosition = filePosition + 1
 	    if newHighScore == false and score > readScore then
