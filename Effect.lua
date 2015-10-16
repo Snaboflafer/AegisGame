@@ -7,8 +7,8 @@ function Effect:new(ImageFile)
 	setmetatable(self, Sprite)
 	self.__index = self
 	
-	s.sfxExplosion = love.audio.newSource("sounds/explosion.wav")
-	
+	s.sfxExplosion = love.audio.newSource(LevelManager:getSound("explosion"))
+
 	return s
 end
 

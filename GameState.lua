@@ -27,16 +27,14 @@ function GameState:load()
 
 	--Create background
 	for i=0, 1, 1 do 
-		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getLevelBackground(1))
-		spriteBg.scrollFactorX = .3
-		spriteBg.scrollFactorY = .3
+		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getLevelBackground(currentLevel))
 		self.wrappingSprites:add(spriteBg)
 	end
 
 	--Create floor
 	self.ground = Group:new()
 	for i=0, 4 do 
-		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLevelFloor(1))
+		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLevelFloor(currentLevel))
 		floorBlock:setCollisionBox(0,30, 256, 198)
 		floorBlock.immovable = true
 		self.ground:add(floorBlock)
@@ -66,8 +64,9 @@ function GameState:load()
 
 	
 	--Create player (flying)
+	local image, height, width = LevelManager:getPlayerShip()
 	self.playerShip = PlayerShip:new(100, 100)
-	self.playerShip:loadSpriteSheet("images/sprites/player_ship.png",160,80)
+	self.playerShip:loadSpriteSheet(image, height, width)
 	self.playerShip:setAnimations()
 	self.playerShip:setCollisionBox(46, 34, 91, 20)
 	self.playerShip:lockToScreen(Sprite.ALL)
@@ -97,7 +96,7 @@ function GameState:load()
 		local jetTrail = Emitter:new(0, 0)
 		for j=1, 20 do
 			local curParticle = Sprite:new(0, 0)
-			curParticle:loadSpriteSheet("images/particles/player_trail.png", 8,3)
+			curParticle:loadSpriteSheet(LevelManager:getParticle("trail"), 8,3)
 			curParticle:addAnimation("idle", {1,2,3,4}, .08, false)
 			curParticle:playAnimation("idle")
 			jetTrail:addParticle(curParticle)
@@ -109,8 +108,10 @@ function GameState:load()
 		self.emitters:add(jetTrail)
 	end
 
+	image, height, width = LevelManager:getPlayerMech()
+
 	self.playerMech = PlayerMech:new(100,100)
-	self.playerMech:loadSpriteSheet("images/sprites/player_mech.png",192,192)
+	self.playerMech:loadSpriteSheet(image, height, width)
 	self.playerMech:setAnimations()
 	self.playerMech:setCollisionBox(68, 44, 50, 104)
 	self.playerMech:lockToScreen(Sprite.ALL)
@@ -130,7 +131,7 @@ function GameState:load()
 	playerGun:setSpeed(500)
 	playerGun:setAngle(0,1)
 	playerGun:lockParent(self.playerMech, false, 107, 16)
-	playerGun:setSound("sounds/cannon.wav")
+	playerGun:setSound(LevelManager:getSound("cannon"))
 	playerGun:setCallback(self.playerMech, PlayerMech.fireGun)
 	playerGun:start(false, 3, .5, -1)
 	playerGun:stop()
@@ -141,7 +142,6 @@ function GameState:load()
 	self.player = self.playerShip
 	GameState:togglePlayerMode("mech")
 	
-	
 	--Create enemies
 	self.enemies = Group:new()
 	GameState:add(self.enemies)
@@ -149,10 +149,8 @@ function GameState:load()
 	self.enemyBullets = Group:new()
 	--Don't add bullets directly to state, will let particle emitters handle them
 
-
 	--Put particles on top of everything else
 	GameState:add(self.emitters)
-
 	
 	--Hud
 	self.hud = Group:new()
@@ -208,6 +206,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 	local cameraX, cameraY = self.camera:getPosition()
 	local spawnY = SpawnY or General.screenH/3
 	
+	local image, height, width = LevelManager:getEnemy()
 	for i=1, NumEnemies or 5 do
 		--Calculate location
 		local spawnX = cameraX + General.screenW + (i * 128)
@@ -219,7 +218,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			--None found, need to create a new enemy
 			curEnemy = {}
 			curEnemy = Enemy:new(spawnX, spawnY)
-			curEnemy:loadSpriteSheet("images/enemy_1.png",64,64)
+			curEnemy:loadSpriteSheet(image, height, width)
 			curEnemy:setAnimations()
 			curEnemy:setPointValue(100)
 			curEnemy:setCollisionBox(7, 26, 44, 19)
@@ -229,7 +228,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			local enemyGun = Emitter:new(spawnX, spawnY)
 			for j=1, 2 do
 				--Create bullets
-				local curBullet = Sprite:new(spawnX, spawnY, "images/particles/bullet_red_16.png")
+				local curBullet = Sprite:new(spawnX, spawnY, LevelManager:getParticle("bullet-red"))
 				curBullet.attackPower = 1
 				enemyGun:addParticle(curBullet)
 				self.enemyBullets:add(curBullet)
@@ -245,7 +244,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			--Thruster particles
 			local enemyThruster = Emitter:new(spawnX, spawnY)
 			for j=1, 5 do
-				local curParticle = Sprite:new(spawnX, spawnY, "images/particles/thruster_small.png")
+				local curParticle = Sprite:new(spawnX, spawnY, LevelManager:getParticle("thruster"))
 				enemyThruster:addParticle(curParticle)
 			end
 			enemyThruster:setSpeed(50, 60)
@@ -332,13 +331,15 @@ end
 
 
 local currentTrigger = 1
-local waveStart = 0
 function GameState:generateEnemies()
+	local enemyGroups = LevelManager:getTriggers(currentLevel)
+	currentTrigger = self:executeNextTrigger(currentTrigger,enemyGroups)
+	currentTrigger = self:checkForEndOfLevel(currentTrigger,enemyGroups)
+end
 
-	local enemyGroups = LevelManager:getTriggers(1)
-
+local waveStart = 0
+function GameState:executeNextTrigger(currentTrigger, enemyGroups)
 	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
-
 		if enemyGroups[currentTrigger]["type"] == "enemy" then
 			GameState:spawnEnemyGroup(enemyGroups[currentTrigger]["number"])
 			currentTrigger = currentTrigger + 1
@@ -346,15 +347,30 @@ function GameState:generateEnemies()
 		elseif enemyGroups[currentTrigger]["type"] == "text" then
 			if GameState:isWaveClear() == true then
 				waveText:setVisible(true)
-				currentTrigger = 1
-				waveStart = self.player.x
-				self.waveTimer = 3
-				self.cameraFocus.velocityX = self.cameraFocus.velocityX + 100
+				currentTrigger = currentTrigger + 1
+				waveStart = GameState.player.x
+				GameState.waveTimer = 3
+				GameState.cameraFocus.velocityX = GameState.cameraFocus.velocityX + 100
 			end
 		end
 	end
+	return currentTrigger
 end
 
+function GameState:checkForEndOfLevel(currentTrigger,enemyGroups)
+	if currentTrigger > table.getn(enemyGroups) and waveText.visible == false then 
+		if (currentLevel >= LevelManager:getNumLevels()) then
+			waveText:setLabel("VICTORY")
+			waveText:setVisible(true)
+			GameState.waveTimer = 1000
+		else
+			currentLevel = currentLevel + 1
+			General:setState(GameState)
+			currentTrigger = 1
+		end
+	end
+	return currentTrigger
+end
 
 function GameState:isWaveClear()
 	clear = true
@@ -414,7 +430,6 @@ end
 
 function GameState:gameOver()
 	Data:setScore(self.score)
-
 	GameState:updateHighScores("Player", self.score)
 	General:setState(MenuState)
 end
