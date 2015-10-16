@@ -46,7 +46,6 @@ function LevelManager:getEnemy()
 	return enemy["image"], enemy["height"], enemy["width"]
 end
 
-
 function LevelManager:getSound(id)
 	return LevelManager.jsonObject["sounds"][id]["src"]
 end
