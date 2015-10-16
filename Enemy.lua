@@ -3,7 +3,8 @@ Enemy = {
 	pointValue = 0,
 	massless = true,
 	route = 0,
-	attackPower = 1
+	attackPower = 1,
+	score = 100
 }
 
 function Enemy:new(X,Y,ImageFile)
@@ -17,7 +18,12 @@ end
 
 function Enemy:kill()
 	GameState.effect:play("explosion", self.x, self.y)
+	Enemy:addToScore(self.score)
 	Sprite.kill(self)
+end
+
+function Enemy:addToScore(score)
+	GameState.score = GameState.score + score
 end
 
 function Enemy:respawn(SpawnX, SpawnY)
