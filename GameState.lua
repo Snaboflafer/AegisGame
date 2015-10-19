@@ -165,6 +165,7 @@ function GameState:load()
 	local hpW = 35 * 3
 	local hpH = 16
 	local hpBack = Sprite:new(hpX+28,hpY+8)
+
 	hpBack:createGraphic(hpW, hpH, {127,127,127}, 255)
 	self.hud:add(hpBack)
 	self.hpBar = Sprite:new(hpX+28,hpY+8)
@@ -176,15 +177,6 @@ function GameState:load()
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
-
-	waveText = Text:new(General.screenW/2, General.screenH*.5,
-		"End of wave!","fonts/04b09.ttf", 36)
-	waveText:setAlign(Text.CENTER)
-	waveText:setColor(255,200,0,255)
-	waveText:setShadow(200,0,0,255)
-	self.waveTimer = 3
-	waveText:setVisible(false)
-	self.hud:add(waveText)
 	
 	self.hud:setEach("scrollFactorX", 0)
 	self.hud:setEach("scrollFactorY", 0)
@@ -313,14 +305,6 @@ function GameState:update()
 	self.cameraFocus.y = self.player.y
 	
 	highScoreText:setLabel("Score: " .. self.score)
-
-	if waveText.visible == true then
-		self.waveTimer = self.waveTimer - General.elapsed
-		if self.waveTimer <= 0 then
-			waveText:setVisible(false)
-		end
-	end
-	
 end
 
 
@@ -341,7 +325,6 @@ function GameState:executeTrigger(Trigger)
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
 			Timer:new(3, self, GameState.nextStage)
-			waveText:setVisible(true)
 		else
 			self.lastTrigger = self.lastTrigger - 1
 		end
