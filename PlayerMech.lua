@@ -16,7 +16,7 @@ function PlayerMech:new(X,Y,ImageFile)
 	s.accelerationY = self.GRAVITY
 	
 	s.change = love.audio.newSource(LevelManager:getSound("mech_to_ship"))
-
+	s.hitGround = love.audio.newSource(LevelManager:getSound("hit_ground"))
 	return s
 end
 
@@ -28,6 +28,7 @@ function PlayerMech:setAnimations()
 	self:playAnimation("idle")
 end
 
+local hittingGround = false
 function PlayerMech:update()
 	if self.enableControls then
 		--self.weapons[self.activeWeapon]:setPosition(self.x+66, self.y+12)
@@ -40,15 +41,22 @@ function PlayerMech:update()
 		else
 			self.accelerationX = 0
 		end
-		
 		if self.touching == Sprite.DOWN then
 			--On ground
+			if (hittingGround == false) then
+				self.hitGround:rewind()
+				self.hitGround:play()
+				hittingGround = true
+			end
 			self.dragX = self.DRAG
 			if love.keyboard.isDown("k") then
 				self.velocityY = -self.JUMPPOWER
 			end
 		else
 			--In air
+			if (hittingGround == true) then
+				hittingGround = false
+			end
 			self.dragX = self.DRAG / 10
 		end
 		

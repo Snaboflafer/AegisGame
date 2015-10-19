@@ -89,6 +89,9 @@
      },
      "mech_to_ship":{
        "src":"sounds/powerup.wav"
+     },
+     "hit_ground":{
+       "src":"sounds/ground_hit.wav"
      }
    },
    "particles":{  
