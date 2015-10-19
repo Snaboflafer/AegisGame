@@ -10,7 +10,6 @@ time = 0
 
 require("General")
 require("Utility")
-require("Data")
 require("Camera")
 require("State")
 require("TitleState")

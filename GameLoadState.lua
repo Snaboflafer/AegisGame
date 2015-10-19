@@ -7,19 +7,10 @@ setmetatable(GameLoadState, State)
 
 function GameLoadState:load()
 	State.load(self)
-	
-	local txtTitle = "GameLoad"
-	
-	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
-						txtTitle, "fonts/Commodore.ttf", 64)
-	headerText:setAlign(Text.CENTER)
-	headerText:setColor(240, 240, 240, 255)
-	headerText:setShadow(0, 150, 150, 255)
-	GameLoadState:add(headerText)
+	local cutScence = Sprite:new(0, 0, "images/scene_1.png")
+	GameLoadState:add(cutScence)
 	
 	self.skipPrompt = Group:new()
-	
-	
 end
 
 function GameLoadState:start()

@@ -13,8 +13,35 @@ General = {
 	worldHeight = 0,
 	colDivisionsX = 16,
 	colDivisionsY = 16,
-	camera = nil
+	camera = nil,
+	mem1 = nil,
+	score = 0,
+	curLevel = 1
 }
+
+function General:setCurrentLevel(Level)
+	General.curLevel = Level
+end
+
+function General:getCurrentLevel()
+	return General.curLevel
+end
+
+function General:setScore(Value)
+	General.score = Value
+end
+
+function General:getScore()
+	return General.score
+end
+
+function General:setMem1(Value)
+	General.mem1 = Value
+end
+
+function General:getMem1()
+	return General.mem1
+end
 
 function General:init()
 	s = {}

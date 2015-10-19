@@ -81,7 +81,8 @@ function MenuState:keypressed(key)
 		self.optionSound:play()
 		self.selected = (self.selected + self.options:getSize()) % self.options:getSize() + 1
     elseif key == "return" or key == " " then
-		if self.selected == 1 then General:setState(GameState)
+		if self.selected == 1 then
+			General:setState(GameLoadState) 
 			self.startSound:rewind()
 			self.startSound:play()
 			--HighScoreState.loaded = false
