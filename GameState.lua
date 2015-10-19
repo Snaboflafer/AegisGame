@@ -35,7 +35,7 @@ function GameState:load()
 	self.ground = Group:new()
 	for i=0, 4 do 
 		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLevelFloor(currentLevel))
-		floorBlock:setCollisionBox(0,30, 256, 198)
+		floorBlock:setCollisionBox(0,30, 300, 198)
 		floorBlock.immovable = true
 		self.ground:add(floorBlock)
 		--self.wrappingSprites:add(floorBlock)
@@ -47,7 +47,7 @@ function GameState:load()
 		
 	--Collision test sprite
 	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
-	self.collisionSprite:setCollisionBox(0,0,256,64)
+	self.collisionSprite:setCollisionBox(0,0,300,64)
 	self.collisionSprite:lockToScreen(Sprite.ALL)
 	--self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
@@ -295,7 +295,9 @@ function GameState:update()
 		
 		local screenX = v:getScreenX()
 		if screenX + v.width < 0 then
-			v.x = v.x + Group.getSize(self.ground) * v.width
+			-- hardcoding width because collisionbox needs to be > width
+			-- but setCollisionBox sets width
+			v.x = v.x + Group.getSize(self.ground) * 256
 		end
 	end
 
