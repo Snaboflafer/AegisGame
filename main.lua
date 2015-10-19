@@ -38,7 +38,7 @@ function love.load()
 	--Camera:newCamera(General.screenW/2,General.screenH/2)
 
 	debugText = Text:new(0,0, "fonts/lucon.ttf", 12)
-	--debugText.visible = false
+	debugText.visible = false
 	
 	
 	frameTimes = {60}	--First value is average

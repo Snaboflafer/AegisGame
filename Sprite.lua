@@ -109,7 +109,7 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 		s.imageFile = ImageFile
 		s.image = love.graphics.newImage(s.imageFile)
 		s.width = Width or s.image:getWidth()
-		s.height = Height s.image:getHeight()
+		s.height = Height or s.image:getHeight()
 	end
 	
 	s.color = {255,255,255}
@@ -193,10 +193,14 @@ function Sprite:reset(X, Y)
 	self.touching = self.NONE
 end
 
-function Sprite:hurt(Damage)
-	self.health = self.health - Damage
-	if self.health <= 0 then
-		self:kill()
+function Sprite:hurt(Damage, OverrideValue)
+	if OverrideValue ~= nil then
+		self[OverrideValue] = self[OverrideValue] - Damage
+	else
+		self.health = self.health - Damage
+		if self.health <= 0 then
+			self:kill()
+		end
 	end
 end
 
