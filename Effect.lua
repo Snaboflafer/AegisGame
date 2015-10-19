@@ -18,7 +18,7 @@ function Effect:initialize(Name, ImageFile, Width, Height)
 end
 
 function Effect:play(Name, X, Y)
-	self:setPosition(X, Y - self.height / 2)
+	self:setPosition(X, Y)
 	self:playAnimation(Name, true)
 	self.sfxExplosion:rewind()
 	self.sfxExplosion:play()

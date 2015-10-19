@@ -52,7 +52,7 @@ function GameState:load()
 	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(0,0,300,64)
 	self.collisionSprite:lockToScreen(Sprite.ALL)
-	--self.collisionSprite:setExists(false)
+	self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
 	
 

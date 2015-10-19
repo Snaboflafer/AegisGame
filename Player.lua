@@ -54,7 +54,12 @@ end
 
 function Player:hurt(Damage)
 	if not self.invuln then
-		Sprite.hurt(self, Damage)
+		if self.activeMode == "mech" and self.shield > 0 then
+			Sprite.hurt(self, Damage, "shield")
+		else
+			Sprite.hurt(self, Damage)
+		end
+		
 		self.sfxHurt:play()
 		local hpWidth = (self.health/self.maxHealth) * 105
 		if hpWidth < 0 then
