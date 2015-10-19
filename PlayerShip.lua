@@ -11,7 +11,7 @@ function PlayerShip:new(X,Y,ImageFile)
 	
 	s.magnitude = 400
 	s.momentArm = math.sqrt(s.magnitude^2/2)
-
+    s.change = love.audio.newSource(LevelManager:getSound("ship_to_mech"))
 	return s
 end
 
@@ -91,6 +91,8 @@ function PlayerShip:update()
 end
 
 function PlayerShip:enterMode(X, Y, VX, VY, HP)
+	self.change:rewind()
+	self.change:play()
 	self.x = X
 	self.y = Y
 	self.velocityX = VX

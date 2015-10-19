@@ -83,7 +83,13 @@
       },
 	  "player_hurt":{
 		 "src":"sounds/hurt.wav"
-	  }
+	  },
+     "ship_to_mech":{
+       "src":"sounds/coin.wav"
+     },
+     "mech_to_ship":{
+       "src":"sounds/powerup.wav"
+     }
    },
    "particles":{  
       "bullet-red":{  
