@@ -47,10 +47,10 @@ function Camera:update()
 		
 		--Move camera if target is outside deadzone
 		if targetX < midX - self.deadzone.left then
-			self.x = self.x - (midX - targetX)*General.elapsed
+			self.x = self.x - (midX - self.deadzone.left - targetX)*General.elapsed
 		end
 		if targetX > midX + self.deadzone.right then
-			self.x = self.x  + (targetX - midX)*General.elapsed
+			self.x = self.x  + (targetX - midX - self.deadzone.right)*General.elapsed
 		end
 
 		if targetY < midY - self.deadzone.up then

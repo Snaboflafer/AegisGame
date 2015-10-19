@@ -3,7 +3,7 @@ PauseState = {
 	selected = 1
 }
 PauseState.__index = PauseState
-setmetatable(PauseState, MenuState)
+setmetatable(PauseState, State)
 
 function PauseState:load()
 	State.load(self)

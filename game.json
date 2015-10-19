@@ -48,7 +48,7 @@
       {  
          "number":2,
          "background":"images/forest.jpg",
-         "floor": "images/floor_snow_1.png",
+         "floor": "images/floor_stone_1.png",
          "music":"sounds/music_Mines_Synth2.ogg",
          "triggers":[  
             {  
@@ -80,7 +80,10 @@
       },
       "cannon":{  
          "src":"sounds/cannon.wav"
-      }
+      },
+	  "player_hurt":{
+		 "src":"sounds/hurt.wav"
+	  }
    },
    "particles":{  
       "bullet-red":{  

@@ -19,6 +19,8 @@ function Player:new(X,Y,ImageFile)
 	s.health = 3
 	s.maxHealth = 3
 	s.shield = 3
+	
+	s.sfxHurt = love.audio.newSource(LevelManager:getSound("player_hurt"))
 
 	return s
 end
@@ -53,7 +55,8 @@ end
 function Player:hurt(Damage)
 	if not self.invuln then
 		Sprite.hurt(self, Damage)
-		local hpWidth = (self.health/self.maxHealth) * 62
+		self.sfxHurt:play()
+		local hpWidth = (self.health/self.maxHealth) * 105
 		if hpWidth < 0 then
 			hpWidth = 0
 		end

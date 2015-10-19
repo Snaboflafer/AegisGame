@@ -155,13 +155,17 @@ function GameState:load()
 	--Hud
 	self.hud = Group:new()
 	
-	local hpBack = Sprite:new(10,10)
-	hpBack:createGraphic(62, 16, {127,127,127}, 255)
+	local hpX = 10
+	local hpY = 10
+	local hpW = 35 * 3
+	local hpH = 16
+	local hpBack = Sprite:new(hpX+28,hpY+8)
+	hpBack:createGraphic(hpW, hpH, {127,127,127}, 255)
 	self.hud:add(hpBack)
-	self.hpBar = Sprite:new(10,10)
-	self.hpBar:createGraphic(62, 16, {255,59,0}, 255)
+	self.hpBar = Sprite:new(hpX+28,hpY+8)
+	self.hpBar:createGraphic(hpW, hpH, {255,59,0}, 255)
 	self.hud:add(self.hpBar)
-	local hpOverlay = Sprite:new(10, 10, "images/ui/hud_health.png")
+	local hpOverlay = Sprite:new(hpX, hpY, "images/ui/hud_health.png")
 	self.hud:add(hpOverlay)
 	
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
@@ -307,7 +311,7 @@ function GameState:update()
 	General:collide(self.playerBullets, self.enemies, nil, Sprite.hardCollide)
 	General:collide(self.player, self.enemies, nil, Sprite.hardCollide)
 	General:collide(self.player, self.ground, self.player, self.player.collideGround, true)
-
+	
 	self.cameraFocus.y = self.player.y
 	
 	highScoreText:setLabel("Score: " .. self.score)
@@ -424,7 +428,7 @@ function GameState:togglePlayerMode()
 		self.playerMech:enterMode(self.playerShip:exitMode())
 		self.player = self.playerMech
 		self.camera:setTarget(self.player)
-		self.camera:setDeadzone(General.screenW, 0, -64, 0)
+		self.camera:setDeadzone(General.screenW, 0, -256, 0)
 	end
 end
 
