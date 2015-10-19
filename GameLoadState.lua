@@ -7,8 +7,16 @@ setmetatable(GameLoadState, State)
 
 function GameLoadState:load()
 	State.load(self)
-	local cutScence = Sprite:new(0, 0, "images/scene_1.png")
-	GameLoadState:add(cutScence)
+
+	local currentLevel = General:getCurrentLevel()
+	print(currentLevel)
+	if currentLevel == 1 then
+		cutScene = Sprite:new(0, 0, "images/scene_1.png")
+	else
+		cutScene = Sprite:new(0, 0, "images/scene_2.png")
+	end
+
+	GameLoadState:add(cutScene)
 	
 	self.skipPrompt = Group:new()
 end

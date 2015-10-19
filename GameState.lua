@@ -385,7 +385,7 @@ function GameState:nextStage()
 	Utility:updateHighScores("Player", self.score)
 	local currentLevel = General:getCurrentLevel()
 	General:setCurrentLevel(currentLevel + 1)
-	General:setState(GameState)
+	General:setState(GameLoadState)
 end
 
 function GameState:gameOver()
