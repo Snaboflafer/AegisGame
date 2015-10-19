@@ -3,9 +3,8 @@ GameState = {
 	CAMERASCROLLSPEED = 200,
 	playerGroundMode = false,
 	score = 0,
-	lastTrigger = 0,
-	curTriggerIndex = 0
-}	
+	lastTrigger = 0
+}
 GameState.__index = GameState
 setmetatable(GameState, State)
 
@@ -174,6 +173,16 @@ function GameState:load()
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
+
+	instructionText = Text:new(General.screenW/2, General.screenH*.5,
+		"Space to fire! \n Defeat the empire pawns\n for great justice","fonts/04b09.ttf", 36)
+	instructionText:setAlign(Text.CENTER)
+	instructionText:setColor(255,200,0,255)
+	instructionText:setShadow(200,0,0,255)
+	Timer:new(6, instructionText, Text.hide)
+
+	self.hud:add(instructionText)
+
 	waveText = Text:new(General.screenW/2, General.screenH*.5,
 		"End of wave!","fonts/04b09.ttf", 36)
 	waveText:setAlign(Text.CENTER)
@@ -272,6 +281,7 @@ function GameState:stop()
 end
 
 function GameState:update()
+	GameState:checkTriggers()
 
 	--Loop scenery groups
 	for k,v in pairs(self.wrappingSprites.members) do
@@ -284,6 +294,7 @@ function GameState:update()
 	end
 	for k,v in pairs(self.ground.members) do
 		-- if right side of wrapping sprite goes off left side of screen
+		
 		local screenX = v:getScreenX()
 		if screenX + v.width < 0 then
 			-- hardcoding width because collisionbox needs to be > width
@@ -293,6 +304,7 @@ function GameState:update()
 	end
 
 	State.update(self)
+	
 	
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
@@ -308,6 +320,7 @@ function GameState:update()
 	
 	highScoreText:setLabel("Score: " .. self.score)
 
+
 	if waveText.visible == true then
 		self.waveTimer = self.waveTimer - General.elapsed
 		if self.waveTimer <= 0 then
@@ -318,54 +331,68 @@ function GameState:update()
 end
 
 
-local currentTrigger = 1
 function GameState:checkTriggers()
-	--if self.curTrigger
+	if self.lastTrigger == table.getn(self.stageTriggers) then
+		return
+	end
+	if self.camera.x > self.stageTriggers[self.lastTrigger+1]["distance"] then
+		self.lastTrigger = self.lastTrigger + 1
+		GameState:executeTrigger(self.stageTriggers[self.lastTrigger])
+	end
 end
-function GameState:generateEnemies()
-	local enemyGroups = LevelManager:getTriggers(currentLevel)
-	currentTrigger = self:executeNextTrigger(currentTrigger,enemyGroups)
-	currentTrigger = self:checkForEndOfLevel(currentTrigger,enemyGroups)
-end
+--	function GameState:generateEnemies()
+--		local enemyGroups = LevelManager:getTriggers(currentLevel)
+--		currentTrigger = self:executeNextTrigger(currentTrigger,enemyGroups)
+--		currentTrigger = self:checkForEndOfLevel(currentTrigger,enemyGroups)
+--	end
 
 local waveStart = 0
 function GameState:executeTrigger(Trigger)
-
-end
-function GameState:executeNextTrigger(currentTrigger, enemyGroups)
-	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
-		if enemyGroups[currentTrigger]["type"] == "enemy" then
-			GameState:spawnEnemyGroup(enemyGroups[currentTrigger]["number"])
-			currentTrigger = currentTrigger + 1
-
-		elseif enemyGroups[currentTrigger]["type"] == "text" then
-			if GameState:isWaveClear() == true then
-				waveText:setVisible(true)
-				currentTrigger = currentTrigger + 1
-				waveStart = GameState.player.x
-				GameState.waveTimer = 3
-				GameState.cameraFocus.velocityX = GameState.cameraFocus.velocityX + 100
-			end
-		end
-	end
-	return currentTrigger
-end
-
-function GameState:checkForEndOfLevel(currentTrigger,enemyGroups)
-	if currentTrigger > table.getn(enemyGroups) and waveText.visible == false then 
-		if (currentLevel >= LevelManager:getNumLevels()) then
-			waveText:setLabel("VICTORY")
+	local triggerType = Trigger["type"]
+	if triggerType == "enemy" then
+		GameState:spawnEnemyGroup(Trigger["value"])
+	elseif triggerType == "waveClear" then
+		if GameState:isWaveClear() then
+			Timer:new(3, self, GameState.nextStage)
 			waveText:setVisible(true)
-			GameState.waveTimer = 1000
 		else
-			local currentLevel = General:getCurrentLevel()
-			General:setCurrentLevel(currentLevel + 1)
-			General:setState(GameLoadedState)
-			currentTrigger = 1
+			self.lastTrigger = self.lastTrigger - 1
 		end
 	end
-	return currentTrigger
 end
+--function GameState:executeNextTrigger(currentTrigger, enemyGroups)
+--	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
+--		if enemyGroups[currentTrigger]["type"] == "enemy" then
+--			GameState:spawnEnemyGroup(enemyGroups[currentTrigger]["number"])
+--			currentTrigger = currentTrigger + 1
+--
+--		elseif enemyGroups[currentTrigger]["type"] == "text" then
+--			if GameState:isWaveClear() == true then
+--				waveText:setVisible(true)
+--				currentTrigger = currentTrigger + 1
+--				waveStart = GameState.player.x
+--				GameState.waveTimer = 3
+--				GameState.cameraFocus.velocityX = GameState.cameraFocus.velocityX + 100
+--			end
+--		end
+--	end
+--	return currentTrigger
+--end
+
+--function GameState:checkForEndOfLevel(currentTrigger,enemyGroups)
+--	if currentTrigger > table.getn(enemyGroups) and waveText.visible == false then 
+--		if (currentLevel >= LevelManager:getNumLevels()) then
+--			waveText:setLabel("VICTORY")
+--			waveText:setVisible(true)
+--			GameState.waveTimer = 1000
+--		else
+--			currentLevel = currentLevel + 1
+--			General:setState(GameState)
+--			currentTrigger = 1
+--		end
+--	end
+--	return currentTrigger
+--end
 
 function GameState:isWaveClear()
 	clear = true
@@ -385,6 +412,7 @@ function GameState:keypressed(Key)
 	if Key == "lshift" then
 		self:togglePlayerMode()
 	end
+
 	--Temporary until input manager
 	self.player:keypressed(Key)
 end
@@ -416,8 +444,13 @@ function GameState:togglePlayerMode()
 	end
 end
 
+function GameState:nextStage()
+	Utility:updateHighScores("Player", self.score)
+	General:setState(GameState)
+end
+
 function GameState:gameOver()
-	General:setScore(self.score)
+	Data:setScore(self.score)
 	Utility:updateHighScores("Player", self.score)
 	--General:setState(MenuState)
 	General:setState(GameEndedState)
