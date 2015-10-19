@@ -15,6 +15,8 @@ function PlayerMech:new(X,Y,ImageFile)
 	s.dragX = self.DRAG
 	s.accelerationY = self.GRAVITY
 	
+	s.change = love.audio.newSource(LevelManager:getSound("mech_to_ship"))
+
 	return s
 end
 
@@ -64,6 +66,8 @@ function PlayerMech:update()
 end
 
 function PlayerMech:enterMode(X, Y, VX, VY, HP)
+	self.change:rewind()
+	self.change:play()
 	self.x = X
 	self.y = Y
 	self.velocityX = VX
