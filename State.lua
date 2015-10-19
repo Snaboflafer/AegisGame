@@ -1,8 +1,8 @@
 --State Object
 
 State = {
-	members = {},
 	loaded = false,
+	members = {},
 	time = 0
 }
 
@@ -10,6 +10,7 @@ State.__index = State
 
 function State:load()
 	self.members = {}
+	self.showDebug = true
 	self.loaded = true
 end
 function State:unload()

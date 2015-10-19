@@ -2,7 +2,8 @@
 
 Data = {
 	mem1 = nil,
-	score = 0
+	score = 0,
+	curLevel = 1
 }
 
 function Data:setScore(Value)

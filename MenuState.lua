@@ -1,5 +1,6 @@
 --- Menu screen state.
 MenuState = {
+	loaded = false,
 	selected = 1
 }
 MenuState.__index = MenuState

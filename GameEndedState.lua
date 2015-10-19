@@ -1,11 +1,12 @@
 GameEndedState = {
+	loaded = false,
 	title = "GAME OVER"
 }
 GameEndedState.__index = GameEndedState
 setmetatable(GameEndedState, State)
 
 function GameEndedState:load()
-	State:load()
+	State.load(self)
 		
 	local txtHeader = "GAME OVER"
 	
@@ -29,7 +30,7 @@ end
 
 function GameEndedState:start()
 	State.start(self)
-	self.closeTimer = 2
+	self.closeTimer = 5
 end
 
 function GameEndedState:stop()
@@ -42,8 +43,8 @@ function GameEndedState:update()
 	self.closeTimer = self.closeTimer - General.elapsed
     if self.closeTimer <= 0 then
     	--patchwork fix for GameState improper closing bug
-    	love.event.push('quit')
-		--General:setState(HighScoreState)
+    	--love.event.push('quit')
+		General:setState(HighScoreState)
     end
 end
 

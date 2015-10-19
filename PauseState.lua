@@ -1,5 +1,6 @@
 --- Paused screen state. Currently just copies menu state.
 PauseState = {
+	loaded = false,
 	selected = 1
 }
 PauseState.__index = PauseState

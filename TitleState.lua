@@ -1,4 +1,6 @@
-TitleState = {}
+TitleState = {
+	loaded = false
+}
 TitleState.__index = TitleState
 setmetatable(TitleState, State)
 

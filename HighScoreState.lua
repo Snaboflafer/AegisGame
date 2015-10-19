@@ -1,5 +1,6 @@
 --- HighScoreState screen state.
 HighScoreState = {
+	loaded = false,
 	name = "High Scores",
 	time = 0,
 	highScores = nil

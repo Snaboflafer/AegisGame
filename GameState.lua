@@ -1,17 +1,18 @@
 GameState = {
+	loaded = false,
 	CAMERASCROLLSPEED = 200,
 	playerGroundMode = false,
-	score = 0
+	score = 0,
+	lastTrigger = 0,
+	curTriggerIndex = 0
 }	
 GameState.__index = GameState
 setmetatable(GameState, State)
 
 function GameState:load()
-	State:load()
+	State.load(self)
 	LevelManager:parseJSON("game.json")
 
-	self.isAlive = true
-	isInvincible = false
 	--Create camera
 	self.camera = General:newCamera(0,0)
 	self.camera:setBounds(0, -32, General.screenW + 32, General.screenH)
@@ -148,6 +149,8 @@ function GameState:load()
 	--self.enemies.showDebug = true
 	self.enemyBullets = Group:new()
 	--Don't add bullets directly to state, will let particle emitters handle them
+	self.lastTrigger = 0
+	self.stageTriggers = LevelManager:getTriggers(currentLevel)
 
 	--Put particles on top of everything else
 	GameState:add(self.emitters)
@@ -279,7 +282,6 @@ function GameState:stop()
 end
 
 function GameState:update()
-	GameState:generateEnemies()
 
 	--Loop scenery groups
 	for k,v in pairs(self.wrappingSprites.members) do
@@ -299,7 +301,7 @@ function GameState:update()
 		end
 	end
 
-	State:update()
+	State.update(self)
 	
 	
 	General:collide(self.enemies)				--Collide Group with itself
@@ -324,17 +326,13 @@ function GameState:update()
 		end
 	end
 	
-	if self.isAlive == false then
-		self.player.accelerationY = 200
-		self.player.dragX = 1
-		self.player.enableControls = false
-		self.player.bounceFactor = .2
-		self.cameraFocus.dragX = .5
-    end
 end
 
 
 local currentTrigger = 1
+function GameState:checkTriggers()
+	--if self.curTrigger
+end
 function GameState:generateEnemies()
 	local enemyGroups = LevelManager:getTriggers(currentLevel)
 	currentTrigger = self:executeNextTrigger(currentTrigger,enemyGroups)
@@ -342,6 +340,9 @@ function GameState:generateEnemies()
 end
 
 local waveStart = 0
+function GameState:executeTrigger(Trigger)
+
+end
 function GameState:executeNextTrigger(currentTrigger, enemyGroups)
 	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
 		if enemyGroups[currentTrigger]["type"] == "enemy" then
@@ -403,12 +404,6 @@ function GameState:keyreleased(Key)
 
 	if Key == "escape" then
 		General:setState(PauseState,false)
-	elseif Key == 'i' then
-		if isInvincible == true then
-			isInvincible = false
-		else
-			isInvincible = true
-		end
 	end
 
 	--Temporary until input manager
@@ -435,5 +430,6 @@ end
 function GameState:gameOver()
 	Data:setScore(self.score)
 	Utility:updateHighScores("Player", self.score)
-	General:setState(MenuState)
+	--General:setState(MenuState)
+	General:setState(GameEndedState)
 end
