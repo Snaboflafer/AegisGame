@@ -3,8 +3,9 @@ GameState = {
 	CAMERASCROLLSPEED = 200,
 	playerGroundMode = false,
 	score = 0,
-	lastTrigger = 0
-}
+	lastTrigger = 0,
+	curTriggerIndex = 0
+}	
 GameState.__index = GameState
 setmetatable(GameState, State)
 
@@ -446,11 +447,13 @@ end
 
 function GameState:nextStage()
 	Utility:updateHighScores("Player", self.score)
+	local level = Utility:getCurrentLevel()
+	Utilet:setCurrentLeve(level + 1)
 	General:setState(GameState)
 end
 
 function GameState:gameOver()
-	Data:setScore(self.score)
+	General:setScore(self.score)
 	Utility:updateHighScores("Player", self.score)
 	--General:setState(MenuState)
 	General:setState(GameEndedState)

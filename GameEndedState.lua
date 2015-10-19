@@ -23,7 +23,7 @@ function GameEndedState:load()
 	GameEndedState:add(headerText)
 	
 	local scoreText = Text:new(General.screenW * .5, General.screenH * .5,
-						Data:getScore(), "fonts/Commodore.ttf", 48)
+						General:getScore(), "fonts/Commodore.ttf", 48)
 	scoreText:setAlign(Text.CENTER)
 	GameEndedState:add(scoreText)
 end
