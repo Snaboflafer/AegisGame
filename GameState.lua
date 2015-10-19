@@ -26,6 +26,8 @@ function GameState:load()
 
 	self.wrappingSprites = Group:new()
 
+	local currentLevel = General:getCurrentLevel()
+
 	--Create background
 	for i=0, 1, 1 do 
 		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getLevelBackground(currentLevel))
@@ -175,15 +177,6 @@ function GameState:load()
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
 
-	instructionText = Text:new(General.screenW/2, General.screenH*.5,
-		"Space to fire! \n Defeat the empire pawns\n for great justice","fonts/04b09.ttf", 36)
-	instructionText:setAlign(Text.CENTER)
-	instructionText:setColor(255,200,0,255)
-	instructionText:setShadow(200,0,0,255)
-	Timer:new(6, instructionText, Text.hide)
-
-	self.hud:add(instructionText)
-
 	waveText = Text:new(General.screenW/2, General.screenH*.5,
 		"End of wave!","fonts/04b09.ttf", 36)
 	waveText:setAlign(Text.CENTER)
@@ -321,7 +314,6 @@ function GameState:update()
 	
 	highScoreText:setLabel("Score: " .. self.score)
 
-
 	if waveText.visible == true then
 		self.waveTimer = self.waveTimer - General.elapsed
 		if self.waveTimer <= 0 then
@@ -341,13 +333,7 @@ function GameState:checkTriggers()
 		GameState:executeTrigger(self.stageTriggers[self.lastTrigger])
 	end
 end
---	function GameState:generateEnemies()
---		local enemyGroups = LevelManager:getTriggers(currentLevel)
---		currentTrigger = self:executeNextTrigger(currentTrigger,enemyGroups)
---		currentTrigger = self:checkForEndOfLevel(currentTrigger,enemyGroups)
---	end
 
-local waveStart = 0
 function GameState:executeTrigger(Trigger)
 	local triggerType = Trigger["type"]
 	if triggerType == "enemy" then
@@ -361,39 +347,6 @@ function GameState:executeTrigger(Trigger)
 		end
 	end
 end
---function GameState:executeNextTrigger(currentTrigger, enemyGroups)
---	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
---		if enemyGroups[currentTrigger]["type"] == "enemy" then
---			GameState:spawnEnemyGroup(enemyGroups[currentTrigger]["number"])
---			currentTrigger = currentTrigger + 1
---
---		elseif enemyGroups[currentTrigger]["type"] == "text" then
---			if GameState:isWaveClear() == true then
---				waveText:setVisible(true)
---				currentTrigger = currentTrigger + 1
---				waveStart = GameState.player.x
---				GameState.waveTimer = 3
---				GameState.cameraFocus.velocityX = GameState.cameraFocus.velocityX + 100
---			end
---		end
---	end
---	return currentTrigger
---end
-
---function GameState:checkForEndOfLevel(currentTrigger,enemyGroups)
---	if currentTrigger > table.getn(enemyGroups) and waveText.visible == false then 
---		if (currentLevel >= LevelManager:getNumLevels()) then
---			waveText:setLabel("VICTORY")
---			waveText:setVisible(true)
---			GameState.waveTimer = 1000
---		else
---			currentLevel = currentLevel + 1
---			General:setState(GameState)
---			currentTrigger = 1
---		end
---	end
---	return currentTrigger
---end
 
 function GameState:isWaveClear()
 	clear = true
@@ -447,8 +400,8 @@ end
 
 function GameState:nextStage()
 	Utility:updateHighScores("Player", self.score)
-	local level = Utility:getCurrentLevel()
-	Utilet:setCurrentLeve(level + 1)
+	local currentLevel = General:getCurrentLevel()
+	General:setCurrentLevel(currentLevel + 1)
 	General:setState(GameState)
 end
 
