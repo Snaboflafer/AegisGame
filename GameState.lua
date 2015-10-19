@@ -3,9 +3,8 @@ GameState = {
 	CAMERASCROLLSPEED = 200,
 	playerGroundMode = false,
 	score = 0,
-	lastTrigger = 0,
-	curTriggerIndex = 0
-}	
+	lastTrigger = 0
+}
 GameState.__index = GameState
 setmetatable(GameState, State)
 
@@ -149,7 +148,6 @@ function GameState:load()
 	--self.enemies.showDebug = true
 	self.enemyBullets = Group:new()
 	--Don't add bullets directly to state, will let particle emitters handle them
-	self.lastTrigger = 0
 	self.stageTriggers = LevelManager:getTriggers(currentLevel)
 
 	--Put particles on top of everything else
@@ -282,6 +280,7 @@ function GameState:stop()
 end
 
 function GameState:update()
+	GameState:checkTriggers()
 
 	--Loop scenery groups
 	for k,v in pairs(self.wrappingSprites.members) do
@@ -331,53 +330,68 @@ function GameState:update()
 end
 
 
-local currentTrigger = 1
 function GameState:checkTriggers()
-	--if self.curTrigger
+	if self.lastTrigger == table.getn(self.stageTriggers) then
+		return
+	end
+	if self.camera.x > self.stageTriggers[self.lastTrigger+1]["distance"] then
+		self.lastTrigger = self.lastTrigger + 1
+		GameState:executeTrigger(self.stageTriggers[self.lastTrigger])
+	end
 end
-function GameState:generateEnemies()
-	local enemyGroups = LevelManager:getTriggers(currentLevel)
-	currentTrigger = self:executeNextTrigger(currentTrigger,enemyGroups)
-	currentTrigger = self:checkForEndOfLevel(currentTrigger,enemyGroups)
-end
+--	function GameState:generateEnemies()
+--		local enemyGroups = LevelManager:getTriggers(currentLevel)
+--		currentTrigger = self:executeNextTrigger(currentTrigger,enemyGroups)
+--		currentTrigger = self:checkForEndOfLevel(currentTrigger,enemyGroups)
+--	end
 
 local waveStart = 0
 function GameState:executeTrigger(Trigger)
-
-end
-function GameState:executeNextTrigger(currentTrigger, enemyGroups)
-	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
-		if enemyGroups[currentTrigger]["type"] == "enemy" then
-			GameState:spawnEnemyGroup(enemyGroups[currentTrigger]["number"])
-			currentTrigger = currentTrigger + 1
-
-		elseif enemyGroups[currentTrigger]["type"] == "text" then
-			if GameState:isWaveClear() == true then
-				waveText:setVisible(true)
-				currentTrigger = currentTrigger + 1
-				waveStart = GameState.player.x
-				GameState.waveTimer = 3
-				GameState.cameraFocus.velocityX = GameState.cameraFocus.velocityX + 100
-			end
-		end
-	end
-	return currentTrigger
-end
-
-function GameState:checkForEndOfLevel(currentTrigger,enemyGroups)
-	if currentTrigger > table.getn(enemyGroups) and waveText.visible == false then 
-		if (currentLevel >= LevelManager:getNumLevels()) then
-			waveText:setLabel("VICTORY")
+	local triggerType = Trigger["type"]
+	if triggerType == "enemy" then
+		GameState:spawnEnemyGroup(Trigger["value"])
+	elseif triggerType == "waveClear" then
+		if GameState:isWaveClear() then
+			Timer:new(3, self, GameState.nextStage)
 			waveText:setVisible(true)
-			GameState.waveTimer = 1000
 		else
-			currentLevel = currentLevel + 1
-			General:setState(GameState)
-			currentTrigger = 1
+			self.lastTrigger = self.lastTrigger - 1
 		end
 	end
-	return currentTrigger
 end
+--function GameState:executeNextTrigger(currentTrigger, enemyGroups)
+--	if currentTrigger <= table.getn(enemyGroups) and self.player.x >= enemyGroups[currentTrigger]["distance"] + waveStart then
+--		if enemyGroups[currentTrigger]["type"] == "enemy" then
+--			GameState:spawnEnemyGroup(enemyGroups[currentTrigger]["number"])
+--			currentTrigger = currentTrigger + 1
+--
+--		elseif enemyGroups[currentTrigger]["type"] == "text" then
+--			if GameState:isWaveClear() == true then
+--				waveText:setVisible(true)
+--				currentTrigger = currentTrigger + 1
+--				waveStart = GameState.player.x
+--				GameState.waveTimer = 3
+--				GameState.cameraFocus.velocityX = GameState.cameraFocus.velocityX + 100
+--			end
+--		end
+--	end
+--	return currentTrigger
+--end
+
+--function GameState:checkForEndOfLevel(currentTrigger,enemyGroups)
+--	if currentTrigger > table.getn(enemyGroups) and waveText.visible == false then 
+--		if (currentLevel >= LevelManager:getNumLevels()) then
+--			waveText:setLabel("VICTORY")
+--			waveText:setVisible(true)
+--			GameState.waveTimer = 1000
+--		else
+--			currentLevel = currentLevel + 1
+--			General:setState(GameState)
+--			currentTrigger = 1
+--		end
+--	end
+--	return currentTrigger
+--end
 
 function GameState:isWaveClear()
 	clear = true
@@ -427,6 +441,11 @@ function GameState:togglePlayerMode()
 		self.camera:setTarget(self.player)
 		self.camera:setDeadzone(General.screenW, 0, -256, 0)
 	end
+end
+
+function GameState:nextStage()
+	Utility:updateHighScores("Player", self.score)
+	General:setState(GameState)
 end
 
 function GameState:gameOver()
