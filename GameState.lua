@@ -148,6 +148,7 @@ function GameState:load()
 	--self.enemies.showDebug = true
 	self.enemyBullets = Group:new()
 	--Don't add bullets directly to state, will let particle emitters handle them
+	self.lastTrigger = 0
 	self.stageTriggers = LevelManager:getTriggers(currentLevel)
 
 	--Put particles on top of everything else
