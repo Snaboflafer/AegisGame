@@ -10,15 +10,16 @@ function GameLoadState:load()
 
 	local currentLevel = General:getCurrentLevel()
 	print(currentLevel)
+	local cutScene
 	if currentLevel == 1 then
 		cutScene = Sprite:new(0, 0, "images/scene_1.png")
 	else
 		cutScene = Sprite:new(0, 0, "images/scene_2.png")
 	end
+	cutScene.scrollFactorX = 0
+	cutScene.scrollFactorY = 0
 
 	GameLoadState:add(cutScene)
-	
-	self.skipPrompt = Group:new()
 end
 
 function GameLoadState:start()
@@ -28,13 +29,6 @@ function GameLoadState:stop()
 	State.stop(self)
 end
 
-function GameLoadState:update()
-	State.update(self)
-end
-
-function GameLoadState:draw()
-	State.draw(self)
-end
 
 function GameLoadState:keypressed(key)
 	General:setState(GameState)
