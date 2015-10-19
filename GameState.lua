@@ -38,7 +38,7 @@ function GameState:load()
 	self.ground = Group:new()
 	for i=0, 4 do 
 		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLevelFloor(currentLevel))
-		floorBlock:setCollisionBox(0,30, 300, 198)
+		floorBlock:setCollisionBox(0,30, 400, 198)
 		floorBlock.immovable = true
 		self.ground:add(floorBlock)
 		--self.wrappingSprites:add(floorBlock)
