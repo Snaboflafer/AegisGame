@@ -1,10 +1,8 @@
-
-JSON = (loadfile "Utility/JSON.lua")() -- one-time load of the routines
+JSON = (loadfile "Utility/JSON.lua")()
 
 LevelManager = {
 	jsonObject
 }
-
 
 function LevelManager:parseJSON(fileName)
 	local contents, size = love.filesystem.read(fileName, size)
@@ -15,12 +13,20 @@ function LevelManager:getNumLevels()
 	return table.getn(LevelManager.jsonObject["levels"])
 end
 
-function LevelManager:getLevelBackground(levelNumber)
-	return LevelManager.jsonObject["levels"][levelNumber]["background"]
+function LevelManager:getFirstLayer(levelNumber)
+	return LevelManager.jsonObject["levels"][levelNumber]["first_layer"]
 end
 
-function LevelManager:getLevelFloor(levelNumber)
-	return LevelManager.jsonObject["levels"][levelNumber]["floor"]
+function LevelManager:getSecondLayer(levelNumber)
+	return LevelManager.jsonObject["levels"][levelNumber]["second_layer"]
+end
+
+function LevelManager:getThirdLayer(levelNumber)
+	return LevelManager.jsonObject["levels"][levelNumber]["third_layer"]
+end
+
+function LevelManager:getCutScene(levelNumber)
+	return LevelManager.jsonObject["levels"][levelNumber]["cut_scene"]
 end
 
 function LevelManager:getLevelMusic(levelNumber)
