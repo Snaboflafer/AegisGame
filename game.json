@@ -19,8 +19,10 @@
    "levels":[  
       {  
          "value":1,
-         "background":"images/StealthHawk-Alien-Landscape-33.jpg",
-         "floor":"images/floor_snow_1.png",
+         "cut_scene":"images/scene_1.png",
+         "first_layer":"images/StealthHawk-Alien-Landscape-33.jpg",
+         "second_layer":"images/floor_snow_1.png",
+         "third_layer": "",
          "music":"sounds/music_Mines_Synth2.ogg",
          "triggers":[  
             {  
@@ -47,8 +49,10 @@
       },
       {  
          "value":2,
-         "background":"images/mountain.jpg",
-         "floor": "images/floor_stone_1.png",
+         "cut_scene":"images/scene_2.png",
+         "first_layer":"images/mountain.jpg",
+         "second_layer": "images/floor_stone_1.png",
+         "third_layer": "",
          "music":"sounds/music_Mines_Synth2.ogg",
          "triggers":[  
             {  
@@ -92,6 +96,9 @@
      },
      "hit_ground":{
        "src":"sounds/ground_hit.wav"
+     },
+     "laser":{
+       "src":"sounds/laser.wav"
      }
    },
    "particles":{  
@@ -106,6 +113,9 @@
       },
       "trail": {
          "src": "images/particles/player_trail.png"
+      },
+      "laser": {
+         "src":"images/particles/laser.png"
       }
    }
 }

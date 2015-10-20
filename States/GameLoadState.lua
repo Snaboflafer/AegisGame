@@ -9,13 +9,8 @@ function GameLoadState:load()
 	State.load(self)
 
 	local currentLevel = General:getCurrentLevel()
-	print(currentLevel)
-	local cutScene
-	if currentLevel == 1 then
-		cutScene = Sprite:new(0, 0, "images/scene_1.png")
-	else
-		cutScene = Sprite:new(0, 0, "images/scene_2.png")
-	end
+	local cutScene = Sprite:new(0, 0, LevelManager:getCutScene(currentLevel))
+
 	cutScene.scrollFactorX = 0
 	cutScene.scrollFactorY = 0
 

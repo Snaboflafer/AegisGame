@@ -11,7 +11,6 @@ setmetatable(GameState, State)
 
 function GameState:load()
 	State.load(self)
-	LevelManager:parseJSON("game.json")
 
 	--Create camera
 	self.camera = General:newCamera(0,0)
@@ -30,14 +29,14 @@ function GameState:load()
 
 	--Create background
 	for i=0, 1, 1 do 
-		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getLevelBackground(currentLevel))
+		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getFirstLayer(currentLevel))
 		self.wrappingSprites:add(spriteBg)
 	end
 
 	--Create floor
 	self.ground = Group:new()
 	for i=0, 4 do 
-		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLevelFloor(currentLevel))
+		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getSecondLayer(currentLevel))
 		floorBlock:setCollisionBox(0,30, 400, 198)
 		floorBlock.immovable = true
 		self.ground:add(floorBlock)
@@ -79,7 +78,7 @@ function GameState:load()
 	local playerGun = Emitter:new(0,0)
 	self.playerBullets = Group:new()
 	for i=1, 5 do
-		local curParticle = Sprite:new(0,0,"images/particles/laser.png")
+		local curParticle = Sprite:new(0,0,LevelManager:getParticle("laser"))
 		curParticle.attackPower = 1
 		playerGun:addParticle(curParticle)
 		self.playerBullets:add(curParticle)
@@ -87,7 +86,7 @@ function GameState:load()
 	playerGun:setSpeed(1000)
 	playerGun:setAngle(0,0)
 	playerGun:lockParent(self.playerShip, false)
-	playerGun:setSound("sounds/laser.wav")
+	playerGun:setSound(LevelManager:getSound("cannon"))
 	playerGun:start(false, 3, .3, -1)
 	playerGun:stop()
 	self.emitters:add(playerGun)
@@ -126,7 +125,7 @@ function GameState:load()
 	--Attach gun to mech
 	playerGun = Emitter:new(0,0)
 	for i=1, 5 do
-		local curParticle = Sprite:new(0,0,"images/particles/bullet_orange_16.png")
+		local curParticle = Sprite:new(0,0, LevelManager:getParticle("bullet-orange"))
 		curParticle.attackPower = 2
 		playerGun:addParticle(curParticle)
 		self.playerBullets:add(curParticle)
@@ -311,7 +310,7 @@ function GameState:spawnBoss(value)
 			local enemyGun = Emitter:new(spawnX, spawnY)
 			for j=1, 10 do
 				--Create bullets
-				local curBullet = Sprite:new(spawnX, spawnY, "images/particles/bullet_red_16.png")
+				local curBullet = Sprite:new(spawnX, spawnY, LevelManager:getParticle("bullet-red"))
 				curBullet.attackPower = 1
 				enemyGun:addParticle(curBullet)
 				self.enemyBullets:add(curBullet)
