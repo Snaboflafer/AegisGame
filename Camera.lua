@@ -7,6 +7,9 @@ Camera = {
 	zoom = 1,
 	shakeMagnitude = 0,
 	shakeDuration = 0,
+	fadeColor = nil,
+	fadeDuration = 0,
+	fadeAlpha = 0,
 	bounds = nil,
 	target = nil,
 	deadzone = nil
@@ -32,6 +35,9 @@ function Camera:new(X, Y)
 		left = 0,
 		right = 0
 	}
+	s.fadeDuration = 0
+	s.fadeAlpha = 0
+	s.fadeColor = nil
 	
 	return s
 end
@@ -68,6 +74,15 @@ function Camera:update()
 		self.y = self.y + 2 * self.shakeMagnitude * self.height * (math.random() - .5)
 	end
 	
+	local fadeAlpha = self.fadeAlpha
+	if fadeAlpha > 0 and fadeAlpha < 255 then
+		fadeAlpha = fadeAlpha + 255 * General.elapsed / self.fadeDuration
+		if fadeAlpha > 255 then
+			fadeAlpha = 255
+		end
+		self.fadeAlpha = fadeAlpha
+	end
+	
 	--Prevent camera from moving past bounds
 	if self.bounds ~= nil then
 		if self.x < self.bounds.left then
@@ -88,6 +103,19 @@ end
 function Camera:draw()
 	--Empty function, camera objects are not drawn
 end
+function Camera:drawEffects()
+	if self.fadeAlpha > 0 then
+		local fadeColor = self.fadeColor
+		love.graphics.setColor(fadeColor[1], fadeColor[2], fadeColor[3], self.fadeAlpha)
+		love.graphics.rectangle(
+			"fill",
+			0,
+			0,
+			General.screenW,
+			General.screenH
+		)
+	end
+end
 
 --[[ Shake the screen
 	Magnitude	Percentage of screen to move in any direction
@@ -96,6 +124,12 @@ end
 function Camera:screenShake(Magnitude, Duration)
 	self.shakeMagnitude = Magnitude or .1
 	self.shakeDuration = Duration or .5
+end
+
+function Camera:fade(FadeColor, FadeDuration)
+	self.fadeColor = FadeColor
+	self.fadeDuration = FadeDuration
+	self.fadeAlpha = 0.001
 end
 
 --[[ Prevent camera from scrolling past certain points

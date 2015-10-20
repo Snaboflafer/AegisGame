@@ -9,6 +9,7 @@ State = {
 State.__index = State
 
 function State:load()
+	General.camera = General:newCamera(0,0)
 	self.members = {}
 	self.showDebug = true
 	self.loaded = true
@@ -41,6 +42,7 @@ end
 
 function State:update()
 	self.time = self.time + General.elapsed
+	General:getCamera():update()
 	for k,v in pairs(self.members) do
 		v:update()
 	end
@@ -50,6 +52,8 @@ function State:draw()
 	for k,v in pairs(self.members) do
 		v:draw()
 	end
+	
+	General:getCamera():drawEffects()
 end
 
 function lerp(a, b, t)

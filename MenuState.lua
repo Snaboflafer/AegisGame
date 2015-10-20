@@ -82,7 +82,9 @@ function MenuState:keypressed(key)
 		self.selected = (self.selected + self.options:getSize()) % self.options:getSize() + 1
     elseif key == "return" or key == " " then
 		if self.selected == 1 then
-			General:setState(GameLoadState) 
+			General:getCamera():fade({255,255,255}, .5)
+			Timer:new(.8, self, MenuState.loadGame)
+			--General:setState(GameLoadState) 
 			self.startSound:rewind()
 			self.startSound:play()
 			--HighScoreState.loaded = false
@@ -100,5 +102,9 @@ function MenuState:keypressed(key)
 			love.event.quit()
 		end
     end
+end
+
+function MenuState:loadGame()
+	General:setState(GameLoadState)
 end
 

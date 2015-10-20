@@ -4,27 +4,21 @@ Jung Yang jyang99@jhu.edu
 Andrew Shiau ashiau1@jhu.edu
 Team: SOL
 
-UPDATES (Assignment 6)
+UPDATES (Assignment 7)
 
-Particle System:
-Enemy bullets
-Player bullets
-Enemies now have thruster jets
-Player has thruster trails
+Player transform mode (Press LShift to switch between flying/ground)
+Load resources from external json
+Multiple levels with cutscenes
 
-Levels:
-Enemy waves
-Enemy spawn groups
-Level progression is accomplished by use of enemy waves
-Clear player death and removed fuel mechanic
 
-Art:
-Replaced player graphics with new art
-Added sound for player bullets
+Audio/Visual:
+Added player ground mode animations
+Additional sound effects
 
 Controls:
 WASD - movement
 Space - shoot
+LShift - toggle mode
 I - toggle invincibility
 
 Credits

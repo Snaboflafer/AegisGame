@@ -51,7 +51,7 @@ function General:init()
 	self.headerFont = love.graphics.newFont("fonts/Square.ttf", 96)
 	self.subFont = love.graphics.newFont("fonts/04b09.ttf", 32)
 	self.elapsed = 0
-	self.camera = Camera:new(X,Y)
+	self.camera = Camera:new(0,0)
 	self.volume = 1
 	self.timeScale = 1
 	self.screenW = love.window.getWidth()

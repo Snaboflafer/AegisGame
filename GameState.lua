@@ -16,7 +16,7 @@ function GameState:load()
 	--Create camera
 	self.camera = General:newCamera(0,0)
 	self.camera:setBounds(0, -32, General.screenW + 32, General.screenH)
-	GameState:add(self.camera)
+	--GameState:add(self.camera)
 	
 	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
 	self.cameraFocus.velocityX = self.CAMERASCROLLSPEED
