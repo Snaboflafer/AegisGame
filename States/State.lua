@@ -44,13 +44,17 @@ function State:update()
 	self.time = self.time + General.elapsed
 	General:getCamera():update()
 	for k,v in pairs(self.members) do
-		v:update()
+		if v.active ~= false and v.exists ~= false then
+			v:update()
+		end
 	end
 end
 
 function State:draw()
 	for k,v in pairs(self.members) do
-		v:draw()
+		if v.visible ~= false and v.exists ~= false then
+			v:draw()
+		end
 	end
 	
 	General:getCamera():drawEffects()

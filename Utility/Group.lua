@@ -15,26 +15,33 @@ function Group:new()
 	s = {}
 	setmetatable(s, self)
 	self.__index = self
-	--self.__tostring = s:toString()
 	
 	s.members = {}
 	
 	return s
 end
 
+--[[ Get the size of the group
+	Returns		The number of members
+]]
 function Group:getSize()
-	--local size = 0
-	--for k, v in pairs(self.members) do
-	--	size = size + 1
-	--end
-	--return size
 	return self.length
 end
 
+--[[ Adds an object into the group
+	NewObject	Object to add
+]]
 function Group:add(NewObject)
 	table.insert(self.members, NewObject)
 	self.length = self.length + 1
 end
+
+--[[ Remove an object from the group
+	SelObject	Object to remove
+	Recurse		Also search for the object in child groups
+	
+	Returns		true if object found/deleted, false if not
+]]
 function Group:delete(SelObject, Recurse)
 	if self.size == 0 then
 		return false
@@ -64,10 +71,6 @@ function Group:destroy()
 end
 
 function Group:update()
-	if not self.active or not self.exists then
-		return
-	end
-
 	for k,v in pairs(self.members) do
 		if v.exists and v.active then
 			v:update()
@@ -75,11 +78,9 @@ function Group:update()
 	end
 end
 
+--[[ Draw all members of the group
+]]
 function Group:draw()
-	if not self.visible or not self.exists then
-		return
-	end
-
 	for k,v in pairs(self.members) do
 		if v.exists and v.visible then
 			v:draw()

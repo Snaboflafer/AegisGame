@@ -167,6 +167,13 @@ function Sprite:createGraphic(Width, Height, Color, Alpha)
 	self.alpha = Alpha
 end
 
+function Sprite:setColor(Color)
+	self.color = Color
+end
+function Sprite:setAlpha(Alpha)
+	self.alpha = Alpha
+end
+
 --[[Dispose of the object
 --]]
 function Sprite:destroy()
@@ -211,10 +218,6 @@ end
 
 -- updates velocity and position of sprite
 function Sprite:update()
-	if not self.active or not self.exists then
-		return
-	end
-	
 	if self.flickerDuration > 0 then
 		self.visible = not self.visible
 		self.flickerDuration = self.flickerDuration - General.elapsed
@@ -314,20 +317,16 @@ end
 --[[Draw sprite to screen
 --]]
 function Sprite:draw()
-	if not self.visible or not self.exists then
-		return
-	end
-	
 	local camera = General:getCamera()
 	
-	love.graphics.setColor(self.color, self.alpha)
+	love.graphics.setColor(self.color[1], self.color[2], self.color[3], self.alpha)
 	if self.image == nil then
 		love.graphics.rectangle(
 			"fill",
-			self.x,
+			self.x - (self.scaleX * self.originX),
 			self.y,
-			self.width,
-			self.height
+			self.width * self.scaleX,
+			self.height * self.scaleY
 		)
 	elseif self.animated then
 		love.graphics.draw(
@@ -612,4 +611,3 @@ function Sprite:getDebug()
 	return debugStr
 end
 
-return Sprite

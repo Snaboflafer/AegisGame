@@ -73,21 +73,37 @@ function PlayerMech:update()
 	Player.update(self)
 end
 
-function PlayerMech:enterMode(X, Y, VX, VY, HP)
+--[[ Enter mech mode
+	X	X position
+	Y	Y position
+	VX	X velocity
+	VY	Y velocity
+	HP	Health
+	SP	Shields
+]]
+function PlayerMech:enterMode(X, Y, VX, VY, HP, SP)
 	self.change:rewind()
 	self.change:play()
-	self.x = X
-	self.y = Y
+	self.x = X - self.width/2
+	self.y = Y - self.height/2
 	self.velocityX = VX
 	self.velocityY = VY
 	self.health = HP
-	self:setExists(true)
+	self.shield = SP
+	self.exists = true
+	
+	if GameState.shieldOverlay ~= nil and GameState.shieldBar ~= nil then
+		GameState.shieldOverlay:setColor({255,255,255})
+		GameState.shieldBar:setAlpha(255)
+	end
 end
 
+--[[ Exit mech mode. Returns required arguments for enterMode()
+]]
 function PlayerMech:exitMode()
 	self.weapons[self.activeWeapon]:stop()
-	self:setExists(false)
-	return self.x, self.y, self.velocityX, self.velocityY, self.health
+	self.exists = false
+	return self.x+self.width/2, self.y+self.height/2, self.velocityX, self.velocityY, self.health, self.shield
 end
 
 function PlayerMech:attackStart()

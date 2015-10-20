@@ -30,9 +30,10 @@ function PlayerShip:changeMagnitude(m)
 	self.magnitude = m
 	self.momentArm = math.sqrt(self.magnitude^2/2)
 end
+
 function PlayerShip:update()
+
 	if self.enableControls then
-		--self.weapons[self.activeWeapon]:setPosition(self.x+66, self.y+12)
 		if love.keyboard.isDown('w') and love.keyboard.isDown('d') then
 			self.velocityX = self.momentArm
 			self.velocityY = -self.momentArm
@@ -65,19 +66,23 @@ function PlayerShip:update()
 		self.velocityX = self.velocityX + GameState.cameraFocus.velocityX
 	end
 	
+	--Determine animation to play
 	if self.velocityY > 0 then
+		--Going down
 		if self.curAnim.name == "up_in" then
 			self:playAnimation("up_out", false, true)
 		else
 			self:playAnimation("down_in")
 		end
 	elseif self.velocityY < 0 then
+		--Going up
 		if self.curAnim.name == "down_in" then
 			self:playAnimation("down_out", false, true)
 		else
 			self:playAnimation("up_in")
 		end
 	else
+		--Constant height
 		if self.curAnim.name == "down_in" then
 			self:playAnimation("down_out", false, true)
 		end
@@ -87,10 +92,29 @@ function PlayerShip:update()
 		self:playAnimation("idle")
 	end
 	
+	--Recharge shield
+	local shield = self.shield
+	if shield < self.maxShield then
+		shield = shield + General.elapsed * .2
+		if shield > self.maxShield then
+			shield = self.maxShield
+		end
+		self.shield = shield
+		self:updateShield()
+	end
+
 	Player.update(self)
 end
 
-function PlayerShip:enterMode(X, Y, VX, VY, HP)
+--[[ Enter ship mode
+	X	X position
+	Y	Y position
+	VX	X velocity
+	VY	Y velocity
+	HP	Health
+	SP	Shields
+]]
+function PlayerShip:enterMode(X, Y, VX, VY, HP, SP)
 	self.change:rewind()
 	self.change:play()
 	self.x = X
@@ -98,13 +122,21 @@ function PlayerShip:enterMode(X, Y, VX, VY, HP)
 	self.velocityX = VX
 	self.velocityY = VY
 	self.health = HP
-	self:setExists(true)
+	self.shield = SP
+	self.exists = true
+	
+	if GameState.shieldOverlay ~= nil and GameState.shieldBar ~= nil then
+		GameState.shieldOverlay:setColor({127,127,127})
+		GameState.shieldBar:setAlpha(127)
+	end
 end
 
+--[[ Exit ship mode. Returns required arguments for enterMode()
+]]
 function PlayerShip:exitMode()
 	self.weapons[self.activeWeapon]:stop()
-	self:setExists(false)
-	return self.x, self.y, self.velocityX, self.velocityY, self.health
+	self.exists = false
+	return self.x, self.y, self.velocityX, self.velocityY, self.health, self.shield
 end
 
 function PlayerShip:attackStart()
@@ -116,7 +148,7 @@ function PlayerShip:attackStop()
 end
 
 function PlayerShip:collideGround()
-
+	--Currently empty, required for Player
 end
 
 function PlayerShip:getType()

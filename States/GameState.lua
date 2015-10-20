@@ -141,17 +141,15 @@ function GameState:load()
 	self.emitters:add(playerGun)
 	self.playerMech:addWeapon(playerGun, 1)
 	
-	--Set as player first, then toggle to do camera setup
-	self.player = self.playerShip
-	GameState:togglePlayerMode("mech")
 	
 	--Create enemies
 	self.enemies = Group:new()
+	self.enemyBullets = Group:new()	--Don't add to state, particle emitters handle bullets
 	GameState:add(self.enemies)
-	--self.enemies.showDebug = true
-	self.enemyBullets = Group:new()
-	--Don't add bullets directly to state, will let particle emitters handle them
+	
+	--Mark stage triggers
 	self.lastTrigger = 0
+	--Read triggers
 	self.stageTriggers = LevelManager:getTriggers(currentLevel)
 
 	--Put particles on top of everything else
@@ -160,12 +158,15 @@ function GameState:load()
 	--Hud
 	self.hud = Group:new()
 	
-	local hpX = 10
-	local hpY = 10
+	local hudX = 10
+	local hudY = 10
+	
+	--Create hp bar
+	local hpX = hudX
+	local hpY = hudY
 	local hpW = 35 * 3
 	local hpH = 16
 	local hpBack = Sprite:new(hpX+28,hpY+8)
-
 	hpBack:createGraphic(hpW, hpH, {127,127,127}, 255)
 	self.hud:add(hpBack)
 	self.hpBar = Sprite:new(hpX+28,hpY+8)
@@ -174,14 +175,47 @@ function GameState:load()
 	local hpOverlay = Sprite:new(hpX, hpY, "images/ui/hud_health.png")
 	self.hud:add(hpOverlay)
 	
+	--Create shield bar
+	local shieldY = hudY + hpH*2
+	local shieldW = 64
+	local shieldH = hpH
+	local shieldBack = Sprite:new(hudX+22, shieldY + 8)
+	shieldBack:createGraphic(shieldW, shieldH, {127,127,127}, 255)
+	self.hud:add(shieldBack)
+	self.shieldBar = Sprite:new(hudX+22, shieldY + 8)
+	self.shieldBar:createGraphic(shieldW, shieldH, {0,166,226}, 255)
+	self.hud:add(self.shieldBar)
+	self.shieldOverlay = Sprite:new(hudX, shieldY, "images/ui/hud_shield.png")
+	self.hud:add(self.shieldOverlay)
+	
+	--Create transform delay bar
+	local modeY = shieldY + shieldH*2
+	local modeW = 119
+	local modeH = 6
+	local modeBack = Sprite:new(hpX+2, modeY + 1, "images/ui/hud_transformDelay_bg.png")
+	self.hud:add(modeBack)
+	self.modeMask = Sprite:new(hpX + modeW +2, modeY + 1)
+	self.modeMask:createGraphic(modeW, modeH, {100,100,100}, 255)
+	self.modeMask.originX = 119
+	self.hud:add(self.modeMask)
+	local modeOverlay = Sprite:new(hpX, modeY, "images/ui/hud_transformDelay.png")
+	self.hud:add(modeOverlay)
+	
+	--Create high score text
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
 	
+	--Keep all Hud elements from moving
 	self.hud:setEach("scrollFactorX", 0)
 	self.hud:setEach("scrollFactorY", 0)
 	
 	GameState:add(self.hud)
+	
+	--Set player mode, then toggle to do camera setup
+	self.player = self.playerShip
+	GameState:togglePlayerMode("mech")
+
 	
 	--Do music
 	self.bgmMusic = love.audio.newSource(LevelManager:getLevelMusic(1))
@@ -426,6 +460,9 @@ function GameState:keyreleased(Key)
 end
 
 function GameState:togglePlayerMode()
+	if self.player.lockTransform then
+		return
+	end	
 	local playerMode = self.player.activeMode
 	
 	if playerMode == "mech" then
@@ -440,6 +477,9 @@ function GameState:togglePlayerMode()
 		self.camera:setTarget(self.player)
 		self.camera:setDeadzone(General.screenW, 0, -256, 0)
 	end
+	self.player:disableTransform()
+	Timer:new(self.player.transformDelay, self.player, Player.enableTransform)
+	self.modeMask.scaleX = 1
 end
 
 function GameState:nextStage()
