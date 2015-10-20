@@ -68,8 +68,8 @@
             },
             {  
                "distance":3000,
-               "type":"text",
-               "value":0
+               "type":"boss",
+               "value":2
             }
          ]
       }
