@@ -1,5 +1,5 @@
 
-JSON = (loadfile "JSON.lua")() -- one-time load of the routines
+JSON = (loadfile "Utility/JSON.lua")() -- one-time load of the routines
 
 LevelManager = {
 	jsonObject

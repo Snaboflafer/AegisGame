@@ -29,6 +29,11 @@ function Boss:respawn(SpawnX, SpawnY)
 	self.exists = true
 end
 
+function Boss:hurt(Damage)
+	Sprite.hurt(self, Damage)
+	self:flicker(.1)
+end
+
 function Boss:addWeapon(GunGroup)
 	self.weapons = GunGroup
 end

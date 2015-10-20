@@ -417,6 +417,8 @@ function GameState:keyreleased(Key)
 
 	if Key == "escape" then
 		General:setState(PauseState,false)
+	elseif Key == "end" then
+		self:nextStage()
 	end
 
 	--Temporary until input manager
