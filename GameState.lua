@@ -257,6 +257,63 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 	end
 end
 
+function GameState:spawnBoss(value)
+	local cameraX, cameraY = self.camera:getPosition()
+	local spawnX = cameraX + General.screenW
+	local spawnY = General.screenH/3
+	if self.boss == nil then
+		self.boss = {}
+		self.boss = Boss:new(spawnX, spawnY)
+		self.boss:loadSpriteSheet("images/enemy_1.png",64,64)
+		self.boss:setAnimations()
+		self.boss:setPointValue(1000)
+		self.boss:setCollisionBox(7, 26, 44, 19)
+		self.boss:lockToScreen(Sprite.UPDOWN)
+		self.boss:setScale(5,5)
+
+		local bossGuns = Group:new()
+		--Create enemy gun
+		for i=1, 3 do
+			local enemyGun = Emitter:new(spawnX, spawnY)
+			for j=1, 10 do
+				--Create bullets
+				local curBullet = Sprite:new(spawnX, spawnY, "images/particles/bullet_red_16.png")
+				curBullet.attackPower = 1
+				enemyGun:addParticle(curBullet)
+				self.enemyBullets:add(curBullet)
+			end
+			enemyGun:setSpeed(100, 150)
+			enemyGun:lockParent(self.boss, true, 0)
+			--enemyGun:lockTarget(self.player)		(Use this to target the player)
+			enemyGun:setAngle(140+20*i, 0)
+			enemyGun:start(false, 10, .8, -1)
+			self.emitters:add(enemyGun)
+			bossGuns:add(enemyGun)
+		--curEnemy:addChild(enemyGun)
+		end
+		self.boss:addWeapon(bossGuns)
+
+		--Thruster particles
+		local enemyThruster = Emitter:new(spawnX, spawnY)
+		for j=1, 5 do
+			local curParticle = Sprite:new(spawnX, spawnY, "images/particles/thruster_small.png")
+			curParticle:setScale(5,5)
+			enemyThruster:addParticle(curParticle)
+		end
+		enemyThruster:setSpeed(50, 60)
+		enemyThruster:setAngle(0, 30)
+		enemyThruster:lockParent(self.boss, true, self.boss.width-20, self.boss.height/2 - 3)
+		enemyThruster:start(false, .2, 0)
+
+		--Register emitter, so that it will be updated
+		self.emitters:add(enemyThruster)
+		
+		self.enemies:add(self.boss)
+	else 
+		self.boss:respawn(spawnX, spawnY)
+	end
+end
+
 function GameState:start()
 	State.start(self)
 	--self.bgmMusic:play()
@@ -322,6 +379,8 @@ function GameState:executeTrigger(Trigger)
 	local triggerType = Trigger["type"]
 	if triggerType == "enemy" then
 		GameState:spawnEnemyGroup(Trigger["value"])
+	elseif triggerType == "boss" then
+		GameState:spawnBoss(Trigger["value"])
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
 			Timer:new(3, self, GameState.nextStage)

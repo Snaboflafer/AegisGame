@@ -32,6 +32,7 @@ require("Text")
 require("Timer")
 require("Effect")
 require("LevelManager")
+require("Boss")
 
 function love.load()
 	General:init()
