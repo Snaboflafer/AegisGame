@@ -47,7 +47,7 @@
       },
       {  
          "value":2,
-         "background":"images/forest.jpg",
+         "background":"images/mountain.jpg",
          "floor": "images/floor_stone_1.png",
          "music":"sounds/music_Mines_Synth2.ogg",
          "triggers":[  
