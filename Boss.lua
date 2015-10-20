@@ -11,6 +11,7 @@ function Boss:new(X,Y,ImageFile)
 	s.route = 0
 	s.velocityX = GameState.cameraFocus.velocityX
 	s.health = 20
+	s.immovable = true
 	return s
 end
 
