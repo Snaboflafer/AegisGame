@@ -68,7 +68,6 @@ function love.update(dt)
 
 	--Game speed info
 	debugStr = debugStr .. "Frame time = " .. math.floor(10000 * General.elapsed)/10000 .. "s\n"
-	--debugStr = debugStr .. math.floor(1/General.elapsed) .. "FPS\n"
 	debugStr = debugStr .. math.floor(10/frameTimes[1])/10 .. " FPS\n"
 	debugStr = debugStr .. "Speed x" .. math.floor(10 * General.timeScale) / 10 .. "\n"
 

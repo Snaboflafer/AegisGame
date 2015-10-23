@@ -68,7 +68,11 @@ Sprite = {
 	attackPower = 0,
 	showDebug = false,
 	last = nil,
-	flickerDuration = 0
+	flickerDuration = 0,
+	flashColor = nil,
+	flashDuration = 0,
+	flashAlpha = 0,
+	flashFinished = false
 }
 
 function Sprite:setActive(Active)
@@ -129,6 +133,11 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 		x = X or 0,
 		y = Y or 0
 	}
+	
+	s.flashColor = nil
+	s.flashDuration = 0
+	s.flashAlpha = 0
+	s.flashFinished = false
 	
 	return s
 end
@@ -314,12 +323,35 @@ function Sprite:update()
 	end
 end
 
---[[Draw sprite to screen
+--[[ Draw sprite to screen
 --]]
 function Sprite:draw()
 	local camera = General:getCamera()
-	
-	love.graphics.setColor(self.color[1], self.color[2], self.color[3], self.alpha)
+	local color
+	if self.flashAlpha > 0 then
+		local flashAlpha = self.flashAlpha
+		
+		if not self.flashFinished then
+			flashAlpha = flashAlpha + 255*General.elapsed/self.flashDuration
+			if flashAlpha > 255 then
+				flashAlpha = 255
+				self.flashFinished = true
+			end
+		else
+			flashAlpha = flashAlpha - 255*General.elapsed/self.flashDuration
+			if flashAlpha < 0 then
+				flashAlpha = 0
+			end
+		end
+		local dR = 1-self.flashColor[1]/255
+		local dG = 1-self.flashColor[2]/255
+		local dB = 1-self.flashColor[3]/255
+		color = {255-flashAlpha*dR, 255-flashAlpha*dG, 255-flashAlpha*dB}
+		self.flashAlpha = flashAlpha
+	else
+		color = self.color
+	end
+	love.graphics.setColor(color[1], color[2], color[3], self.alpha)
 	if self.image == nil then
 		love.graphics.rectangle(
 			"fill",
@@ -534,6 +566,12 @@ end
 
 function Sprite:flicker(Duration)
 	self.flickerDuration = Duration
+end
+function Sprite:flash(FlashColor, FlashDuration)
+	self.flashColor = FlashColor
+	self.flashDuration = FlashDuration * .5
+	self.flashAlpha = 0.001
+	self.flashFinished = false
 end
 
 --[[Prevent sprite from moving offscreen during update()

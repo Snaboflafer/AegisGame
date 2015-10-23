@@ -84,6 +84,7 @@ function Emitter:addParticle(NewParticle)
 	--Disable particle, and add to members
 	NewParticle.health = 0
 	NewParticle.exists = false
+	NewParticle.massless = true
 	self:add(NewParticle)
 end
 

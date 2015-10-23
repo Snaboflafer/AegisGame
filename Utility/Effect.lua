@@ -45,7 +45,7 @@ function Effect:initExplosion()
 			--Create the actual trail sprites
 			local curParticle = Sprite:new(0,0)
 			curParticle:loadSpriteSheet(LevelManager:getParticle("fireball"), 32, 32)
-			curParticle:addAnimation("default", {1,2,3,4,5,6,7,7,8,8,9,9,9,9,10}, .08, false)
+			curParticle:addAnimation("default", {1,2,3,4,5,6,7,7,8,8,9,9,9,10}, .08, false)
 			curParticle:playAnimation("default")
 			fireTrail:addParticle(curParticle)
 		end

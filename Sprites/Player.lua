@@ -77,9 +77,11 @@ function Player:hurt(Damage)
 	if self.activeMode == "mech" and self.shield > 0 then
 		--Try rerouting damage to shields if in mech mode
 		Sprite.hurt(self, Damage, "shield")
+		self:flash({0,174,239}, .5)
 		self:updateShield()
 	else
 		Sprite.hurt(self, Damage)
+		self:flash({243,17,17}, .5)
 		self:updateHealth()
 	end
 	
