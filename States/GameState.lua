@@ -11,6 +11,8 @@ setmetatable(GameState, State)
 
 function GameState:load()
 	State.load(self)
+	
+	self.objects = Group:new()
 
 	--Create camera
 	self.camera = General:newCamera(0,0)
@@ -54,15 +56,14 @@ function GameState:load()
 	self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
 	
-
-	--Set up effects
-	self.effect = Effect:new("images/explosion.png")
-	self.effect:initialize("explosion", "images/explosion.png",64,64)
-	self.effect:play("explosion",-128,-128)
-	GameState:add(self.effect)
-	
 	--Set up particles
 	self.emitters = Group:new()
+	self.worldParticles = Group:new()
+
+	--Set up effects
+	self.explosion = Effect:new()
+	self.explosion:initExplosion()
+	GameState:add(self.explosion)
 
 	
 	--Create player (flying)
@@ -86,7 +87,7 @@ function GameState:load()
 	playerGun:setSpeed(1000)
 	playerGun:setAngle(0,0)
 	playerGun:lockParent(self.playerShip, false)
-	playerGun:setSound(LevelManager:getSound("cannon"))
+	playerGun:setSound(LevelManager:getSound("laser"))
 	playerGun:start(false, 3, .3, -1)
 	playerGun:stop()
 	self.emitters:add(playerGun)
@@ -110,6 +111,8 @@ function GameState:load()
 		self.emitters:add(jetTrail)
 	end
 
+	
+	--Create player Mech
 	image, height, width = LevelManager:getPlayerMech()
 
 	self.playerMech = PlayerMech:new(100,100)
@@ -124,7 +127,7 @@ function GameState:load()
 	
 	--Attach gun to mech
 	playerGun = Emitter:new(0,0)
-	for i=1, 5 do
+	for i=1, 7 do
 		local curParticle = Sprite:new(0,0, LevelManager:getParticle("bullet-orange"))
 		curParticle.attackPower = 2
 		playerGun:addParticle(curParticle)
@@ -135,10 +138,33 @@ function GameState:load()
 	playerGun:lockParent(self.playerMech, false, 107, 16)
 	playerGun:setSound(LevelManager:getSound("cannon"))
 	playerGun:setCallback(self.playerMech, PlayerMech.fireGun)
-	playerGun:start(false, 3, .5, -1)
+	playerGun:start(false, 3, .3, -1)
 	playerGun:stop()
 	self.emitters:add(playerGun)
 	self.playerMech:addWeapon(playerGun, 1)
+	
+	--Create mech thruster
+	local mechThrust_Jet = Emitter:new()
+	--Empty
+	
+	local mechThrust_Smoke = Emitter:new()
+	for i=1, 15 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("smoke"), 32,32)
+		curParticle:addAnimation("default", {1,1,1,2,3,4,3,2,1}, .01, false)
+		curParticle:playAnimation("default")
+		mechThrust_Smoke:addParticle(curParticle)
+	end
+	mechThrust_Smoke:setSpeed(500,800)
+	mechThrust_Smoke:setAngle(245, 20)
+	mechThrust_Smoke:setGravity(-4000)
+	mechThrust_Smoke:setDrag(10)
+	mechThrust_Smoke:lockParent(self.playerMech, false, -26, 24)
+	mechThrust_Smoke:start(false, .15, .01, -1)
+	mechThrust_Smoke:stop()
+	self.emitters:add(mechThrust_Smoke)
+
+	self.playerMech:assignThruster(mechThrust_Jet, mechThrust_Smoke)
 	
 	
 	--Create enemies
@@ -192,6 +218,7 @@ function GameState:load()
 	local modeW = 119
 	local modeH = 6
 	local modeBack = Sprite:new(hpX+2, modeY + 1, "images/ui/hud_transformDelay_bg.png")
+	modeBack.scaleY = 6
 	self.hud:add(modeBack)
 	self.modeMask = Sprite:new(hpX + modeW +2, modeY + 1)
 	self.modeMask:createGraphic(modeW, modeH, {100,100,100}, 255)
@@ -214,6 +241,13 @@ function GameState:load()
 	--Set player mode, then toggle to do camera setup
 	self.player = self.playerShip
 	GameState:togglePlayerMode("mech")
+	
+	
+	--Organize groups
+	self.objects:add(self.ground)
+	self.objects:add(self.player)
+	self.objects:add(self.worldParticles)
+	self.objects:add(enemies)
 
 	
 	--Do music
@@ -381,16 +415,17 @@ function GameState:update()
 
 	State.update(self)
 	
-	
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
 	General:collide(self.enemies, self.ground)
+	General:collide(self.ground, self.worldParticles)
 	
 	--Collisions with custom callback actions
 	General:collide(self.player, self.enemyBullets, nil, Sprite.hardCollide)
 	General:collide(self.playerBullets, self.enemies, nil, Sprite.hardCollide)
 	General:collide(self.player, self.enemies, nil, Sprite.hardCollide)
 	General:collide(self.player, self.ground, self.player, self.player.collideGround, true)
+	
 	
 	self.cameraFocus.y = self.player.y
 	

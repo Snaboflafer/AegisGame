@@ -17,7 +17,7 @@ function Enemy:new(X,Y,ImageFile)
 end
 
 function Enemy:kill()
-	GameState.effect:play("explosion", self.x, self.y)
+	GameState.explosion:play(self.x, self.y)
 	Enemy:addToScore(self.score)
 	Sprite.kill(self)
 end

@@ -2,8 +2,11 @@
 Emitter = {
 	x = 0,	--Initial X location of emitter
 	y = 0,	--Initial Y location of emitter
-	gravity = 0,	--Gravity applied to all particles (Y only)
-	drag = 0,		--Drag applied to all particles (X and Y)
+	velocityX = 0,	--Horizontal velocity of the emitter
+	velocityY = 0,	--Vertical velocity of the emitter
+	gravity = 0,	--Acceleration applied to all particles (Y only)
+	dragX = 0,		--Drag applied to all particles (X)
+	dragY = 0,		--Drag applied to all particles (Y)
 	emitAngle = 0,	--Base angle (radians) that particles are launched at
 	angleRange = math.pi,	--Max angle deviation in either direction
 	velocityMin = 0,		--Minimum launch velocity
@@ -11,18 +14,18 @@ Emitter = {
 	emitDelay = 0,		--Time delay between emissions (does not apply if launchAll==true)
 	emitTimer = 0,		--Counter for counting delay between emissions
 	emitCount = -1,		--Number of particles to launch in burst. Use -1 for all
-	emitSound = nil,
+	emitSound = nil,	--Sound to play when emitting a particle
 	launchAll = true,	--Launch all particles at once, or sequentially
 	enabled = false,	--Whether the emitter is on or off
 	lifetime = 30,		--How long each particle lasts after emission
 	parent = nil,		--(Optional) Parent object. See lockParent() for info
-	parentOffsetX = 0,
+	parentOffsetX = 0,	--Offset from parent's position
 	parentOffsetY = 0,
 	autoEnable = false,	--Turn off/on with parent
 	target = nil,		--(Optional) Target object. See lockTarget() for info
-	targetOffsetX = 0,
+	targetOffsetX = 0,	--Offset from target's position
 	targetOffsetY = 0,
-	callbackObject = nil,
+	callbackObject = nil,	--Callback (object) for when a particle is emitted
 	callbackFunction = nil
 }
 
@@ -36,6 +39,8 @@ function Emitter:new(X, Y)
 	
 	s.x = X or 0
 	s.y = Y or 0
+	s.velocityX = 0
+	s.velocityY = 0
 	
 	return s
 end
@@ -118,7 +123,13 @@ function Emitter:update()
 		--Emitter is set to launch all particles at once
 		self.enabled = false
 		
-		for i=1, self.length, 1 do
+		local launchCount
+		if self.emitCount > 0 then
+			launchCount = self.emitCount
+		else
+			launchCount = self.length
+		end
+		for i=1, launchCount do
 			self:emitParticle()
 		end
 	else
@@ -154,6 +165,8 @@ function Emitter:emitParticle()
 		--Snap position to parent
 		self.x = self.parent.x + self.parentOffsetX
 		self.y = self.parent.y + self.parentOffsetY
+		--self.velocityX = self.parent.velocityX
+		--self.velocityY = self.parent.velocityY
 	end
 	if self.target ~= nil then
 		--Set angle if there is a target
@@ -174,8 +187,8 @@ function Emitter:emitParticle()
 	particle.x = self.x
 	particle.y = self.y
 	particle.accelerationY = self.gravity
-	particle.dragX = self.drag
-	particle.dragY = self.drag
+	particle.dragX = self.dragX
+	particle.dragY = self.dragY
 	particle.exists = true
 	particle.alive = true
 	particle.visible = true
@@ -187,8 +200,9 @@ function Emitter:emitParticle()
 	--Calculate random velocity and angle
 	local velocity = math.random(self.velocityMin, self.velocityMax)
 	local angle = self.emitAngle + (2 * math.random()-1) * self.angleRange
-	particle.velocityX = velocity * math.cos(angle)
-	particle.velocityY = -velocity * math.sin(angle)
+	--Set particle velocity, using calculated value and emitter movement
+	particle.velocityX = velocity * math.cos(angle) + self.velocityX
+	particle.velocityY = -velocity * math.sin(angle) + self.velocityY
 	
 	--Play sound if specified
 	if self.emitSound ~= nil then
@@ -252,8 +266,11 @@ function Emitter:setGravity(Gravity)
 end
 --[[ Set a drag value for all particles (both X/Y)
 ]]
-function Emitter:setParticleDrag()
-	self.drag = Drag
+function Emitter:setDrag(DragX, DragY)
+	DragX = DragX or 0
+	
+	self.dragX = DragX
+	self.dragY = DragY or DragX
 end
 --[[ Set the sound to play when a particle is emitted
 ]]
@@ -261,6 +278,10 @@ function Emitter:setSound(SoundPath)
 	self.emitSound = love.audio.newSource(SoundPath)
 end
 
+--[[ Set a callback function for whenever a particle is emitted
+	CallbackObject	Target object of callback
+	CallbackFunction	Function to call
+]]
 function Emitter:setCallback(CallbackObject, CallbackFunction)
 	self.callbackObject = CallbackObject
 	self.callbackFunction = CallbackFunction

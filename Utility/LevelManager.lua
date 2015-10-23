@@ -59,3 +59,7 @@ end
 function LevelManager:getParticle(id)
 	return LevelManager.jsonObject["particles"][id]["src"]
 end
+
+function LevelManager:getImage(id)
+	return LevelManager.jsonObject["images"][id]["src"]
+end

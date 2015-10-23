@@ -42,6 +42,11 @@
             },
             {  
                "distance":3000,
+               "type":"enemy",
+               "value":10
+            },
+            {  
+               "distance":3050,
                "type":"waveClear",
                "value":0
             }
@@ -116,6 +121,17 @@
       },
       "laser": {
          "src":"images/particles/laser.png"
-      }
+      },
+	  "smoke": {
+		 "src":"images/particles/smoke.png"
+	  },
+	  "fireball": {
+		  "src":"images/particles/fireball.png"
+	  }
+   },
+   "images":{
+	  "explosion":{
+		  "src":"images/fx/explosion.png"
+	  }
    }
 }

@@ -2,8 +2,11 @@ PlayerMech = {
 	enableControls = true,
 	activeMode = "mech",
 	JUMPPOWER = 600,
-	GRAVITY = 1500,
-	DRAG = 20,
+	GRAVITY = 1400,
+	DRAG = 200,
+	fuel = 3,
+	maxFuel = 3,
+	jetThrust = -100
 }
 
 function PlayerMech:new(X,Y,ImageFile)
@@ -28,38 +31,93 @@ function PlayerMech:setAnimations()
 	self:playAnimation("idle")
 end
 
+--[[ Assign Jet and Smoke emitters for the thruster
+]]
+function PlayerMech:assignThruster(Jet, Smoke)
+	self.thrust_jet = Jet
+	self.thrust_smoke = Smoke
+end
+
 local hittingGround = false
 function PlayerMech:update()
+
 	if self.enableControls then
+		local pressedUp = love.keyboard.isDown("w")
+		local pressedDown = love.keyboard.isDown("s")
+		local pressedLeft = love.keyboard.isDown("a")
+		local pressedRight = love.keyboard.isDown("d")
+		local pressedJump = love.keyboard.isDown("k")
+	
+	
 		--self.weapons[self.activeWeapon]:setPosition(self.x+66, self.y+12)
-		if love.keyboard.isDown("d") then
-			self.accelerationX = 350
+		if pressedRight then
+			self.accelerationX = 800
 			self.maxVelocityX = 200
-		elseif love.keyboard.isDown("a") then
-			self.accelerationX = -200
+		elseif pressedLeft then
+			self.accelerationX = -550
 			self.maxVelocityX = 120
 		else
 			self.accelerationX = 0
 		end
+		
 		if self.touching == Sprite.DOWN then
 			--On ground
-			if (hittingGround == false) then
-				self.hitGround:rewind()
-				self.hitGround:play()
-				hittingGround = true
-			end
+			self.accelerationY = self.GRAVITY
+			
 			self.dragX = self.DRAG
-			if love.keyboard.isDown("k") then
+			if pressedJump then
 				self.velocityY = -self.JUMPPOWER
+			end
+			
+			if self.fuel < self.maxFuel then
+				self.fuel = self.fuel + General.elapsed * 10
+				if self.fuel > self.maxFuel then
+					self.fuel = self.maxFuel
+				end
 			end
 		else
 			--In air
-			if (hittingGround == true) then
-				hittingGround = false
-			end
 			self.dragX = self.DRAG / 10
+			
+			local accY = self.accelerationY
+			if pressedJump and self.velocityY>-50 and self.fuel > 0 then
+				--Enable boost
+				self.thrust_smoke:restart()
+				
+				local maxThrust = self.jetThrust
+				if accY	> maxThrust then
+					accY = accY - General.elapsed*12*(accY - maxThrust)
+				end
+				self.accelerationY = accY
+				self.fuel = self.fuel - General.elapsed
+				self.maxVelocityY = 45
+			else
+				self.thrust_smoke:stop()
+				local gravity = self.GRAVITY
+				if accY < gravity then
+					accY = accY + General.elapsed * 2 * (gravity - accY)
+					if accY > gravity then
+						accY = gravity
+					end
+					self.accelerationY = accY
+				end
+				
+				self.maxVelocityY = 1000
+			end
 		end
 		
+
+		if pressedUp then
+			self.weapons[self.activeWeapon]:setAngle(20, 1)
+			self.weapons[self.activeWeapon]:lockParent(self, false, 87, -24)
+		elseif pressedDown then
+			self.weapons[self.activeWeapon]:setAngle(-20, 1)
+			self.weapons[self.activeWeapon]:lockParent(self, false, 127, 56)
+		else
+			self.weapons[self.activeWeapon]:setAngle(0,1)
+			self.weapons[self.activeWeapon]:lockParent(self, false, 107, 16)
+		end
+
 	end
 	
 	if self.velocityX > 0 then
@@ -102,6 +160,7 @@ end
 ]]
 function PlayerMech:exitMode()
 	self.weapons[self.activeWeapon]:stop()
+	self.thrust_smoke:stop()
 	self.exists = false
 	return self.x+self.width/2, self.y+self.height/2, self.velocityX, self.velocityY, self.health, self.shield
 end
@@ -121,6 +180,8 @@ end
 function PlayerMech:collideGround()
 	if self.velocityY > 100 then
 		General.activeState.camera:screenShake(.01,.05)
+		self.hitGround:rewind()
+		self.hitGround:play()
 	end
 end
 

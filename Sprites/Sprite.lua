@@ -103,8 +103,8 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	self.__index = self
 
 	
-	s.x = X
-	s.y = Y
+	s.x = X or 0
+	s.y = Y or 0
 	if (ImageFile ~= nil) then
 		s.imageFile = ImageFile
 		s.image = love.graphics.newImage(s.imageFile)
@@ -126,8 +126,8 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	s.active = true
 	
 	s.last = {
-		x = X,
-		y = Y
+		x = X or 0,
+		y = Y or 0
 	}
 	
 	return s
@@ -239,7 +239,7 @@ function Sprite:update()
 		if self.dragX > math.abs(self.velocityX) then
 			self.velocityX = 0
 		else
-			self.velocityX = self.velocityX - self.dragX * Utility:signOf(self.velocityX)
+			self.velocityX = self.velocityX - self.dragX * Utility:signOf(self.velocityX) * General.elapsed
 		end
 	else
 		self.velocityX = self.velocityX + self.accelerationX * General.elapsed
@@ -254,7 +254,7 @@ function Sprite:update()
 		if self.dragY > math.abs(self.velocityY) then
 			self.velocityY = 0
 		else
-			self.velocityY = self.velocityY - self.dragY * Utility:signOf(self.velocityY)
+			self.velocityY = self.velocityY - self.dragY * Utility:signOf(self.velocityY) * General.elapsed
 		end
 	else
 		self.velocityY = self.velocityY + self.accelerationY * General.elapsed
@@ -442,7 +442,7 @@ function Sprite:addAnimation(AName, Frames, FrameTime, Loop)
 	self.animations[AName] = {name = AName,
 							frames = Frames or {1},
 							frameTime = FrameTime or 0,
-							loop = Loop or false}
+							loop = Loop}
 end
 --[[Start an animation
 	AName	Name of animation to play
