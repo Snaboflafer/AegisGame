@@ -20,13 +20,11 @@ function HighScoreState:load()
 	headerText:setShadow(180, 130, 0, 255)
 	HighScoreState:add(headerText)
 	
-	
-	local highScores = HighScoreState:readHighScores("highScores.txt")
+	local highScores = HighScoreState:readHighScores("highScores.json")
 	local scoresText = Text:new(General.screenW * .1, General.screenH * .5,
 						highScores, "fonts/Commodore.ttf", 32)
 	scoresText:setAlign(Text.LEFT)
 	HighScoreState:add(scoresText)
-	
 end
 
 function HighScoreState:start()
@@ -45,20 +43,16 @@ function HighScoreState:draw()
 end
 
 function HighScoreState:readHighScores(path)
-    local file = {}
-    for line in love.filesystem.lines(path) do
-    	table.insert(file,line)
-    end
+	local contents, size = love.filesystem.read(path, size)
+	local jsonObject = JSON:decode(contents)
+	local highScores = jsonObject["highScores"]
+
     local content = ""
-    local name = ""
-    local score = ""
-	for n = 1,table.getn(file),2 do
-		print(file[n])
-	    name = file[n]
-	    score = file[n+1]
-	    content = content .. name .. " " .. score .. "\n"
+
+	for k, scoreObject in pairs(highScores) do
+		content = content .. scoreObject["name"] .. " " .. scoreObject["score"] .. "\n"
 	end
-    return content
+	return content
 end
 
 function HighScoreState:keypressed(key)

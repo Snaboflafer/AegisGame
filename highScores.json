@@ -1,0 +1,24 @@
+{  
+   "highScores":[  
+      {  
+         "name":"Steven",
+         "score":5000
+      },
+      {  
+         "name":"Larry",
+         "score":4000
+      },
+      {  
+         "name":"Mark",
+         "score":3000
+      },
+      {  
+         "name":"Jacob",
+         "score":2000
+      },
+      {  
+         "name":"Ramone",
+         "score":1000
+      }
+   ]
+}
