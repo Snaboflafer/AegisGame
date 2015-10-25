@@ -20,10 +20,19 @@
       {  
          "value":1,
          "cut_scene":"images/scene_1.png",
-         "first_layer":"images/StealthHawk-Alien-Landscape-33.jpg",
-         "second_layer":"images/floor_snow_1.png",
-         "third_layer": "",
          "music":"sounds/music_Mines_Synth2.ogg",
+         "layers": [
+            {
+               "image": "images/StealthHawk-Alien-Landscape-33.jpg",
+               "scrollfactor": "",
+               "offset": ""
+            },
+            {
+               "image": "images/floor_snow_1.png",
+               "scrollfactor": "",
+               "offset": ""
+            }
+         ],
          "triggers":[  
             {  
                "distance":500,
@@ -55,10 +64,19 @@
       {  
          "value":2,
          "cut_scene":"images/scene_2.png",
-         "first_layer":"images/mountain.jpg",
-         "second_layer": "images/floor_stone_1.png",
-         "third_layer": "",
          "music":"sounds/music_Mines_Synth2.ogg",
+         "layers": [
+            {
+               "image": "images/mountain.jpg",
+               "scrollfactor": "",
+               "offset": ""
+            },
+            {
+               "image": "images/floor_stone_1.png",
+               "scrollfactor": "",
+               "offset":""
+            }
+         ],
          "triggers":[  
             {  
                "distance":500,

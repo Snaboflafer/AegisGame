@@ -31,14 +31,14 @@ function GameState:load()
 
 	--Create background
 	for i=0, 1, 1 do 
-		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getFirstLayer(currentLevel))
+		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getLayerImage(currentLevel, 1))
 		self.wrappingSprites:add(spriteBg)
 	end
 
 	--Create floor
 	self.ground = Group:new()
 	for i=0, 4 do 
-		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getSecondLayer(currentLevel))
+		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLayerImage(currentLevel, 2))
 		floorBlock:setCollisionBox(0,30, 400, 198)
 		floorBlock.immovable = true
 		self.ground:add(floorBlock)

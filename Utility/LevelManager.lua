@@ -13,16 +13,8 @@ function LevelManager:getNumLevels()
 	return table.getn(LevelManager.jsonObject["levels"])
 end
 
-function LevelManager:getFirstLayer(levelNumber)
-	return LevelManager.jsonObject["levels"][levelNumber]["first_layer"]
-end
-
-function LevelManager:getSecondLayer(levelNumber)
-	return LevelManager.jsonObject["levels"][levelNumber]["second_layer"]
-end
-
-function LevelManager:getThirdLayer(levelNumber)
-	return LevelManager.jsonObject["levels"][levelNumber]["third_layer"]
+function LevelManager:getLayerImage(levelNumber, layerNumber)
+	return LevelManager.jsonObject["levels"][levelNumber]["layers"][layerNumber]["image"]
 end
 
 function LevelManager:getCutScene(levelNumber)
