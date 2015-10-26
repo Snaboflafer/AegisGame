@@ -1,71 +1,31 @@
 --Class for sprites. Should extend Object
-Enemy = {
-	pointValue = 0,
-	massless = true,
-	route = 0,
-	attackPower = 1,
-	score = 100
+Enemy1 = {
 }
 
-function Enemy:new(X,Y,ImageFile)
-	s = Sprite:new(X,Y,ImageFile)
+function Enemy1:new(X,Y)
+	s = Enemy:new(X,Y)
 	setmetatable(s, self)
-	setmetatable(self, Sprite)
+	setmetatable(self, Enemy)
 	self.__index = self
+
 	s.route = math.floor(math.random()*3)
 	s.health = 1
 	s.maxHealth = 1
+	s.NUMROUTES = 3
+	s.attackPower = 1
 	
 	s.sfxHurt = love.audio.newSource(LevelManager:getSound("hurt_2"))
 	
 	return s
 end
 
-function Enemy:kill()
-	GameState.explosion:play(self.x, self.y)
-	Enemy:addToScore(self.score)
-	Sprite.kill(self)
-end
-
-function Enemy:hurt(Damage)
-	Sprite.hurt(self, Damage)
-	self:flash({243, 17,17}, .2)
-	self.sfxHurt:play()
-end
-
-function Enemy:addToScore(score)
-	GameState.score = GameState.score + score
-end
-
-function Enemy:respawn(SpawnX, SpawnY)
-	self.lifetime = 0
-	self.health = self.maxHealth
-	self.x = SpawnX
-	self.y = SpawnY
-	self.route = math.floor(math.random()*3)
-	self.velocityX = 0
-	self.velocityY = 0
-	self.accelerationX = 0
-	self.accelerationY = 0
-	self.exists = true
-end
-
-
-function Enemy:setAnimations()
+function Enemy1:setAnimations()
 	self:addAnimation("idle", {1,2}, .1, true)
 	self:addAnimation("up", {3,4}, .1, true)
 	self:addAnimation("down", {5,6}, .1, true)
 end
 
-function Enemy:setPointValue(V)
-	self.pointValue = V
-end
-
-function Enemy:getPointValue()
-	return self.pointValue
-end
-
-function Enemy:update()
+function Enemy1:update()
 	if self.route == 0 and self:onScreen() == true then
 		self.accelerationY = 400*math.cos(5*self.lifetime)
 	elseif self.route == 1 then
@@ -96,11 +56,9 @@ function Enemy:update()
 		self:setExists(false)
 	end
 
-	Sprite.update(self)
+	Enemy.update(self)
 end
 
-function Enemy:getType()
-	return "Enemy"
+function Enemy1:getType()
+	return "Enemy1"
 end
-
-return Enemy	

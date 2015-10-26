@@ -276,10 +276,9 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 		if curEnemy == nil then
 			--None found, need to create a new enemy
 			curEnemy = {}
-			curEnemy = Enemy:new(spawnX, spawnY)
+			curEnemy = Enemy1:new(spawnX, spawnY)
 			curEnemy:loadSpriteSheet(image, height, width)
 			curEnemy:setAnimations()
-			curEnemy:setPointValue(100)
 			curEnemy:setCollisionBox(7, 26, 44, 19)
 			curEnemy:lockToScreen(Sprite.UPDOWN)
 

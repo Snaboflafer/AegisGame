@@ -12,8 +12,8 @@ Player = {
 
 thump = love.audio.newSource("sounds/thump.mp3")
 
-function Player:new(X,Y,ImageFile)
-	s = Sprite:new(X,Y,ImageFile)
+function Player:new(X,Y)
+	s = Sprite:new(X,Y)
 	setmetatable(s, self)
 	setmetatable(self, Sprite)
 	self.__index = self

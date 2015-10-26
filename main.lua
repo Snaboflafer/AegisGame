@@ -31,6 +31,7 @@ require("Sprites/Player")
 require("Sprites/PlayerShip")
 require("Sprites/PlayerMech")
 require("Sprites/Enemy")
+require("Sprites/Enemy1")
 require("Sprites/Boss")
 
 function love.load()
