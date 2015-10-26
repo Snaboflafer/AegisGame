@@ -8,6 +8,11 @@ NewHighScoreState.__index = NewHighScoreState
 setmetatable(NewHighScoreState, State)
 
 function NewHighScoreState:load()
+
+	if NewHighScoreState:isHighScore() == false then
+		General:setState(HighScoreState)
+	end
+
 	State.load(self)
 	local txtHeader = "Enter your name"
 	
