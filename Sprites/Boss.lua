@@ -46,7 +46,8 @@ function Boss:setAnimations()
 end
 
 function Boss:update()
-	self.accelerationX = (General:getCamera().x + General.screenW*2/3 - self.x)/8
+	self.velocityX = General:getCamera().x + General.screenW*3/4 - self.x
+
 	if self.route == 0 then 
 		i = 0
 		for k, v in pairs(self.weapons.members) do 
@@ -59,15 +60,15 @@ function Boss:update()
 		end
 	elseif self.route == 1 then
 		if self.lifetime < 4 then
-			i = 1
+			i = 0
 			for k, v in pairs(self.weapons.members) do 
-				v:setAngle((self.lifetime+1)*40*i, 0)
+				v:setAngle(100 + self.lifetime*12 + i*50, 0)
 				i = i + 1
 			end
 		elseif self.lifetime < 8 then
 			i = 0
 			for k, v in pairs(self.weapons.members) do 
-				v:setAngle(self.lifetime*30 + i*10, 0)
+				v:setAngle(self.lifetime*40 + i*10 - 60, 0)
 				i = i + 1
 			end
 		else
