@@ -169,6 +169,9 @@ function GameState:load()
 	
 	--Create enemies
 	self.enemies = Group:new()
+	for i=1, 3 do
+		self.enemies:add(Group:new())
+	end
 	self.enemyBullets = Group:new()	--Don't add to state, particle emitters handle bullets
 	GameState:add(self.enemies)
 	
@@ -259,12 +262,20 @@ end
 
 --[[ Spawn a group of enemies past the screen edge
 	NumEnemies	Number of enemies to spawn
-	SpawnY		Height to spawn enemies at
+	Type		Enemy type to spawn
 ]]
-function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
+function GameState:spawnEnemyGroup(NumEnemies, Type)
 	local cameraX, cameraY = self.camera:getPosition()
-	local spawnY = SpawnY or General.screenH/3
-	
+	local spawnY = General.screenH/3
+
+	local enemyClass = nil
+	if Type == 1 then
+		enemyClass = Enemy1
+	elseif Type == 2 then
+		enemyClass = Enemy2
+	elseif Type == 3 then
+		enemyClass = Enemy3
+	end
 	local image, height, width = LevelManager:getEnemy(1)
 	for i=1, NumEnemies or 5 do
 		--Calculate location
@@ -272,11 +283,11 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 		local spawnY = spawnY + 256 * (math.random()-.5)
 
 		--Attempt to recycle an enemy
-		local curEnemy = self.enemies:getFirstAvailable(true)
+		local curEnemy = self.enemies.members[Type]:getFirstAvailable(true)
 		if curEnemy == nil then
 			--None found, need to create a new enemy
 			curEnemy = {}
-			curEnemy = Enemy1:new(spawnX, spawnY)
+			curEnemy = enemyClass:new(spawnX, spawnY)
 			curEnemy:loadSpriteSheet(image, height, width)
 			curEnemy:setAnimations()
 			curEnemy:setCollisionBox(7, 26, 44, 19)
@@ -314,7 +325,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 			self.emitters:add(enemyThruster)
 			
 			self.emitters:add(enemyGun)
-			self.enemies:add(curEnemy)
+			self.enemies.members[Type]:add(curEnemy)
 		else
 			--Found an available enemy, respawn it
 			curEnemy:respawn(spawnX, spawnY)
@@ -445,9 +456,9 @@ end
 function GameState:executeTrigger(Trigger)
 	local triggerType = Trigger["type"]
 	if triggerType == "enemy" then
-		GameState:spawnEnemyGroup(Trigger["value"])
+		GameState:spawnEnemyGroup(Trigger["value"], Trigger["enemyType"])
 	elseif triggerType == "boss" then
-		GameState:spawnBoss(Trigger["value"])
+		GameState:spawnBoss(Trigger["enemyType"])
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
 			Timer:new(3, self, GameState.nextStage)
@@ -459,11 +470,16 @@ end
 
 function GameState:isWaveClear()
 	clear = true
-	for key, enemy in pairs(self.enemies.members) do
-		if enemy.exists == true then
-			clear = false
-		end
+	if self.enemies:getFirstUnavailable(true) == nil then
+		return true
+	else
+		return false
 	end
+	--for key, enemy in pairs(self.enemies.members) do
+	--	if enemy.exists == true then
+	--		clear = false
+	--	end
+	--end
 	return clear
 end
 

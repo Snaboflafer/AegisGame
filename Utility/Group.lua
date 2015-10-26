@@ -154,6 +154,24 @@ function Group:getFirstAvailable(Recurse)
 	return nil
 end
 
+function Group:getFirstUnavailable(Recurse)
+	local result
+	for i=1, self.length do
+		result = self.members[i]
+		if result:getType() == "Group" and Recurse then
+			result = result:getFirstUnavailable(Recurse)
+			if result ~= nil then
+				return result
+			end
+		elseif result.exists then
+			return result
+		end
+	end
+	
+	return nil
+end
+
+
 function Group:getType()
 	return "Group"
 end
