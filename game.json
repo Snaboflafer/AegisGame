@@ -108,7 +108,7 @@
       "cannon":{  
          "src":"sounds/cannon.wav"
       },
-	  "player_hurt":{
+	  "player_hurt_health":{
 		 "src":"sounds/hurt.wav"
 	  },
      "ship_to_mech":{
@@ -122,7 +122,13 @@
      },
      "laser":{
        "src":"sounds/laser.wav"
-     }
+     },
+	 "hurt_2":{
+		"src":"sounds/hurt_2.wav"
+	 },
+	 "player_hurt_shield":{
+		"src":"sounds/hurt_shield.wav"
+	 }
    },
    "particles":{  
       "bullet-red":{  

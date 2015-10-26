@@ -24,7 +24,8 @@ function Player:new(X,Y,ImageFile)
 	s.shield = 3
 	s.maxShield = 3
 	
-	s.sfxHurt = love.audio.newSource(LevelManager:getSound("player_hurt"))
+	s.sfxHurtHealth = love.audio.newSource(LevelManager:getSound("player_hurt_health"))
+	s.sfxHurtShield = love.audio.newSource(LevelManager:getSound("player_hurt_shield"))
 
 	return s
 end
@@ -77,18 +78,19 @@ function Player:hurt(Damage)
 	if self.activeMode == "mech" and self.shield > 0 then
 		--Try rerouting damage to shields if in mech mode
 		Sprite.hurt(self, Damage, "shield")
-		self:flash({0,174,239}, .5)
+		self:flash({0,174,239}, 1)
+		self.sfxHurtShield:play()
 		self:updateShield()
 	else
 		Sprite.hurt(self, Damage)
+		self:flicker(1)
 		self:flash({243,17,17}, .5)
+		self.sfxHurtHealth:play()
 		self:updateHealth()
 	end
 	
-	self.sfxHurt:play()
 
 	--Flicker and make invulnerable for one second
-	self:flicker(1)
 	self:invulnOn()
 	Timer:new(1, self, Player.invulnOff)
 	General:getCamera():screenShake(.01, .5)

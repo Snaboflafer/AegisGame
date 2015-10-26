@@ -26,7 +26,8 @@ Emitter = {
 	targetOffsetX = 0,	--Offset from target's position
 	targetOffsetY = 0,
 	callbackObject = nil,	--Callback (object) for when a particle is emitted
-	callbackFunction = nil
+	callbackFunction = nil,
+	numActive = 0
 }
 
 --[[Create a new Emitter at the given location
@@ -85,22 +86,27 @@ function Emitter:addParticle(NewParticle)
 	NewParticle.health = 0
 	NewParticle.exists = false
 	NewParticle.massless = true
+	NewParticle.killOffScreen = true
 	self:add(NewParticle)
 end
 
 --[[ Update the emitter
 ]]
 function Emitter:update()
-	for i=1, self.length do
-		--Check all particles
-		local curParticle = self.members[i]
+	for i=1, self.numActive do
+		--Check the first particle in the list
+		local curParticle = self.members[1]
 		if curParticle.lifetime > self.lifetime then
-			--Destroy particle if past its lifetime
 			curParticle.exists = false
-		end
-		if not curParticle:onScreen() then
-			--Destroy particle if not on screen
-			curParticle.exists = false
+			--Move to back of group
+			table.remove(self.members, 1)
+			table.insert(self.members, curParticle)
+			self.numActive = self.numActive - 1
+			if self.numActive == 0 then
+				break
+			end
+		else
+			break
 		end
 	end
 	
@@ -182,6 +188,8 @@ function Emitter:emitParticle()
 		--No particles available, so cancel
 		return
 	end
+	
+	self.numActive = self.numActive + 1
 	
 	--Reset particle values
 	particle.lifetime = 0

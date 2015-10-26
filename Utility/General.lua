@@ -67,6 +67,9 @@ function General:draw()
 		return
 	end
 	for i=1, self.loadedStates:getSize(), 1 do
+		if self.loadedStates.members[i].camera ~= nil then
+			self.camera = self.loadedStates.members[i].camera
+		end
 		State.draw(self.loadedStates.members[i])
 	end
 end

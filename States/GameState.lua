@@ -78,9 +78,9 @@ function GameState:load()
 	
 	local playerGun = Emitter:new(0,0)
 	self.playerBullets = Group:new()
-	for i=1, 5 do
+	for i=1, 10 do
 		local curParticle = Sprite:new(0,0,LevelManager:getParticle("laser"))
-		curParticle.attackPower = 1
+		curParticle.attackPower = .5
 		playerGun:addParticle(curParticle)
 		self.playerBullets:add(curParticle)
 	end
@@ -88,7 +88,7 @@ function GameState:load()
 	playerGun:setAngle(0,0)
 	playerGun:lockParent(self.playerShip, false)
 	playerGun:setSound(LevelManager:getSound("laser"))
-	playerGun:start(false, 3, .3, -1)
+	playerGun:start(false, 3, .12, -1)
 	playerGun:stop()
 	self.emitters:add(playerGun)
 	self.playerShip:addWeapon(playerGun, 1)

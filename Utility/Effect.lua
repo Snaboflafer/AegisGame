@@ -32,7 +32,7 @@ function Effect:initExplosion()
 	
 	--Create particle system
 	local explosion = Emitter:new()
-	for i=1, 24 do
+	for i=1, 18 do
 		--Create invisible fireball objects to be used for explosions
 		--(Enough for 3 concurrent explosions)
 		local fireball = Sprite:new(0,0)
@@ -63,7 +63,7 @@ function Effect:initExplosion()
 	explosion:setGravity(100)
 	explosion:setDrag(20, 0)
 	explosion:lockParent(self.sprite, false)
-	explosion:start(true, 1, 0, 8)
+	explosion:start(true, 1, 0, 6)
 	explosion:stop()
 	table.insert(self.emitters,explosion)
 	

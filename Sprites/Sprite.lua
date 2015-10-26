@@ -39,6 +39,7 @@ Sprite = {
 	imageFile = "[NO IMAGE]",	--Filename for image
 	image = nil, --Image of sprite
 	lockSides = 0,	--Set to true to prevent sprite from moving offscreen
+	killOffScreen = false,
 	animated = false,
 	animations = {},	--List of animations registered for sprite
 	curAnim = nil,		--Table for current animation
@@ -314,6 +315,10 @@ function Sprite:update()
 			self.x = camera.x * self.scrollFactorX + camera.width - self.width
 			self.velocityX = -self.velocityX * self.bounceFactor
 			self.touching = Sprite.RIGHT
+		end
+	elseif (self.killOffScreen) then
+		if not self:onScreen() then
+			self:kill()
 		end
 	end
 
@@ -602,10 +607,10 @@ function Sprite:getCenter()
 end
 function Sprite:onScreen()
 	local camera = General:getCamera()
-	if self.x - (General:getCamera().x * self.scrollFactorX) + self.width < 0 or
-		self.x - (General:getCamera().x * self.scrollFactorX) > General.screenW then
-		if self.y - (General:getCamera().y * self.scrollFactorY) + self.height < 0 or
-			self.y - (General:getCamera().y * self.scrollFactorY) > General.screenH then
+	if self.x - (camera.x * self.scrollFactorX) + self.width < 0 or
+		self.x - (camera.x * self.scrollFactorX) > General.screenW then
+		if self.y - (camera.y * self.scrollFactorY) + self.height < 0 or
+			self.y - (camera.y * self.scrollFactorY) > General.screenH then
 			return false
 		end
 	else
