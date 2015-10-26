@@ -265,7 +265,7 @@ function GameState:spawnEnemyGroup(NumEnemies, SpawnY)
 	local cameraX, cameraY = self.camera:getPosition()
 	local spawnY = SpawnY or General.screenH/3
 	
-	local image, height, width = LevelManager:getEnemy()
+	local image, height, width = LevelManager:getEnemy(1)
 	for i=1, NumEnemies or 5 do
 		--Calculate location
 		local spawnX = cameraX + General.screenW + (i * 128)
@@ -330,7 +330,7 @@ function GameState:spawnBoss(value)
 	if self.boss == nil then
 		self.boss = {}
 		self.boss = Boss:new(spawnX, spawnY)
-		self.boss:loadSpriteSheet("images/enemy_1.png",64,64)
+		self.boss:loadSpriteSheet(LevelManager:getEnemy(1), 64, 64)
 		self.boss:setAnimations()
 		self.boss:setPointValue(1000)
 		self.boss:setCollisionBox(7, 26, 44, 19)

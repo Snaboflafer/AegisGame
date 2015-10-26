@@ -39,8 +39,8 @@ function LevelManager:getPlayerMech()
 	return mech["image"], mech["height"], mech["width"]
 end
 
-function LevelManager:getEnemy()
-	local enemy = LevelManager.jsonObject["enemy"]
+function LevelManager:getEnemy(enemyNumber)
+	local enemy = LevelManager.jsonObject["enemies"][enemyNumber]
 	return enemy["image"], enemy["height"], enemy["width"]
 end
 
