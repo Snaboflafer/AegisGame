@@ -133,12 +133,12 @@
          "music":"sounds/music_Mines_Synth2.ogg",
          "layers":[  
             {  
-               "image":"images/mountain.jpg",
+               "image":"images/moon.jpg",
                "scrollfactor":"",
                "offset":""
             },
             {  
-               "image":"images/floor_stone_1.png",
+               "image":"images/floor_snow_1.png",
                "scrollfactor":"",
                "offset":""
             }

@@ -54,7 +54,6 @@ function NewHighScoreState:keypressed(key)
 	elseif key == "backspace" then
 		NewHighScoreState.name = string.sub(NewHighScoreState.name, 1, string.len(NewHighScoreState.name) - 1)
 	else
-		print(key)
 		if Utility:isValidKey(key) == true then
 			NewHighScoreState.name = NewHighScoreState.name .. key
 		end
