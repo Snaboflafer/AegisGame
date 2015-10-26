@@ -90,6 +90,11 @@ function love.update(dt)
 	if GameEndedState.loaded then 
 		debugStr = debugStr .. "GameEndedState (" .. tostring(GameEndedState) .. ") is loaded\n"
 	end
+	if NewHighScoreState.loaded then 
+		debugStr = debugStr .. "NewHighScoreState (" .. tostring(NewHighScoreState) .. ") is loaded\n"
+	end
+
+
 	debugStr = debugStr .. "Registered loaded states:\n"
 	if General.loadedStates ~= nil then
 		for i=1, General.loadedStates:getSize(), 1 do
