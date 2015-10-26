@@ -517,15 +517,14 @@ function GameState:togglePlayerMode()
 end
 
 function GameState:nextStage()
-	Utility:updateHighScores("Player", self.score)
 	local currentLevel = General:getCurrentLevel()
 	General:setCurrentLevel(currentLevel + 1)
 	General:setState(GameLoadState)
 end
 
 function GameState:gameOver()
-	General:setScore(self.score)
-	Utility:updateHighScores("Player", self.score)
+	local lastScore = General:getScore()
+	General:setScore(self.score + lastScore)
 	--General:setState(MenuState)
-	General:setState(GameEndedState)
+	General:setState(NewHighScoreState)
 end

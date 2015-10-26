@@ -2,23 +2,23 @@
    "highScores":[  
       {  
          "name":"Steven",
-         "score":5000
+         "score":50
       },
       {  
          "name":"Larry",
-         "score":4000
+         "score":40
       },
       {  
          "name":"Mark",
-         "score":3000
+         "score":30
       },
       {  
          "name":"Jacob",
-         "score":2000
+         "score":20
       },
       {  
          "name":"Ramone",
-         "score":1000
+         "score":10
       }
    ]
 }
