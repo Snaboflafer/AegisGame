@@ -1,6 +1,7 @@
 JSON = (loadfile "Utility/JSON.lua")()
 
 NewHighScoreState = {
+	loaded = false,
 	name = ""	
 }
 
@@ -26,11 +27,14 @@ function NewHighScoreState:load()
 	NewHighScoreState:add(self.nameText)
 end
 
-function HighScoreState:update()
+function NewHighScoreState:update()
 	State.update(self)
+	if NewHighScoreState:isHighScore() == false then
+		General:setState(HighScoreState)
+	end
 end
 
-function HighScoreState:draw()
+function NewHighScoreState:draw()
 	State.draw(self)
 end
 
