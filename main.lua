@@ -141,10 +141,10 @@ function love.keypressed(key)
 	if key == "up" then
 		debugText.y = debugText.y + 140
 	end
-	if key == "pageup" then
+	if key == "=" then
 		General.timeScale = General.timeScale - .5
 	end
-	if key == "pagedown" then
+	if key == "-" then
 		General.timeScale = General.timeScale + .5
 	end
 end

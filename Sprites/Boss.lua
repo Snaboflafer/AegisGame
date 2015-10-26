@@ -9,7 +9,6 @@ function Boss:new(X,Y,ImageFile)
 	setmetatable(self, Enemy)
 	self.__index = self
 	s.route = 0
-	s.velocityX = GameState.cameraFocus.velocityX
 	s.health = 20
 	s.immovable = true
 	return s
@@ -21,12 +20,14 @@ function Boss:respawn(SpawnX, SpawnY)
 	self.y = SpawnY
 	self.route = math.floor(math.random()*3)
 	self.route = 0
-	self.velocityX = GameState.cameraFocus.velocityX
 	self.velocityY = 0
 	self.accelerationX = 0
 	self.accelerationY = 0
 	self.health = 20
 	self.exists = true
+end
+
+function Boss:setPointValue()
 end
 
 function Boss:hurt(Damage)
@@ -38,17 +39,21 @@ function Boss:addWeapon(GunGroup)
 	self.weapons = GunGroup
 end
 
+function Boss:setAnimations()
+	self:addAnimation("idle", {1,2}, .1, true)
+	self:addAnimation("up", {3,4}, .1, true)
+	self:addAnimation("down", {5,6}, .1, true)
+end
+
 function Boss:update()
-	self.velocityX = GameState.cameraFocus.velocityX
+	self.accelerationX = (General:getCamera().x + General.screenW*2/3 - self.x)/8
 	if self.route == 0 then 
 		i = 0
 		for k, v in pairs(self.weapons.members) do 
 		v:setAngle(120+self.lifetime*15 + i*10, 0)
 		i = i + 1
 		end
-		if self.lifetime < 8 then
-			self.velocityX = self.velocityX - 40
-		else
+		if self.lifetime > 8 then
 			self.lifetime = 0
 			self.route = 1
 		end
@@ -59,14 +64,12 @@ function Boss:update()
 				v:setAngle((self.lifetime+1)*40*i, 0)
 				i = i + 1
 			end
-			self.velocityX = self.velocityX - 40
 		elseif self.lifetime < 8 then
 			i = 0
 			for k, v in pairs(self.weapons.members) do 
 				v:setAngle(self.lifetime*30 + i*10, 0)
 				i = i + 1
 			end
-			self.velocityX = self.velocityX + 40
 		else
 			self.lifetime = 0
 		end
