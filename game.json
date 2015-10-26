@@ -19,8 +19,8 @@
       },
       {  
          "image":"images/sprites/enemy_2.png",
-         "height":120,
-         "width":192
+         "height":192,
+         "width":120
       },
       {  
          "image":"images/sprites/enemy_3.png",
@@ -50,7 +50,7 @@
                "distance":500,
                "type":"enemy",
                "value":3,
-			   "enemyType":1
+			   "enemyType":2
             },
             {  
                "distance":1500,
