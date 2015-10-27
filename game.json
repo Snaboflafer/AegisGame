@@ -141,7 +141,7 @@
       },
       {  
          "value":3,
-         "cut_scene":"images/scene_1.png",
+         "cut_scene":"images/scene_3.png",
          "music":"sounds/music_Mines_Synth2.ogg",
          "layers":[  
             {  
