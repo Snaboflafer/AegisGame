@@ -32,7 +32,7 @@
       {  
          "value":1,
          "cut_scene":"images/scene_1.png",
-         "music":"sounds/music_Mines_Synth2.ogg",
+         "music":"sounds/Mishima.ogg",
          "layers":[  
             {  
                "image":"images/StealthHawk-Alien-Landscape-33.jpg",
