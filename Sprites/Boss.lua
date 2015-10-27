@@ -45,6 +45,16 @@ function Boss:setAnimations()
 	self:addAnimation("down", {5,6}, .1, true)
 end
 
+function Boss:kill()
+	Enemy.kill(self)
+	for k, v in pairs(self.weapons[0].members) do 
+		v:stop()
+	end
+	for k, v in pairs(self.weapons[1].members) do 
+		v:stop()
+	end
+end
+
 function Boss:update()
 	self.velocityX = 2*(General:getCamera().x + General.screenW*3/4 - self.x)
 
