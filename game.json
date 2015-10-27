@@ -50,31 +50,31 @@
                "distance":500,
                "type":"enemy",
                "value":3,
-			   "enemyType":2
+			      "enemyType":3
             },
             {  
                "distance":1500,
                "type":"enemy",
                "value":5,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":2000,
                "type":"enemy",
                "value":10,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":3000,
                "type":"enemy",
                "value":10,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":3050,
                "type":"waveClear",
                "value":0,
-			   "enemyType":0
+			      "enemyType":0
             }
          ]
       },
@@ -99,31 +99,31 @@
                "distance":500,
                "type":"enemy",
                "value":3,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":1500,
                "type":"enemy",
                "value":5,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":2000,
                "type":"enemy",
                "value":10,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":3000,
                "type":"boss",
                "value":0,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":3050,
                "type":"waveClear",
                "value":0,
-			   "enemyType":0
+			      "enemyType":0
             }
          ]
       },
@@ -148,25 +148,25 @@
                "distance":500,
                "type":"enemy",
                "value":3,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":1500,
                "type":"enemy",
                "value":5,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":2000,
                "type":"enemy",
                "value":10,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":3000,
                "type":"boss",
                "value":0,
-			   "enemyType":1
+			      "enemyType":1
             }
          ]
       }
