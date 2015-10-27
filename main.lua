@@ -32,11 +32,8 @@ require("Sprites/PlayerShip")
 require("Sprites/PlayerMech")
 require("Sprites/Enemy")
 require("Sprites/Enemy1")
-<<<<<<< Updated upstream
 require("Sprites/Enemy2")
-=======
 require("Sprites/Enemy3")
->>>>>>> Stashed changes
 require("Sprites/Boss")
 
 function love.load()

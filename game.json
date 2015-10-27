@@ -50,11 +50,7 @@
                "distance":500,
                "type":"enemy",
                "value":3,
-<<<<<<< Updated upstream
-			   "enemyType":2
-=======
 			      "enemyType":3
->>>>>>> Stashed changes
             },
             {  
                "distance":1500,
