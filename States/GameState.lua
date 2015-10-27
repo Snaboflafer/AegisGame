@@ -357,7 +357,7 @@ function GameState:spawnBoss(value)
 		self.boss:lockToScreen(Sprite.UPDOWN)
 		self.boss:setScale(5,5)
 
-		local bossGuns = Group:new()
+		local bossGuns1 = Group:new()
 		--Create enemy gun
 		for i=1, 3 do
 			local enemyGun = Emitter:new(spawnX, spawnY)
@@ -369,15 +369,38 @@ function GameState:spawnBoss(value)
 				self.enemyBullets:add(curBullet)
 			end
 			enemyGun:setSpeed(100, 150)
-			enemyGun:lockParent(self.boss, true, 0)
+			enemyGun:lockParent(self.boss, false, 0)
 			--enemyGun:lockTarget(self.player)		(Use this to target the player)
 			enemyGun:setAngle(140+20*i, 0)
 			enemyGun:start(false, 10, .8, -1)
 			self.emitters:add(enemyGun)
-			bossGuns:add(enemyGun)
+			bossGuns1:add(enemyGun)
 		--curEnemy:addChild(enemyGun)
 		end
-		self.boss:addWeapon(bossGuns)
+		self.boss:addWeapon(bossGuns1, 0)
+
+		local bossGuns2 = Group:new()
+		--Create enemy gun
+		for i=0, 3 do
+			local enemyGun = Emitter:new(spawnX, spawnY)
+			for j=1, 10 do
+				--Create bullets
+				local curBullet = Sprite:new(spawnX, spawnY, LevelManager:getParticle("bullet-red"))
+				curBullet.attackPower = 1
+				enemyGun:addParticle(curBullet)
+				self.enemyBullets:add(curBullet)
+			end
+			enemyGun:setSpeed(100, 150)
+			enemyGun:lockParent(self.boss, false, i*20, 80)
+			--enemyGun:lockTarget(self.player)		(Use this to target the player)
+			enemyGun:setAngle(140+20*i, 0)
+			enemyGun:start(false, 10, .8, -1)
+			enemyGun:stop()
+			self.emitters:add(enemyGun)
+			bossGuns2:add(enemyGun)
+		--curEnemy:addChild(enemyGun)
+		end
+		self.boss:addWeapon(bossGuns2, 1)
 
 		--Thruster particles
 		local enemyThruster = Emitter:new(spawnX, spawnY)
