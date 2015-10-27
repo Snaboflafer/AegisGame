@@ -24,8 +24,8 @@
       },
       {  
          "image":"images/sprites/enemy_3.png",
-         "height":64,
-         "width":128
+         "height":128,
+         "width":64
       }
    ],
    "levels":[  
@@ -50,31 +50,37 @@
                "distance":500,
                "type":"enemy",
                "value":3,
-			   "enemyType":2
+			      "enemyType":1
             },
             {  
                "distance":1500,
                "type":"enemy",
                "value":5,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":2000,
                "type":"enemy",
                "value":10,
-			   "enemyType":1
+			      "enemyType":1
+            },
+            {  
+               "distance":2500,
+               "type":"enemy",
+               "value":2,
+               "enemyType":2
             },
             {  
                "distance":3000,
                "type":"enemy",
                "value":10,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":3050,
                "type":"waveClear",
                "value":0,
-			   "enemyType":0
+			      "enemyType":0
             }
          ]
       },
@@ -99,37 +105,43 @@
                "distance":500,
                "type":"enemy",
                "value":3,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":1500,
                "type":"enemy",
                "value":5,
-			   "enemyType":1
+			      "enemyType":1
+            },
+            {  
+               "distance":1750,
+               "type":"enemy",
+               "value":2,
+               "enemyType":2
             },
             {  
                "distance":2000,
                "type":"enemy",
-               "value":10,
-			   "enemyType":1
+               "value":7,
+			      "enemyType":1
             },
             {  
                "distance":3000,
                "type":"boss",
                "value":0,
-			   "enemyType":1
+			      "enemyType":1
             },
             {  
                "distance":3050,
                "type":"waveClear",
                "value":0,
-			   "enemyType":0
+			      "enemyType":0
             }
          ]
       },
       {  
          "value":3,
-         "cut_scene":"images/scene_1.png",
+         "cut_scene":"images/scene_3.png",
          "music":"sounds/music_Mines_Synth2.ogg",
          "layers":[  
             {  
@@ -148,25 +160,25 @@
                "distance":500,
                "type":"enemy",
                "value":3,
-			   "enemyType":1
+			      "enemyType":3
             },
             {  
                "distance":1500,
                "type":"enemy",
-               "value":5,
-			   "enemyType":1
+               "value":3,
+			      "enemyType":2
             },
             {  
                "distance":2000,
                "type":"enemy",
-               "value":10,
-			   "enemyType":1
+               "value":5,
+			      "enemyType":3
             },
             {  
                "distance":3000,
-               "type":"boss",
-               "value":0,
-			   "enemyType":1
+               "type":"enemy",
+               "value":10,
+			      "enemyType":3
             }
          ]
       }

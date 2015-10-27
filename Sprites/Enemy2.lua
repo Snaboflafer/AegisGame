@@ -1,5 +1,6 @@
 --Class for sprites. Should extend Object
 Enemy2 = {
+	maxVelocityX = 200
 }
 
 function Enemy2:new(X,Y)
@@ -13,7 +14,8 @@ function Enemy2:new(X,Y)
 	s.maxHealth = 2
 	s.NUMROUTES = 1
 	s.attackPower = 1
-	s.accelerationY = 200
+	--s.accelerationY = 200
+	s.y = General.screenH - 200
 	
 	s.sfxHurt = love.audio.newSource(LevelManager:getSound("hurt_2"))
 	
@@ -34,24 +36,32 @@ function Enemy2:setAnimations()
 end
 
 function Enemy2:update()
-	if self.route == 0 and self:onScreen() == true then
-		self.accelerationY = 400*math.cos(5*self.lifetime)
-	elseif self.route == 1 then
-		if self.lifetime < 2 and self:onScreen() == true then
-			self.accelerationY = -50
-		else
-			self.accelerationY = 15
-			self.accelerationX = -100
+	if self.aiStage == 1 then
+		self.accelerationX = math.random()*50
+		if self:getScreenX() < General.screenW * .8 then
+			--self.aiStage = self.aiStage + 1
 		end
-	elseif self.route == 2 then
-		if self.lifetime < 2 and self:onScreen() == true then
-			self.accelerationY = 50
-		else
-			self.accelerationY = -15
-			self.accelerationX = -100
-		end
+	elseif self.aiStage == 2 then
+		self:kill()
 	end
-	
+	--if self.route == 0 and self:onScreen() == true then
+	--	self.accelerationY = 400*math.cos(5*self.lifetime)
+	--elseif self.route == 1 then
+	--	if self.lifetime < 2 and self:onScreen() == true then
+	--		self.accelerationY = -50
+	--	else
+	--		self.accelerationY = 15
+	--		self.accelerationX = -100
+	--	end
+	--elseif self.route == 2 then
+	--	if self.lifetime < 2 and self:onScreen() == true then
+	--		self.accelerationY = 50
+	--	else
+	--		self.accelerationY = -15
+	--		self.accelerationX = -100
+	--	end
+	--end
+	--
 	self:playAnimation("idle_0")
 	
 	if self:getScreenX() + self.width < 0 then

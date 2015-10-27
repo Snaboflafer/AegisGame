@@ -4,7 +4,8 @@ Enemy = {
 	route = 0,
 	NUMROUTES = 0,
 	attackPower = 1,
-	score = 0
+	score = 0,
+	aiStage = 1
 }
 
 function Enemy:new(X,Y)
@@ -45,6 +46,7 @@ function Enemy:respawn(SpawnX, SpawnY)
 	self.accelerationX = 0
 	self.accelerationY = 0
 	self.exists = true
+	self.aiStage = 1
 end
 
 
