@@ -46,6 +46,7 @@ function Enemy:respawn(SpawnX, SpawnY)
 	self.accelerationX = 0
 	self.accelerationY = 0
 	self.exists = true
+	self.aiStage = 1
 end
 
 

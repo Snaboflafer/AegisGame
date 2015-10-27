@@ -21,7 +21,7 @@ end
 
 function Enemy3:setAnimations()
 	self:addAnimation("idle", {1,2,3,4}, .02, true)
-	self:addAnimation("forward", {5,6,7,8}, .1, true)
+	self:addAnimation("forward", {5,6,7,8}, .02, true)
 end
 
 function Enemy3:update()
