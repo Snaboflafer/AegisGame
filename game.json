@@ -24,8 +24,8 @@
       },
       {  
          "image":"images/sprites/enemy_3.png",
-         "height":64,
-         "width":128
+         "height":128,
+         "width":64
       }
    ],
    "levels":[  

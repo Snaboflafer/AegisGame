@@ -1,6 +1,5 @@
---Class for sprites. Should extend Object
-Enemy3 = {
-}
+--Class for third type of enemy sprites
+Enemy3 = {}
 
 function Enemy3:new(X,Y)
 	s = Enemy:new(X,Y)
@@ -13,6 +12,7 @@ function Enemy3:new(X,Y)
 	s.maxHealth = 0.5
 	s.NUMROUTES = 1
 	s.attackPower = 1
+	s.maxVelocityY = 200
 	
 	s.sfxHurt = love.audio.newSource(LevelManager:getSound("hurt_2"))
 	
@@ -20,33 +20,34 @@ function Enemy3:new(X,Y)
 end
 
 function Enemy3:setAnimations()
-	self:addAnimation("idle", {1,2,3,4}, .1, true)
-	self:addAnimation("foward", {5,6,7,8}, .1, true)
+	self:addAnimation("idle", {1,2,3,4}, .02, true)
+	self:addAnimation("forward", {5,6,7,8}, .1, true)
 end
 
 function Enemy3:update()
-
-
-	if self.route == 0 and self:onScreen() == true then
-		self.accelerationY = 400*math.cos(5*self.lifetime)
-	elseif self.route == 1 then
-		if self.lifetime < 2 and self:onScreen() == true then
-			self.accelerationY = -50
-		else
-			self.accelerationY = 15
-			self.accelerationX = -100
+	if self.aiStage == 1 then
+		if self:getScreenX() <= General.screenW - 150 then
+			self.aiStage = self.aiStage + 1
 		end
-	elseif self.route == 2 then
-		if self.lifetime < 2 and self:onScreen() == true then
-			self.accelerationY = 50
-		else
-			self.accelerationY = -15
-			self.accelerationX = -100
+	elseif self.aiStage == 2 then
+		self.velocityX = GameState.cameraFocus.velocityX
+
+		if math.abs(self.y - GameState.player.y) < 20 then
+			self.aiStage = 3
+		elseif self.y < GameState.player.y then
+			self.accelerationY = 100
+		elseif self.y > GameState.player.y then
+			self.accelerationY = -100
 		end
+	else
+		self.accelerationX = -500
+		self.velocityY = 0
 	end
-	
+
 	if self.velocityX < 0 then
 		self:playAnimation("forward")
+	else
+		self:playAnimation("idle")
 	end
 	
 	if self:getScreenX() + self.width < 0 then
