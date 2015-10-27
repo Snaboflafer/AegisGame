@@ -4,7 +4,8 @@ Enemy = {
 	route = 0,
 	NUMROUTES = 0,
 	attackPower = 1,
-	score = 0
+	score = 0,
+	aiStage = 1
 }
 
 function Enemy:new(X,Y)

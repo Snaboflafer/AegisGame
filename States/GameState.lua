@@ -329,9 +329,9 @@ function GameState:spawnEnemyGroup(NumEnemies, Type)
 				
 				self.emitters:add(enemyGun)
 			elseif Type == 2 then
-				--curEnemy:setCollisionBox()
+				curEnemy:setCollisionBox(40, 48, 122, 65)
 			elseif Type == 3 then
-				
+				curEnemy:setCollisionBox(45,18, 42,32)
 			end
 			curEnemy:lockToScreen(Sprite.UPDOWN)
 			self.enemies.members[Type]:add(curEnemy)
