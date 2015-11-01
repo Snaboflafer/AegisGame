@@ -45,16 +45,13 @@ Sprite = {
 	curAnim = nil,		--Table for current animation
 	curAnimFrame = 1,	--Frame index for the currently playing animation
 	curImageQuad = 1,	--Index for the current current graphic in the image file
+	lastAnimFrame = 1,
 	animTimer = 0,		--Timer measuring between animation frames
 	animFinished = false,	--Whether the current animation has finished
 	animMustFinish = false,	--Whether an animation must finish before another can be played
 	curFrameImage = nil,
 	quadFrameCount = 1,
-	imageQuads = {},
-	touchingU = false,
-	touchingD = false,
-	touchingL = false,
-	touchingR = false,
+	imageQuads = {},	--Table containing quads for each animation frame
 	immovable = false,	--Object cannot be pushed by objects during collision
 	massless = false,	--Object won't push objects during collision
 	bounceFactor = 0,	--Percentage of speed retained after collision
@@ -63,17 +60,18 @@ Sprite = {
 	visible = true,		--Whether the sprite should draw
 	solid = true,		--Whether the sprite responds to collisions
 	alive = true,
-	lifetime = 0,
+	lifetime = 0,		--How long this sprite has existed
 	health = 1,
 	maxhealth = 1,
-	attackPower = 0,
+	attackPower = 0,	--Innate damage of sprite (damages other sprites by this amount during HardCollide())
 	showDebug = false,
-	last = nil,
+	last = nil,			--Storage of value from last frame
 	flickerDuration = 0,
 	flashColor = nil,
 	flashDuration = 0,
 	flashAlpha = 0,
-	flashFinished = false
+	flashFinished = false,
+	flashLoop = false
 }
 
 function Sprite:setActive(Active)
@@ -116,6 +114,10 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 		s.width = Width or s.image:getWidth()
 		s.height = Height or s.image:getHeight()
 	end
+	s.scrollFactorX = 1
+	s.scrollFactorY = 1
+	s.offsetX = 0
+	s.offsetY = 0
 	
 	s.color = {255,255,255}
 	s.alpha = 255
@@ -139,16 +141,23 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	s.flashDuration = 0
 	s.flashAlpha = 0
 	s.flashFinished = false
+	s.flashLoop = false
 	
 	return s
 end
 
+--[[ Load an animated sprite sheet
+	ImageFile	Image file of sprite sheet
+	Width		Pixel width of each frame (Must be exact factor of image width)
+	Height		Pixel height of each frame (Must be exact factor of image height)
+]]
 function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 	--Load image
 	self.imageFile = ImageFile
 	self.image = love.graphics.newImage(self.imageFile)
 	self.animated = true
 
+	--Set default collision bounds
 	s.width = Width
 	s.height = Height
 
@@ -170,22 +179,34 @@ function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 	end
 end
 
+--[[ Create a basic rectangle graphic for the sprite
+	Width		Width of sprite
+	Height		Height of sprite
+	Color		Color of the sprite {R,G,B}
+	Alpha		Opacity of the sprite (255=Solid, 0=Clear)
+]]
 function Sprite:createGraphic(Width, Height, Color, Alpha)
 	self.width = Width
 	self.height = Height
-	self.color = Color
-	self.alpha = Alpha
+	self.color = Color or {255,255,255}
+	self.alpha = Alpha or 255
 end
 
+--[[ Set a color to draw over the object
+	Color	{R,G,B} color to draw. {255,255,255} = no overlay
+]]
 function Sprite:setColor(Color)
-	self.color = Color
+	self.color = Color or {255,255,255}
 end
+--[[ Set opacity of Sprite
+	Alpha	Opacity of sprite (255=Solid, 0=Clear)
+]]
 function Sprite:setAlpha(Alpha)
-	self.alpha = Alpha
+	self.alpha = Alpha or 255
 end
 
---[[Dispose of the object
---]]
+--[[ Dispose of the object
+]]
 function Sprite:destroy()
 	for k, v in ipairs(self) do
 		self[k] = nil
@@ -193,11 +214,17 @@ function Sprite:destroy()
 	self = nil
 end
 
+--[[ Kill the sprite
+]]
 function Sprite:kill()
 	self.alive = false
 	self.exists = false
 end
 
+--[[ Reset the sprite at a position
+	X	X position to move to
+	Y	Y position to move to
+]]
 function Sprite:reset(X, Y)
 	self.exists = true
 	self.alive = true
@@ -210,6 +237,10 @@ function Sprite:reset(X, Y)
 	self.touching = self.NONE
 end
 
+--[[ Damage the Sprite's health by an amount
+	Damage			Amount to lower health by
+	OverrideValue	(Optional) Apply damage to this field (given as string) instead
+]]
 function Sprite:hurt(Damage, OverrideValue)
 	if OverrideValue ~= nil then
 		self[OverrideValue] = self[OverrideValue] - Damage
@@ -221,19 +252,26 @@ function Sprite:hurt(Damage, OverrideValue)
 	end
 end
 
+--[[ Damage two objects, based on each's attack power. Does NOT do collision resolution.
+	Object1		First object (damaged by Object2)
+	Object2		First object (damaged by Object1)
+]]
 function Sprite:hardCollide(Object1, Object2)
 	Object1:hurt(Object2.attackPower)
 	Object2:hurt(Object1.attackPower)
 end
 
--- updates velocity and position of sprite
+--[[ Basic update logic for a Sprite
+]]
 function Sprite:update()
 	if self.flickerDuration > 0 then
+		local duration = self.flickerDuration
 		self.visible = not self.visible
-		self.flickerDuration = self.flickerDuration - General.elapsed
-		if self.flickerDuration <= 0 then
+		duration = duration - General.elapsed
+		if duration <= 0 then
 			self.visible = true
 		end
+		self.flickerDuration = duration
 	end
 	
 	self.last.x = self.x
@@ -244,47 +282,50 @@ function Sprite:update()
 	self.touchingPrev = self.touching
 	self.touching = Sprite.NONE
 	
+	local vX = self.velocityX
+	local vY = self.velocityY
+	
 	--Apply either drag or acceleration to velocity
 	if self.accelerationX == 0 then
-		if self.dragX > math.abs(self.velocityX) then
-			self.velocityX = 0
+		if self.dragX > math.abs(vX) then
+			vX = 0
 		else
-			self.velocityX = self.velocityX - self.dragX * Utility:signOf(self.velocityX) * General.elapsed
+			vX = vX - self.dragX * Utility:signOf(vX) * General.elapsed
 		end
 	else
-		self.velocityX = self.velocityX + self.accelerationX * General.elapsed
+		vX = vX + self.accelerationX * General.elapsed
 	end
 	--Limit velocity to maximum
-	if (self.maxVelocityX >= 0) and (math.abs(self.velocityX) > self.maxVelocityX) then
-		self.velocityX = self.maxVelocityX * Utility:signOf(self.velocityX)
+	if (self.maxVelocityX >= 0) and (math.abs(vX) > self.maxVelocityX) then
+		vX = self.maxVelocityX * Utility:signOf(vX)
 	end
 
 	--Apply either drag or acceleration to velocity
 	if self.accelerationY == 0 then
-		if self.dragY > math.abs(self.velocityY) then
-			self.velocityY = 0
+		if self.dragY > math.abs(vY) then
+			vY = 0
 		else
-			self.velocityY = self.velocityY - self.dragY * Utility:signOf(self.velocityY) * General.elapsed
+			vY = vY - self.dragY * Utility:signOf(vY) * General.elapsed
 		end
 	else
-		self.velocityY = self.velocityY + self.accelerationY * General.elapsed
+		vY = vY + self.accelerationY * General.elapsed
 	end
 	--Limit velocity to maximum
-	if (self.maxVelocityY >= 0) and (math.abs(self.velocityY) > self.maxVelocityY) then
-		self.velocityY = self.maxVelocityY * Utility:signOf(self.velocityY)
+	if (self.maxVelocityY >= 0) and (math.abs(vY) > self.maxVelocityY) then
+		vY = self.maxVelocityY * Utility:signOf(vY)
 	end
 	
-	if (math.abs(self.velocityX) < Sprite.VELOCITY_THRESHOLD) then
-		self.velocityX = 0
+	if (math.abs(vX) < Sprite.VELOCITY_THRESHOLD) then
+		vX = 0
 	end
-	if (math.abs(self.velocityX) < Sprite.VELOCITY_THRESHOLD) then
-		self.velocityX = 0
+	if (math.abs(vX) < Sprite.VELOCITY_THRESHOLD) then
+		vX = 0
 	end
 
-	
 	--Apply velocity to position
-	self.x = self.x + self.velocityX * General.elapsed
-	self.y = self.y + self.velocityY * General.elapsed
+	self.x = self.x + vX * General.elapsed
+	self.y = self.y + vY * General.elapsed
+	
 	
 	--Lock to screen handling
 	if (self.lockSides > Sprite.NONE) then
@@ -297,30 +338,33 @@ function Sprite:update()
 		if (self.y < camera.y * self.scrollFactorY) and
 			(locks % Sprite.ALL == 0 or locks % Sprite.UP == 0 or locks % Sprite.UPDOWN == 0) then
 			self.y = camera.y * self.scrollFactorY
-			self.velocityY = -self.velocityY * self.bounceFactor
+			vY = -vY * self.bounceFactor
 			self.touching = Sprite.UP
 		elseif (self.y + self.height > camera.y * self.scrollFactorY + camera.height)
 			and (locks % Sprite.ALL == 0 or locks % Sprite.DOWN == 0 or locks % Sprite.UPDOWN == 0) then
 			self.y = camera.y * self.scrollFactorY + camera.height - self.height
-			self.velocityY = -self.velocityY * self.bounceFactor
+			vY = -vY * self.bounceFactor
 			self.touching = Sprite.DOWN
 		end
 		if (self.x < camera.x * self.scrollFactorX)
 			and (locks % Sprite.ALL == 0 or locks % Sprite.LEFT == 0 or locks % Sprite.SIDES == 0) then
 			self.x = camera.x * self.scrollFactorX
-			self.velocityX = -self.velocityX * self.bounceFactor
+			vX = -vX * self.bounceFactor
 			self.touching = Sprite.LEFT
 		elseif (self.x + self.width > camera.x * self.scrollFactorX + camera.width)
 			and (locks % Sprite.ALL == 0 or locks % Sprite.RIGHT == 0 or locks % Sprite.SIDES == 0) then
 			self.x = camera.x * self.scrollFactorX + camera.width - self.width
-			self.velocityX = -self.velocityX * self.bounceFactor
+			vX = -vX * self.bounceFactor
 			self.touching = Sprite.RIGHT
 		end
-	elseif (self.killOffScreen) then
+	elseif self.killOffScreen then
 		if not self:onScreen() then
 			self:kill()
 		end
 	end
+
+	self.velocityX = vX
+	self.velocityY = vY
 
 	--Update animations
 	if (self.animated) then
@@ -328,8 +372,8 @@ function Sprite:update()
 	end
 end
 
---[[ Draw sprite to screen
---]]
+--[[ Draw sprite to the screen
+]]
 function Sprite:draw()
 	local camera = General:getCamera()
 	local color
@@ -345,7 +389,12 @@ function Sprite:draw()
 		else
 			flashAlpha = flashAlpha - 255*General.elapsed/self.flashDuration
 			if flashAlpha < 0 then
-				flashAlpha = 0
+				if self.flashLoop then
+					flashAlpha = 0.001
+					self.flashFinished = false
+				else
+					flashAlpha = 0
+				end
 			end
 		end
 		local dR = 1-self.flashColor[1]/255
@@ -386,8 +435,12 @@ function Sprite:draw()
 	end
 end
 
---[[Set the collision area of the sprite
---]]
+--[[ Set the collision area of the sprite
+	X	Offset from left of image file to left of collision box
+	Y	Offset from top of image file to top of collision box
+	W	Collidable width (from offset) of sprite
+	H	Collidable height (from offset) of sprite
+]]
 function Sprite:setCollisionBox(X, Y, W, H)
 	self.x = self.x + X - self.offsetX
 	self.y = self.y + Y - self.offsetY
@@ -397,21 +450,12 @@ function Sprite:setCollisionBox(X, Y, W, H)
 	self.width = W
 	self.height = H
 end
---[[Find if the sprite is touching something in a direction
---]]
-function Sprite:isTouching(Direction)
-	--return bit32.band(Direction, self.touching) ~= Sprite.NONE
-	
-end
-function Sprite:justTouched(Direction)
-	return (bit32.band(Direction, self.touching) ~= Sprite.NONE) and (bit32.band(Direction, self.touchingPrev) == Sprite.NONE)
-end
 
---[[Load an animated sprite sheet
+--[[ Load an animated sprite sheet
 	ImageFile	Filename for sheet to load
 	Width		Pixel width of each frame
 	Height		Pixel height of each frame
---]]
+]]
 function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 	--Load image
 	self.imageFile = ImageFile
@@ -435,8 +479,9 @@ function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 		end
 	end
 end
---[[Reset image to default
---]]
+
+--[[ Reset image to default
+]]
 function Sprite:resetImage()
 	self.imageFile = nil
 	self.image = nil
@@ -444,6 +489,10 @@ function Sprite:resetImage()
 	self.width = nil
 	self.height = nil
 end
+--[[ Set the size scale of the Sprite (Scales image/collision)
+	X	Horizontal scale multiplier
+	Y	Vertical scale multiplier
+]]
 function Sprite:setScale(X, Y)
 	if X == 0 then
 		X = .00001
@@ -451,13 +500,12 @@ function Sprite:setScale(X, Y)
 	if Y == 0 then
 		Y = .00001
 	end
+	--Rescale bounds, accounting for old scale
 	self.width = (X / self.scaleX) * self.width
 	self.height = (Y / self.scaleY) * self.height
 	self.scaleX = X
 	self.scaleY = Y
 end
-
-
 
 --[[Add an animation to the sprite
 	AName	Name of the animation
@@ -481,11 +529,14 @@ function Sprite:addAnimation(AName, Frames, FrameTime, Loop)
 							frameTime = FrameTime or 0,
 							loop = Loop}
 end
---[[Start an animation
-	AName	Name of animation to play
-	Restart	Force animation to restart from beginning
---]]
+
+--[[ Start an animation
+	AName		Name of animation to play
+	Restart		Force animation to restart from beginning
+	MustFinish	The animation must finish before another can play
+]]
 function Sprite:playAnimation(AName,Restart,MustFinish)
+	--Set defaults
 	if Restart == nil then
 		Restart = false
 	end
@@ -494,13 +545,16 @@ function Sprite:playAnimation(AName,Restart,MustFinish)
 	end
 
 	if self.curAnim ~= nil then
-		--Cancel if trying to play the active animation, but neither forced restart nor finished
-		if not Restart and (AName == self.curAnim.name) and not self.animFinished then
+		--An animation is already playing
+		if not Restart and (AName == self.curAnim.name) then
+			--Cancel if trying to play the active animation, but neither
+			-- forcing to restart nor finished
 			return
 		end
 	
-		--Cancel if trying to replay current non-looping animation
-		if AName == self.curAnim.name and self.animFinished and not self.curAnim.loop and not Restart then
+		if AName == self.curAnim.name and self.animFinished
+			and not self.curAnim.loop and not Restart then
+			--Cancel if trying to replay current, non-looping animation (and not forced)
 			return
 		end
 	end
@@ -510,7 +564,7 @@ function Sprite:playAnimation(AName,Restart,MustFinish)
 		return
 	end
 	
-	--Check that animation exists
+	--Check that the called animation exists
 	if (self.animations[AName] == nil) then
 		self:resetImage()
 		self.imageFile = "[ERROR: Animation \"" .. AName .. "\" not defined]"
@@ -520,22 +574,26 @@ function Sprite:playAnimation(AName,Restart,MustFinish)
 	
 	--Start animation
 	self.curAnim = self.animations[AName]
+	self.lastAnimFrame = 1
 	self.curAnimFrame = 1
 	self.animTimer = self.curAnim.frameTime
 	self.animFinished = false
 	self.animMustFinish = MustFinish
 end
+
 --[[ Restart the currently running animation
 ]]
 function Sprite:restartAnimation()
+	self.lastAnimFrame = self.curAnimFrame
 	self.curAnimFrame = 1
 	self.animTimer = self.curAnim.frameTime
 	self.animFinished = false
 end
+
 --[[Determine the current frame for an animated sprite
 ]]
 function Sprite:updateAnimation()
-	if (not self.animated) or (self.curAnim == nil) then
+	if not self.animated or self.curAnim == nil then
 		--Cancel if not animating
 		return
 	end
@@ -546,7 +604,7 @@ function Sprite:updateAnimation()
 		self.animTimer = self.animTimer - General.elapsed
 		
 		if self.animTimer <= 0 then
-			--Timer reached max time for frame, reset
+			--Frame timer finished, reset and advance frame
 			self.animTimer = self.curAnim.frameTime
 			
 			if self.curAnimFrame == table.getn(self.curAnim.frames) then
@@ -554,12 +612,14 @@ function Sprite:updateAnimation()
 				
 				if self.curAnim.loop then
 					--Restart if looping
+					self.lastAnimFrame = self.curAnimFrame
 					self.curAnimFrame = 1
 				end
 				--Animation has completed once, mark as finished
 				self.animFinished = true
 			else
 				--Not yet finished, go to next frame
+				self.lastAnimFrame = self.curAnimFrame
 				self.curAnimFrame = self.curAnimFrame + 1
 			end
 			
@@ -569,18 +629,34 @@ function Sprite:updateAnimation()
 	end
 end
 
+--[[ Flicker the Sprite for a given time
+	Duration	Time in seconds for sprite to flicker
+]]
 function Sprite:flicker(Duration)
 	self.flickerDuration = Duration
 end
-function Sprite:flash(FlashColor, FlashDuration)
+--[[ Flash a color overlay on the sprite
+	FlashColor		Color to overlay {R,G,B}
+	FlashDuration	Time for flash (total)
+]]
+function Sprite:flash(FlashColor, FlashDuration, Loop)
 	self.flashColor = FlashColor
 	self.flashDuration = FlashDuration * .5
 	self.flashAlpha = 0.001
 	self.flashFinished = false
+	if Loop == nil then
+		Loop = false
+	end
+	self.flashLoop = Loop
 end
 
---[[Prevent sprite from moving offscreen during update()
---]]
+function Sprite:clearFx()
+	self.flashAlpha = 0
+	self.flickerDuration = 0
+end
+
+--[[Prevent sprite from moving offscreen
+]]
 function Sprite:lockToScreen(value)
 	self.lockSides = value or Sprite.ALL
 end
@@ -648,7 +724,7 @@ function Sprite:getDebug()
 		debugStr = debugStr .. "\t Screen Lock = " .. self.lockSides .. "\n"
 	end
 	if self.animated then
-		debugStr = debugStr .. "\t Animation: \"" .. self.curAnim.name .. "\" (Frame " .. self.curAnim.frames[self.curAnimFrame] .. ")\n"
+		debugStr = debugStr .. "\t Animation: \"" .. self.curAnim.name .. "\" (Frame " .. self.curAnimFrame .. ")\n"
 	end
 	
 	return debugStr

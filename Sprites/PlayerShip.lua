@@ -1,6 +1,7 @@
 PlayerShip = {
 	enableControls = true,
-	activeMode = "ship"
+	activeMode = "ship",
+	SHIELDCHARGERATE = .3
 }
 
 function PlayerShip:new(X,Y,ImageFile)
@@ -95,7 +96,7 @@ function PlayerShip:update()
 	--Recharge shield
 	local shield = self.shield
 	if shield < self.maxShield then
-		shield = shield + General.elapsed * .2
+		shield = shield + General.elapsed * self.SHIELDCHARGERATE
 		if shield > self.maxShield then
 			shield = self.maxShield
 		end

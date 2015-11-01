@@ -25,47 +25,87 @@ function GameState:load()
 	self.cameraFocus.showDebug = true
 	GameState:add(self.cameraFocus)
 
-	self.wrappingSprites = Group:new()
-
-	local currentLevel = General:getCurrentLevel()
+	--Set up particles
+	self.emitters = Group:new()
+	self.worldParticles = Group:new()
 
 	--Create background
-	for i=0, 1, 1 do 
-		local spriteBg = Sprite:new(i * 960, -64, LevelManager:getLayerImage(currentLevel, 1))
-		self.wrappingSprites:add(spriteBg)
+	self.wrapBg = Group:new()
+	local currentLevel = General:getCurrentLevel()
+
+	local bgLayers = LevelManager:getBgLayers(currentLevel)
+	for i=1, table.getn(bgLayers) do
+		local layerGroup = Group:new()
+		local bgImage = bgLayers[i]["image"]
+		local scroll = bgLayers[i]["scrollFactor"]
+		local offset = bgLayers[i]["offset"]
+		
+		local width = love.graphics.newImage(bgImage):getWidth() + offset
+		for j=0, math.ceil(General.screenW/width) do
+			local spriteBg = Sprite:new(j*width, bgLayers[i]["y"], bgImage)
+			spriteBg.scrollFactorX = scroll
+			spriteBg.scrollFactorY = scroll
+			spriteBg.width = width
+			layerGroup:add(spriteBg)
+		end
+		self.wrapBg:add(layerGroup)
 	end
+	--error(table.getn(bgLayers))
+	--for i=0, 1, 1 do 
+	--	local spriteBg = Sprite:new(i * 960, -64, LevelManager:getBgLayers(currentLevel)[1]["image"])
+	--	self.wrappingSprites:add(spriteBg)
+	--end
 
 	--Create floor
 	self.ground = Group:new()
 	for i=0, 4 do 
-		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getLayerImage(currentLevel, 2))
+		local floorBlock = Sprite:new(i * 256, General.screenH- 128, LevelManager:getGroundImage(currentLevel))
 		floorBlock:setCollisionBox(0,30, 400, 198)
 		floorBlock.immovable = true
 		self.ground:add(floorBlock)
 		--self.wrappingSprites:add(floorBlock)
 	end
 	--self.wrappingSprites:add(self.ground) (Nested groups not yet fully supported)
+	local GROUNDDEPTH = 100
+	self.groundCollide = Sprite:new(-32, General.screenH-GROUNDDEPTH)
+	self.groundCollide:createGraphic(32000, GROUNDDEPTH, {255,255,255})
+	self.groundCollide.immovable = true
+	self.groundCollide.visible = false
 	
-	GameState:add(self.wrappingSprites)
+	GameState:add(self.wrapBg)
 	GameState:add(self.ground)
+	GameState:add(self.groundCollide)
+	
+	--Test sprites
+	
+	--Sprite performance
+	--[[
+	local testSprite
+	local randVal
+	for i=1, 1000 do
+		randVal = math.random()+.5
 		
-	--Collision test sprite
+		testSprite = Sprite:new(i*.05,i*.03)
+		randVal = (randVal*i)%255
+		testSprite:createGraphic(3,3, {randVal + math.random()*60, randVal + math.random()*60, randVal + math.random()*60}, 255)
+		testSprite.velocityX = randVal
+		testSprite.velocityY = randVal/2
+		testSprite.lockSides = Sprite.ALL
+		testSprite.accelerationY = 256
+		testSprite.accelerationX = 64 + math.random()*32
+		testSprite.bounceFactor = 1
+		testSprite.scrollFactorX = 0
+		testSprite.scrollFactorY = 0
+		GameState:add(testSprite)
+	end
+	--]]
 	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
-	self.collisionSprite:setCollisionBox(0,0,300,64)
+	self.collisionSprite:setCollisionBox(0,0,256,64)
 	self.collisionSprite:lockToScreen(Sprite.ALL)
 	self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
 	
-	--Set up particles
-	self.emitters = Group:new()
-	self.worldParticles = Group:new()
 
-	--Set up effects
-	self.explosion = Effect:new()
-	self.explosion:initExplosion()
-	GameState:add(self.explosion)
-
-	
 	--Create player (flying)
 	local image, height, width = LevelManager:getPlayerShip()
 	self.playerShip = PlayerShip:new(100, 100)
@@ -88,7 +128,7 @@ function GameState:load()
 	playerGun:setAngle(0,0)
 	playerGun:lockParent(self.playerShip, false)
 	playerGun:setSound(LevelManager:getSound("laser"))
-	playerGun:start(false, 3, .12, -1)
+	playerGun:start(false, 1, .12, -1)
 	playerGun:stop()
 	self.emitters:add(playerGun)
 	self.playerShip:addWeapon(playerGun, 1)
@@ -133,15 +173,35 @@ function GameState:load()
 		playerGun:addParticle(curParticle)
 		self.playerBullets:add(curParticle)
 	end
-	playerGun:setSpeed(500)
+	playerGun:setSpeed(500,525)
 	playerGun:setAngle(0,1)
 	playerGun:lockParent(self.playerMech, false, 107, 16)
 	playerGun:setSound(LevelManager:getSound("cannon"))
 	playerGun:setCallback(self.playerMech, PlayerMech.fireGun)
-	playerGun:start(false, 3, .3, -1)
+	playerGun:start(false, 2, .3, -1)
 	playerGun:stop()
 	self.emitters:add(playerGun)
-	self.playerMech:addWeapon(playerGun, 1)
+	
+	local playerCasings = Emitter:new(0,0)
+	for i=1,7 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet_casing"), 12, 12)
+		curParticle:addAnimation("default", {1,2,3,4}, .03, true)
+		curParticle:playAnimation("default")
+		playerCasings:addParticle(curParticle)
+		self.worldParticles:add(curParticle)
+	end
+	playerCasings:setSpeed(400)
+	playerCasings:setAngle(115, 10)
+	playerCasings:setGravity(1000)
+	playerCasings:setDrag(50)
+	playerCasings:lockParent(self.playerMech, false, 30, 20)
+	playerCasings:start(false, 1, .3, 1)
+	playerCasings:stop()
+	self.emitters:add(playerCasings)
+
+	self.playerMech:addWeapon(playerGun, 1, playerCasings)
+
 	
 	--Create mech thruster
 	local mechThrust_Jet = Emitter:new()
@@ -173,13 +233,21 @@ function GameState:load()
 		self.enemies:add(Group:new())
 	end
 	self.enemyBullets = Group:new()	--Don't add to state, particle emitters handle bullets
-	self.enemies.showDebug = true
 	GameState:add(self.enemies)
 	
 	--Mark stage triggers
 	self.lastTrigger = 0
 	--Read triggers
 	self.stageTriggers = LevelManager:getTriggers(currentLevel)
+
+	
+	--Set up effects
+	self.explosion = Effect:new()
+	self.explosion:initExplosion()
+	GameState:add(self.explosion)
+	self.groundParticle = Effect:new()
+	self.groundParticle:initGroundParticle(LevelManager:getLevelTheme(currentLevel))
+	GameState:add(self.groundParticle)
 
 	--Put particles on top of everything else
 	GameState:add(self.emitters)
@@ -198,9 +266,19 @@ function GameState:load()
 	local hpBack = Sprite:new(hpX+28,hpY+8)
 	hpBack:createGraphic(hpW, hpH, {127,127,127}, 255)
 	self.hud:add(hpBack)
+
 	self.hpBar = Sprite:new(hpX+28,hpY+8)
-	self.hpBar:createGraphic(hpW, hpH, {255,59,0}, 255)
+	self.hpBar:loadSpriteSheet("images/ui/hud_healthBar.png", 105, 16)
+	self.hpBar:addAnimation("default", {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, .05, true)
+	self.hpBar:playAnimation("default")
+	--self.hpBar:createGraphic(hpW, hpH, {255,59,0}, 255)
 	self.hud:add(self.hpBar)
+
+	self.hpMask = Sprite:new(hudX + hpW +28, hpY + 8)
+	self.hpMask:createGraphic(hpW, hpH, {100,100,100}, 255)
+	self.hpMask.originX = hpW
+	self.hpMask.scaleX = 0
+	self.hud:add(self.hpMask)
 	local hpOverlay = Sprite:new(hpX, hpY, "images/ui/hud_health.png")
 	self.hud:add(hpOverlay)
 	
@@ -211,9 +289,18 @@ function GameState:load()
 	local shieldBack = Sprite:new(hudX+22, shieldY + 8)
 	shieldBack:createGraphic(shieldW, shieldH, {127,127,127}, 255)
 	self.hud:add(shieldBack)
+
 	self.shieldBar = Sprite:new(hudX+22, shieldY + 8)
-	self.shieldBar:createGraphic(shieldW, shieldH, {0,166,226}, 255)
+	self.shieldBar:loadSpriteSheet("images/ui/hud_shieldBar.png", 64, 16)
+	self.shieldBar:addAnimation("default", {15,14,13,12,11,10,9,8,7,6,5,4,3,2,1}, .04, true)
+	self.shieldBar:playAnimation("default")
 	self.hud:add(self.shieldBar)
+
+	self.shieldMask = Sprite:new(hudX + shieldW +22, shieldY + 8)
+	self.shieldMask:createGraphic(shieldW, shieldH, {100,100,100}, 255)
+	self.shieldMask.originX = shieldW
+	self.shieldMask.scaleX = 0
+	self.hud:add(self.shieldMask)
 	self.shieldOverlay = Sprite:new(hudX, shieldY, "images/ui/hud_shield.png")
 	self.hud:add(self.shieldOverlay)
 	
@@ -315,14 +402,17 @@ function GameState:spawnEnemyGroup(NumEnemies, Type)
 
 				--Thruster particles
 				local enemyThruster = Emitter:new(spawnX, spawnY)
-				for j=1, 5 do
-					local curParticle = Sprite:new(spawnX, spawnY, LevelManager:getParticle("thruster"))
+				for j=1, 10 do
+					local curParticle = Sprite:new(spawnX, spawnY)
+					curParticle:loadSpriteSheet(LevelManager:getParticle("thruster"), 16, 8)
+					curParticle:addAnimation("default", {1,2,3,4}, .025, false)
+					curParticle:playAnimation("default")
 					enemyThruster:addParticle(curParticle)
 				end
 				enemyThruster:setSpeed(50, 60)
 				enemyThruster:setAngle(0, 30)
 				enemyThruster:lockParent(curEnemy, true, curEnemy.width-4, curEnemy.height/2 - 3)
-				enemyThruster:start(false, .2, 0)
+				enemyThruster:start(false, .1, 0)
 
 				--Register emitter, so that it will be updated
 				self.emitters:add(enemyThruster)
@@ -382,7 +472,10 @@ function GameState:spawnBoss(value)
 		--Thruster particles
 		local enemyThruster = Emitter:new(spawnX, spawnY)
 		for j=1, 5 do
-			local curParticle = Sprite:new(spawnX, spawnY, "images/particles/thruster_small.png")
+			local curParticle = Sprite:new(spawnX, spawnY)
+			curParticle:loadSpriteSheet("images/particles/thruster_small.png", 16, 8)
+			curParticle:addAnimation("default", {1,2,3,4}, .05, false)
+			curParticle:playAnimation("default")
 			curParticle:setScale(5,5)
 			enemyThruster:addParticle(curParticle)
 		end
@@ -413,14 +506,23 @@ function GameState:update()
 	GameState:checkTriggers()
 
 	--Loop scenery groups
-	for k,v in pairs(self.wrappingSprites.members) do
-		-- if right side of wrapping sprite goes off left side of screen
-		local screenX = v:getScreenX()
-		--if (v.x + v.width) < General.camera.x then
-		if screenX + v.width < 0 then
-			v.x = v.x + Group.getSize(self.wrappingSprites) * v.width
+	for i=1, self.wrapBg.length do
+		curSprite = self.wrapBg.members[i].members[1]
+		if curSprite:getScreenX() + curSprite.width < 0 then
+			curSprite.x = curSprite.x + self.wrapBg.members[i].length * curSprite.width
+			table.remove(self.wrapBg.members[i].members, 1)
+			table.insert(self.wrapBg.members[i].members, self.wrapBg.members[i].length, curSprite)
+			--curSprite.x = curSprite.x + (math.ceil(General.screenW/curSprite.width)+1) * curSprite.width
 		end
 	end
+	--	for k,v in pairs(self.wrappingSprites.members) do
+	--		-- if right side of wrapping sprite goes off left side of screen
+	--		local screenX = v:getScreenX()
+	--		--if (v.x + v.width) < General.camera.x then
+	--		if screenX + v.width < 0 then
+	--			v.x = v.x + Group.getSize(self.wrappingSprites) * v.width
+	--		end
+	--	end
 	for k,v in pairs(self.ground.members) do
 		-- if right side of wrapping sprite goes off left side of screen
 		
@@ -436,14 +538,15 @@ function GameState:update()
 	
 	General:collide(self.enemies)				--Collide Group with itself
 	General:collide(self.player, self.collisionSprite)
-	General:collide(self.enemies, self.ground)
-	General:collide(self.ground, self.worldParticles)
+	General:collide(self.enemies, self.groundCollide)
+	General:collide(self.worldParticles,self.groundCollide)
 	
 	--Collisions with custom callback actions
 	General:collide(self.player, self.enemyBullets, nil, Sprite.hardCollide)
 	General:collide(self.playerBullets, self.enemies, nil, Sprite.hardCollide)
 	General:collide(self.player, self.enemies, nil, Sprite.hardCollide)
-	General:collide(self.player, self.ground, self.player, self.player.collideGround, true)
+	--General:collide(self.player, self.ground, self.player, self.player.collideGround, true)
+	General:collide(self.player, self.groundCollide, self.player, self.player.collideGround, true)
 	
 	
 	self.cameraFocus.y = self.player.y

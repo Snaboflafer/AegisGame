@@ -11,11 +11,11 @@ Emitter = {
 	angleRange = math.pi,	--Max angle deviation in either direction
 	velocityMin = 0,		--Minimum launch velocity
 	velocityMax = 100,		--Maximum launch velocity
-	emitDelay = 0,		--Time delay between emissions (does not apply if launchAll==true)
+	emitDelay = 0,		--Time delay between emissions (does not apply if launchBurst==true)
 	emitTimer = 0,		--Counter for counting delay between emissions
 	emitCount = -1,		--Number of particles to launch in burst. Use -1 for all
 	emitSound = nil,	--Sound to play when emitting a particle
-	launchAll = true,	--Launch all particles at once, or sequentially
+	launchBurst = true,	--Launch all particles at once, or sequentially
 	enabled = false,	--Whether the emitter is on or off
 	lifetime = 30,		--How long each particle lasts after emission
 	parent = nil,		--(Optional) Parent object. See lockParent() for info
@@ -27,7 +27,8 @@ Emitter = {
 	targetOffsetY = 0,
 	callbackObject = nil,	--Callback (object) for when a particle is emitted
 	callbackFunction = nil,
-	numActive = 0
+	activeStart = 1,	--Starting index of the active particle block
+	numActive = 0		--Number of active particles
 }
 
 --[[Create a new Emitter at the given location
@@ -43,28 +44,36 @@ function Emitter:new(X, Y)
 	s.velocityX = 0
 	s.velocityY = 0
 	
+	s.emitDelay = 0
+	s.emitTimer = 0
+	s.emitCount = -1
+	s.emitSound = nil
+	s.launchBurst = true
+	s.enabled = false
+	
+	
 	return s
 end
 
 --[[ Start the emitter
-	LaunchAll	Launch all the particles at once. If not, the Delay
-				 argument is used to launch particles sequentially.
+	LaunchBurst	Launch a burst of particles at once. If not, the Delay
+				 argument is used to launch single particles sequentially.
 	Lifetime	How long each particle lasts in seconds (default 30s)
 	Delay		Delay for sequential launch between particles
-	Count		Number of particles to launch. Use -1 for all
+	Count		Number of particles to launch (in series, or burst). Use -1 for all
 ]]
-function Emitter:start(LaunchAll, Lifetime, Delay, Count)
-	if LaunchAll == nil then
+function Emitter:start(LaunchBurst, Lifetime, Delay, Count)
+	if LaunchBurst == nil then
 		--Default to launching all particles at once
-		LaunchAll = true
+		LaunchBurst = true
 	end
-	self.launchAll = LaunchAll
+	self.launchBurst = LaunchBurst
 	self.lifetime = Lifetime
 	self.emitDelay = Delay
 	self.emitCount = Count
 	self.enabled = true
 end
---[[ Restart the emitter.
+--[[ Restart the emitter, using previously set launch parameters.
 	Enables the emitter and resets the timer.
 ]]
 function Emitter:restart()
@@ -93,25 +102,51 @@ end
 --[[ Update the emitter
 ]]
 function Emitter:update()
-	for i=1, self.numActive do
-		--Check the first particle in the list
-		local curParticle = self.members[1]
-		if curParticle.lifetime > self.lifetime then
+	local startIndex = self.activeStart
+	local activeCount = self.numActive
+	local length = self.length
+	local index
+	local curParticle
+	for i=0, activeCount-1 do
+		--Check active particle (begin from activeStart, loop around)
+		index = (startIndex+i-1) % length +1	--Blame Lua to complicate a simple array loop. Why you do this, Lua?
+		curParticle = self.members[index]
+		if curParticle.lifetime > self.lifetime or not curParticle.exists then
 			curParticle.exists = false
-			--Move to back of group
-			table.remove(self.members, 1)
-			table.insert(self.members, curParticle)
-			self.numActive = self.numActive - 1
-			if self.numActive == 0 then
-				break
-			end
+			activeCount = activeCount - 1
+			--Increment start point
+			self.activeStart = (startIndex+i) % length + 1
+			--error("Out of time.\n" .. 
+			--		"Active: " .. activeCount .. "\n" ..
+			--		"Start:  " .. self.activeStart)
 		else
+			--curParticle:update()
 			break
 		end
 	end
+	self.numActive = activeCount
 	
 	--Update all particles
+	--Will fix optimal method (below) later
 	Group.update(self)
+
+	--[[
+	startIndex = self.activeStart
+	
+	for i=1, activeCount-1 do
+		index = (startIndex+i-1) % length +1
+		curParticle = self.members[index]
+		if curParticle.exists then
+			curParticle:update()
+		else
+			--Particle has been killed, need to move
+			table.remove(self.members, index)
+			activeCount = activeCount - 1
+			table.insert(self.members, (startIndex+activeCount-1)%length + 1, curParticle)
+		end
+	end
+	self.numActive = activeCount
+	--]]
 	
 	--Check enabled status
 	if not self.enabled then
@@ -126,8 +161,15 @@ function Emitter:update()
 	end
 	
 	--Emission
-	if self.launchAll then
-		--Emitter is set to launch all particles at once
+	self.emitTimer = self.emitTimer - General.elapsed
+	if self.emitTimer > 0 then
+		return
+	end
+	--Reset timer
+	self.emitTimer = self.emitDelay
+
+	if self.launchBurst then
+		--Emitter is set to launch multiple particles at once
 		self.enabled = false
 		
 		local launchCount
@@ -141,16 +183,7 @@ function Emitter:update()
 		end
 	else
 		--Launch a single particle
-		
-		self.emitTimer = self.emitTimer - General.elapsed
-		if self.emitTimer > 0 then
-			return
-		end
-		
-		--Launch a particle
 		self:emitParticle()
-		--Reset timer
-		self.emitTimer = self.emitDelay
 		--Decrement remaining count
 		self.emitCount = self.emitCount - 1
 		if self.emitCount == 0 then
@@ -160,7 +193,11 @@ function Emitter:update()
 	end
 end
 
---[[ Emit a single particle. Will cancel if not particles available.
+--function Emitter:draw()
+--	Group.draw(self)
+--end
+
+--[[ Emit a single particle. Will cancel if no particles available.
 ]]
 function Emitter:emitParticle()
 	if self.parent ~= nil then
@@ -182,10 +219,11 @@ function Emitter:emitParticle()
 	end
 
 	--Find the first available particle
-	local particle = self:getFirstAvailable(true)
+	--local particle = self:getFirstAvailable(true)
+	local particle = self.members[(self.activeStart+self.numActive-1) % self.length + 1]
 	
-	if particle == nil then
-		--No particles available, so cancel
+	if particle.exists then
+		--Particle found already exists, so don't use it
 		return
 	end
 	
@@ -196,6 +234,7 @@ function Emitter:emitParticle()
 	particle.x = self.x
 	particle.y = self.y
 	particle.accelerationY = self.gravity
+	particle.accelerationX = 0
 	particle.dragX = self.dragX
 	particle.dragY = self.dragY
 	particle.exists = true

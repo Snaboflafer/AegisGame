@@ -6,23 +6,27 @@ Team: SOL
 
 UPDATES (Assignment 7)
 
-Player transform mode (Press LShift to switch between flying/ground)
-Load resources from external json
-Multiple levels with cutscenes
+Restructured directories
+Player shields/transform delay
+Set up high scores and stage layers in json
+Increased player mech mobility (Hover, gun can be aimed up/down)
+Prompt user with high score / name
+Two new enemies (with custom graphics / ai)
+Level 3. High-tech futuristic moon-based combat.
+Point system and ground collisions being revised, currently in progress
 
-
-Audio/Visual:
-Added player ground mode animations
-Additional sound effects
 
 Controls:
 WASD - movement
-Space - shoot
+K - Jump (ground only). Hold jump while in air to hover
+Space - Shoot
 LShift - toggle mode
 I - toggle invincibility
 
 Credits
 Music: 	Nighogg soundtrack by Daedelus,
 		Spiral Knights soundtrack
-Images: Image Stealth Hawk Alien Landscape
+Images: Image: Stealth Hawk Alien Landscape
+		Image: http://www.forwallpaper.com/wallpaper/art-qauz-space-planets-moon-moon-rings-landscape-128478.html
 		Explosion Sprite sheet http://rtype-2014-minetta.googlecode.com/svn/trunk/img/
+		

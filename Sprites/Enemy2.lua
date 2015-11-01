@@ -1,6 +1,6 @@
 --Class for sprites. Should extend Object
 Enemy2 = {
-	maxVelocityX = 200
+	maxVelocityX = 100
 }
 
 function Enemy2:new(X,Y)
@@ -12,6 +12,7 @@ function Enemy2:new(X,Y)
 	s.route = math.floor(math.random()*1)
 	s.health = 2
 	s.maxHealth = 2
+	s.score = 200
 	s.NUMROUTES = 1
 	s.attackPower = 1
 	--s.accelerationY = 200
@@ -37,7 +38,7 @@ end
 
 function Enemy2:update()
 	if self.aiStage == 1 then
-		self.accelerationX = math.random()*50
+		self.accelerationX = (math.random()+.5)*50
 		if self:getScreenX() < General.screenW * .8 then
 			--self.aiStage = self.aiStage + 1
 		end

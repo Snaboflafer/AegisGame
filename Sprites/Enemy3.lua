@@ -1,5 +1,6 @@
 --Class for third type of enemy sprites
-Enemy3 = {}
+Enemy3 = {
+}
 
 function Enemy3:new(X,Y)
 	s = Enemy:new(X,Y)
@@ -8,8 +9,9 @@ function Enemy3:new(X,Y)
 	self.__index = self
 
 	s.route = 1
-	s.health = 0.5
-	s.maxHealth = 0.5
+	s.health = 0
+	s.maxHealth = 0
+	s.score = 50
 	s.NUMROUTES = 1
 	s.attackPower = 1
 	s.maxVelocityY = 200

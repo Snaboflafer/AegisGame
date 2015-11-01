@@ -5,6 +5,7 @@ Effect = {
 	solid = false,
 	emitters = {},
 	sprite = nil,
+	sfx = nil,
 	effectType = ""
 }
 
@@ -13,8 +14,7 @@ function Effect:new(ImageFile)
 	setmetatable(s, self)
 	self.__index = self
 
-	
-	s.sfxExplosion = love.audio.newSource(LevelManager:getSound("explosion"))
+	s.emitters = {}
 
 	return s
 end
@@ -82,7 +82,33 @@ function Effect:initExplosion()
 	smokeBurst:start(true, 2, 0, 10)
 	smokeBurst:stop()
 	table.insert(self.emitters, smokeBurst)
-	--self.playerShip:addWeapon(playerGun, 1)
+	
+	self.sfx = love.audio.newSource(LevelManager:getSound("explosion"))
+
+end
+
+function Effect:initGroundParticle(Theme)
+	self.effectType = "groundParticle"
+	local particleImg = LevelManager:getParticle(Theme .. "Ground")
+	
+	local burst = Emitter:new()
+	
+	local image = love.graphics.newImage(particleImg)
+	for i=1, 50 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(particleImg, image:getWidth()/4, image:getHeight())
+		curParticle:addAnimation("default", {1,2,3,4}, .25, false)
+		curParticle:playAnimation("default")
+		GameState.worldParticles:add(curParticle)
+		burst:addParticle(curParticle)
+	end
+	burst:setSpeed(0,50)
+	burst:setAngle(110, 70)
+	burst:setGravity(100)
+	burst:setDrag(0,100)
+	burst:start(true, 1, .5, 25)
+	burst:stop()
+	table.insert(self.emitters, burst)
 end
 
 function Effect:destroy()
@@ -91,6 +117,7 @@ function Effect:destroy()
 		self.emitters[i]=nil
 	end
 	self.emitters = nil
+	self.sfx = nil
 end
 
 function Effect:update()
@@ -125,14 +152,19 @@ end
 
 function Effect:play(X, Y)
 	self.exists = true
-	self.sprite.exists = true
-	self.sprite:setPosition(X, Y)
-	self.sprite:playAnimation("default", true)
+	if self.sprite ~= nil then
+		self.sprite.exists = true
+		self.sprite:setPosition(X, Y)
+		self.sprite:playAnimation("default", true)
+	end
 	for k,v in pairs(self.emitters) do
+		v:setPosition(X,Y)
 		v:restart()
 	end
-	self.sfxExplosion:rewind()
-	self.sfxExplosion:play()
+	if self.sfx ~= nil then
+		self.sfx:rewind()
+		self.sfx:play()
+	end
 end
 
 function Effect:getType()

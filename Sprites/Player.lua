@@ -1,5 +1,7 @@
 Player = {
 	weapons = {},
+	weaponCasings = {},
+	weaponFlashes = {},
 	activeWeapon = 1,
 	score = 0,
 	enableControls = true,
@@ -19,6 +21,8 @@ function Player:new(X,Y)
 	self.__index = self
 	
 	s.weapons = {}
+	s.weaponCasings = {}
+	s.weaponFlashes = {}
 	s.health = 3
 	s.maxHealth = 3
 	s.shield = 3
@@ -30,12 +34,18 @@ function Player:new(X,Y)
 	return s
 end
 
-function Player:addWeapon(GunEmitter, Slot)
+function Player:addWeapon(GunEmitter, Slot, CasingEmitter, FlashEmitter)
 	--if self.weapons == nil then
 	--	self.weapons = Group:new()
 	--end
 	--self.weapons:add(GunEmitter)
 	self.weapons[Slot] = GunEmitter
+	if CasingEmitter ~= nil then
+		self.weaponCasings[Slot] = CasingEmitter
+	end
+	if FlashEmitter ~= nil then
+		self.weaponFlashes[Slot] = FlashEmitter
+	end
 end
 
 --Kill the player
@@ -80,12 +90,16 @@ function Player:hurt(Damage)
 		Sprite.hurt(self, Damage, "shield")
 		self:flash({0,174,239}, 1)
 		self.sfxHurtShield:play()
+		GameState.shieldMask:flicker(.2)
+		GameState.shieldMask:flash({255,0,0}, .2)
 		self:updateShield()
 	else
 		Sprite.hurt(self, Damage)
 		self:flicker(1)
 		self:flash({243,17,17}, .5)
 		self.sfxHurtHealth:play()
+		GameState.hpMask:flicker(.2)
+		GameState.hpMask:flash({126,0,0}, .2)
 		self:updateHealth()
 	end
 	
@@ -104,7 +118,11 @@ function Player:updateHealth()
 	if hpWidth < 0 then
 		hpWidth = 0
 	end
-	GameState.hpBar.width = hpWidth
+	GameState.hpMask.scaleX = 1 - self.health/self.maxHealth
+	
+	if self.health <= 1 then
+		GameState.hpBar:flash({128,0,0}, 1, true)
+	end
 end
 --[[ Update the shield bar in the Hud
 ]]
@@ -113,7 +131,7 @@ function Player:updateShield()
 	if shieldWidth < 0 then
 		shieldWidth = 0
 	end
-	GameState.shieldBar.width = shieldWidth
+	GameState.shieldMask.scaleX = 1 - self.shield/self.maxShield
 end
 
 function Player:invulnOn()

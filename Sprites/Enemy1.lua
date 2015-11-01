@@ -11,6 +11,7 @@ function Enemy1:new(X,Y)
 	s.route = math.floor(math.random()*3)
 	s.health = 1
 	s.maxHealth = 1
+	s.score = 100
 	s.NUMROUTES = 3
 	s.attackPower = 1
 	
