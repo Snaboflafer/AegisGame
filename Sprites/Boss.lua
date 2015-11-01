@@ -35,8 +35,8 @@ function Boss:hurt(Damage)
 	self:flicker(.1)
 end
 
-function Boss:addWeapon(GunGroup)
-	self.weapons = GunGroup
+function Boss:addWeapon(GunGroup, slot)
+	self.weapons[slot] = GunGroup
 end
 
 function Boss:setAnimations()
@@ -45,13 +45,23 @@ function Boss:setAnimations()
 	self:addAnimation("down", {5,6}, .1, true)
 end
 
+function Boss:kill()
+	Enemy.kill(self)
+	for k, v in pairs(self.weapons[0].members) do 
+		v:stop()
+	end
+	for k, v in pairs(self.weapons[1].members) do 
+		v:stop()
+	end
+end
+
 function Boss:update()
-	self.velocityX = General:getCamera().x + General.screenW*3/4 - self.x
+	self.velocityX = 2*(General:getCamera().x + General.screenW*3/4 - self.x)
 
 	if self.route == 0 then 
 		i = 0
-		for k, v in pairs(self.weapons.members) do 
-		v:setAngle(120+self.lifetime*15 + i*10, 0)
+		for k, v in pairs(self.weapons[0].members) do 
+			v:setAngle(120+self.lifetime*15 + i*10, 0)
 		i = i + 1
 		end
 		if self.lifetime > 8 then
@@ -61,18 +71,39 @@ function Boss:update()
 	elseif self.route == 1 then
 		if self.lifetime < 4 then
 			i = 0
-			for k, v in pairs(self.weapons.members) do 
+			for k, v in pairs(self.weapons[0].members) do 
 				v:setAngle(100 + self.lifetime*12 + i*50, 0)
 				i = i + 1
 			end
 		elseif self.lifetime < 8 then
 			i = 0
-			for k, v in pairs(self.weapons.members) do 
+			for k, v in pairs(self.weapons[0].members) do 
 				v:setAngle(self.lifetime*40 + i*10 - 60, 0)
 				i = i + 1
 			end
 		else
 			self.lifetime = 0
+			self.route = 2
+			for k, v in pairs(self.weapons[0].members) do 
+				v:stop()
+			end
+			for k, v in pairs(self.weapons[1].members) do 
+				v:restart()
+			end
+		end
+	elseif self.route == 2 then
+		for k, v in pairs(self.weapons[1].members) do 
+			v:setAngle(200+self.lifetime*5, 0)
+		end
+		if self.lifetime > 8 then
+			self.lifetime = 0
+			self.route = 1
+			for k, v in pairs(self.weapons[1].members) do 
+				v:stop()
+			end
+			for k, v in pairs(self.weapons[0].members) do 
+				v:restart()
+			end
 		end
 	end
 

@@ -156,7 +156,7 @@
       {  
          "value":3,
          "cut_scene":"images/scene_3.png",
-         "music":"sounds/music_Mines_Synth2.ogg",
+         "music":"sounds/Mishima.ogg",
          "ground":"images/floor_snow_1.png",
 		 "levelTheme":"snow",
 		 "layers":[  
