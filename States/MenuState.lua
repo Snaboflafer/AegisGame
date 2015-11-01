@@ -34,8 +34,6 @@ function MenuState:load()
 	debugInfo:setAlign(Text.RIGHT)
 	MenuState:add(debugInfo)
 	
-	self.bgm = love.audio.newSource("sounds/blast_network.mp3")
-	self.bgm:setLooping(true)
 	self.optionSound = love.audio.newSource("sounds/select_1.wav")
 	self.selectSound = love.audio.newSource("sounds/select_2.wav")
 	self.startSound = love.audio.newSource("sounds/select_long.wav")
@@ -43,11 +41,11 @@ end
 
 function MenuState:start()
 	State.start(self)
-	self.bgm:play()
+	SoundManager:playBgm("sounds/blast_network.mp3")
 end
 function MenuState:stop()
 	State.stop(self)
-	self.bgm:stop()
+	SoundManager:stopBgm()
 end
 
 function MenuState:update()

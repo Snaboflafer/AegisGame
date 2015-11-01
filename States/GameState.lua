@@ -315,10 +315,7 @@ function GameState:load()
 	self.objects:add(enemies)
 	
 	--Do music
-	self.bgmMusic = love.audio.newSource(LevelManager:getLevelMusic(currentLevel))
-    self.bgmMusic:setLooping(true)
-	self.bgmMusic:setVolume(.2)
-	self.bgmMusic:play()
+	SoundManager:playBgm(LevelManager:getLevelMusic(currentLevel))
 end
 
 --[[ Spawn a group of enemies past the screen edge
@@ -495,7 +492,7 @@ function GameState:start()
 end
 function GameState:stop()
 	State.stop(self)
-	self.bgmMusic:stop()
+	SoundManager:stopBgm()
 end
 
 function GameState:update()
