@@ -61,6 +61,8 @@ function Group:delete(SelObject, Recurse)
 	end
 end
 
+--[[ Destroy all members of the group 
+]]
 function Group:destroy()
 	for k, v in pairs(self.members) do
 		v:destroy()
@@ -70,6 +72,8 @@ function Group:destroy()
 	self = nil
 end
 
+--[[ Update all members of the group
+]]
 function Group:update()
 	for k,v in pairs(self.members) do
 		if v.exists and v.active then
@@ -91,12 +95,15 @@ end
 function Group:setActive(Active)
 	self.active = Active
 end
+
 function Group:setExists(Exists)
 	self.exists = Exists
 end
+
 function Group:setSolid(Solid)
 	self.solid = Solid
 end
+
 function Group:setVisible(Visible)
 	self.visible = Visible
 end
@@ -154,6 +161,10 @@ function Group:getFirstAvailable(Recurse)
 	return nil
 end
 
+--[[Returns the first element where exists==true
+	Recurse		Set true to search subgroups as well. Otherwise, groups
+				will be ignored
+--]]
 function Group:getFirstUnavailable(Recurse)
 	local result
 	for i=1, self.length do

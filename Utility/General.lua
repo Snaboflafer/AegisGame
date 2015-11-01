@@ -269,6 +269,7 @@ function General:closeState(OldState, Force)
 	if Force == nil then
 		Force = true
 	end
+
 	if OldState == self.activeState and not Force then
 		--Can't close the active state. Use setState instead!
 		return

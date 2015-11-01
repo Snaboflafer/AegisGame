@@ -1,4 +1,4 @@
-
+-- Sets the controls for the player
 Input = {
 	BUTTON_LEFT = "a",
 	BUTTON_RIGHT = "d",

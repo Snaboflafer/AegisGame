@@ -75,36 +75,12 @@ function GameState:load()
 	GameState:add(self.wrapBg)
 	GameState:add(self.ground)
 	GameState:add(self.groundCollide)
-	
-	--Test sprites
-	
-	--Sprite performance
-	--[[
-	local testSprite
-	local randVal
-	for i=1, 1000 do
-		randVal = math.random()+.5
-		
-		testSprite = Sprite:new(i*.05,i*.03)
-		randVal = (randVal*i)%255
-		testSprite:createGraphic(3,3, {randVal + math.random()*60, randVal + math.random()*60, randVal + math.random()*60}, 255)
-		testSprite.velocityX = randVal
-		testSprite.velocityY = randVal/2
-		testSprite.lockSides = Sprite.ALL
-		testSprite.accelerationY = 256
-		testSprite.accelerationX = 64 + math.random()*32
-		testSprite.bounceFactor = 1
-		testSprite.scrollFactorX = 0
-		testSprite.scrollFactorY = 0
-		GameState:add(testSprite)
-	end
-	--]]
+
 	self.collisionSprite = Sprite:new(200,200,"images/button_256x64.png")
 	self.collisionSprite:setCollisionBox(0,0,256,64)
 	self.collisionSprite:lockToScreen(Sprite.ALL)
 	self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
-	
 
 	--Create player (flying)
 	local image, height, width = LevelManager:getPlayerShip()
@@ -150,7 +126,6 @@ function GameState:load()
 		jetTrail:start(false, .3, 0)
 		self.emitters:add(jetTrail)
 	end
-
 	
 	--Create player Mech
 	image, height, width = LevelManager:getPlayerMech()
@@ -333,13 +308,11 @@ function GameState:load()
 	self.player = self.playerShip
 	GameState:togglePlayerMode("mech")
 	
-	
 	--Organize groups
 	self.objects:add(self.ground)
 	self.objects:add(self.player)
 	self.objects:add(self.worldParticles)
 	self.objects:add(enemies)
-
 	
 	--Do music
 	self.bgmMusic = love.audio.newSource(LevelManager:getLevelMusic(currentLevel))
