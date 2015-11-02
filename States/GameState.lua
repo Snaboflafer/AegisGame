@@ -566,7 +566,7 @@ function GameState:executeTrigger(Trigger)
 		GameState:spawnBoss(Trigger["enemyType"])
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
-			Timer:new(3, self, GameState.nextStage)
+			self:nextStage()
 		else
 			self.lastTrigger = self.lastTrigger - 1
 		end
@@ -605,7 +605,7 @@ function GameState:keyreleased(Key)
 
 	if Key == "escape" then
 		General:setState(PauseState,false)
-	elseif Key == "end" then
+	elseif Key == "end" or Key == "n" then
 		self:nextStage()
 	end
 
@@ -637,6 +637,11 @@ function GameState:togglePlayerMode()
 end
 
 function GameState:nextStage()
+	General:getCamera():fade({255,255,255}, .2)
+	Timer:new(.3, self, self.startNextStage)
+end
+
+function GameState:startNextStage()
 	local currentLevel = General:getCurrentLevel()
 	General:setCurrentLevel(currentLevel + 1)
 	General:setState(GameLoadState)
