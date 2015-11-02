@@ -638,8 +638,8 @@ function GameState:togglePlayerMode()
 end
 
 function GameState:nextStage()
-	General:getCamera():fade({255,255,255}, .2)
-	Timer:new(.3, self, self.startNextStage)
+	General:getCamera():fade({255,255,255}, .5)
+	Timer:new(.5, self, self.startNextStage)
 end
 
 function GameState:startNextStage()
