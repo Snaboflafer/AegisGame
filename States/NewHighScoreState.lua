@@ -2,7 +2,8 @@ JSON = (loadfile "Utility/JSON.lua")()
 
 NewHighScoreState = {
 	loaded = false,
-	name = ""	
+	name = "Enter name",	
+	hintCleared = false
 }
 
 NewHighScoreState.__index = NewHighScoreState
@@ -10,14 +11,23 @@ setmetatable(NewHighScoreState, State)
 
 function NewHighScoreState:load()
 	State.load(self)
-	local txtHeader = "Enter your name"
-	
+
+	local txtHeader = "New High Score"
+
 	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
 						txtHeader, "fonts/Commodore.ttf", 44)
 	headerText:setAlign(Text.CENTER)
 	headerText:setColor(240, 240, 240, 240, 255)
 	headerText:setShadow(180, 130, 0, 25)
 	NewHighScoreState:add(headerText)
+
+	local txtScore = General:getScore()
+	local scoreText = Text:new(General.screenW * .5, General.screenH * .35,
+						txtScore, "fonts/Commodore.ttf", 44)
+	scoreText:setAlign(Text.CENTER)
+	scoreText:setColor(240, 240, 240, 240, 255)
+	scoreText:setShadow(180, 130, 0, 25)
+	NewHighScoreState:add(scoreText)
 
 	self.nameText = Text:new(General.screenW * .5, General.screenH * .5,
 						NewHighScoreState.name, "fonts/Commodore.ttf", 32)
@@ -47,13 +57,19 @@ function NewHighScoreState:stop()
 end
 
 function NewHighScoreState:keypressed(key)
-	if key == "return" then
+	if key == "return" and NewHighScoreState.hintCleared == true then
 		local score = General:getScore()
 		NewHighScoreState:updateHighScores(NewHighScoreState.name, score)
-		General:setState(GameEndedState)
+		General:setState(HighScoreState)
 	elseif key == "backspace" then
 		NewHighScoreState.name = string.sub(NewHighScoreState.name, 1, string.len(NewHighScoreState.name) - 1)
 	else
+
+		if NewHighScoreState.hintCleared == false then
+			NewHighScoreState.name = ""
+			NewHighScoreState.hintCleared = true
+		end
+
 		if Utility:isValidKey(key) == true then
 			NewHighScoreState.name = NewHighScoreState.name .. key
 		end

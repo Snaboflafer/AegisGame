@@ -645,6 +645,5 @@ end
 function GameState:gameOver()
 	local lastScore = General:getScore()
 	General:setScore(self.score + lastScore)
-	--General:setState(MenuState)
 	General:setState(NewHighScoreState)
 end
