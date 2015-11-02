@@ -18,10 +18,10 @@ end
 
 function PlayerShip:setAnimations()
 	self:addAnimation("idle", {1}, 0, false)
-	self:addAnimation("down_in", {2, 3, 4, 5}, .05, false)
-	self:addAnimation("down_out", {6, 7, 8, 9}, .05, false)
-	self:addAnimation("up_in", {12, 13, 14, 15}, .05, false)
-	self:addAnimation("up_out", {16, 17, 18, 19}, .05, false)
+	self:addAnimation("down_in", {2, 3, 4, 5}, .07, false)
+	self:addAnimation("down_out", {6, 7, 8, 9}, .07, false)
+	self:addAnimation("up_in", {12, 13, 14, 15}, .07, false)
+	self:addAnimation("up_out", {16, 17, 18, 19}, .07, false)
 	self:playAnimation("idle")
 end
 
@@ -145,6 +145,7 @@ function PlayerShip:attackStart()
 end
 
 function PlayerShip:attackStop()
+
 	self.weapons[self.activeWeapon]:stop()
 end
 

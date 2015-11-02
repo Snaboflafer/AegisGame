@@ -157,11 +157,15 @@ function Player:keypressed(Key)
 end
 
 function Player:keyreleased(Key)
-	if Key == " " then
-		--self.weapons[self.activeWeapon]:stop()
+	if Key == " " and self.activeMode == "ship" then
 		self:attackStop()
 	elseif Key == "i" then
-		self.invuln = true
+		self.invuln = not self.invuln
+		if self.invuln then
+			self.color = {50,50,128}
+		else
+			self.color = {255,255,255}
+		end
 	end
 end
 

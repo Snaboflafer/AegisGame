@@ -158,8 +158,8 @@ function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 	self.animated = true
 
 	--Set default collision bounds
-	s.width = Width
-	s.height = Height
+	self.width = Width
+	self.height = Height
 
 	--Calculate frames per row/column, and set total
 	local hIndices = self.image:getWidth()/Width
@@ -546,9 +546,8 @@ function Sprite:playAnimation(AName,Restart,MustFinish)
 
 	if self.curAnim ~= nil then
 		--An animation is already playing
-		if not Restart and (AName == self.curAnim.name) then
-			--Cancel if trying to play the active animation, but neither
-			-- forcing to restart nor finished
+		if AName == self.curAnim.name and not Restart then
+			--Cancel if trying to play the active animation, but not forcing restart
 			return
 		end
 	
