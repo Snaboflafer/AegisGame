@@ -133,7 +133,7 @@ function GameState:load()
 	self.playerMech = PlayerMech:new(100,100)
 	self.playerMech:loadSpriteSheet(image, height, width)
 	self.playerMech:setAnimations()
-	self.playerMech:setCollisionBox(68, 44, 50, 104)
+	self.playerMech:setCollisionBox(68, 44)
 	self.playerMech:lockToScreen(Sprite.ALL)
 	self.playerMech.showDebug = true
 	--self.camera:setTarget(self.player)
@@ -158,9 +158,10 @@ function GameState:load()
 	self.emitters:add(playerGun)
 	
 	local playerCasings = Emitter:new(0,0)
-	for i=1,7 do
+	for i=1,14 do
 		local curParticle = Sprite:new(0,0)
 		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet_casing"), 12, 12)
+		curParticle:setCollisionBox(2,2,8,8)
 		curParticle:addAnimation("default", {1,2,3,4}, .03, true)
 		curParticle:playAnimation("default")
 		playerCasings:addParticle(curParticle)
@@ -315,10 +316,7 @@ function GameState:load()
 	self.objects:add(enemies)
 	
 	--Do music
-	self.bgmMusic = love.audio.newSource(LevelManager:getLevelMusic(currentLevel))
-    self.bgmMusic:setLooping(true)
-	self.bgmMusic:setVolume(.2)
-	self.bgmMusic:play()
+	SoundManager:playBgm(LevelManager:getLevelMusic(currentLevel))
 end
 
 --[[ Spawn a group of enemies past the screen edge
@@ -494,8 +492,8 @@ function GameState:start()
 	--self.bgmMusic:play()
 end
 function GameState:stop()
+	SoundManager:stopBgm()
 	State.stop(self)
-	self.bgmMusic:stop()
 end
 
 function GameState:update()
@@ -569,7 +567,7 @@ function GameState:executeTrigger(Trigger)
 		GameState:spawnBoss(Trigger["enemyType"])
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
-			Timer:new(3, self, GameState.nextStage)
+			self:nextStage()
 		else
 			self.lastTrigger = self.lastTrigger - 1
 		end
@@ -608,7 +606,7 @@ function GameState:keyreleased(Key)
 
 	if Key == "escape" then
 		General:setState(PauseState,false)
-	elseif Key == "end" then
+	elseif Key == "end" or Key == "n" then
 		self:nextStage()
 	end
 
@@ -640,6 +638,12 @@ function GameState:togglePlayerMode()
 end
 
 function GameState:nextStage()
+	General:getCamera():fade({255,255,255}, .2)
+	SoundManager:stopBgm()
+	Timer:new(.3, self, self.startNextStage)
+end
+
+function GameState:startNextStage()
 	local currentLevel = General:getCurrentLevel()
 	General:setCurrentLevel(currentLevel + 1)
 	General:setState(GameLoadState)
@@ -648,6 +652,5 @@ end
 function GameState:gameOver()
 	local lastScore = General:getScore()
 	General:setScore(self.score + lastScore)
-	--General:setState(MenuState)
 	General:setState(NewHighScoreState)
 end

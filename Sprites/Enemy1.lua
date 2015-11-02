@@ -8,11 +8,11 @@ function Enemy1:new(X,Y)
 	setmetatable(self, Enemy)
 	self.__index = self
 
-	s.route = math.floor(math.random()*3)
+	s.NUMROUTES = 3
+	s.route = math.floor(math.random() * s.NUMROUTES)
 	s.health = 1
 	s.maxHealth = 1
 	s.score = 100
-	s.NUMROUTES = 3
 	s.attackPower = 1
 	
 	s.sfxHurt = love.audio.newSource(LevelManager:getSound("hurt_2"))

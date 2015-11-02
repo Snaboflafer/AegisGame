@@ -28,16 +28,16 @@ function TitleState:load()
 	instructionText:flash({0,0,0}, .5, true)
 	TitleState:add(instructionText)]]--
 
-    self.bgm = love.audio.newSource("sounds/mission_ui.mp3")
+
+    SoundManager:playBgm("sounds/mission_ui.mp3")
 end
 
 function TitleState:start()
     State.start(self)
-    self.bgm:play()
 end
 function TitleState:stop()
 	State.stop(self)
-    self.bgm:stop()
+    SoundManager:stopBgm()
 end
 
 

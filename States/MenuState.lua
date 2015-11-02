@@ -34,8 +34,6 @@ function MenuState:load()
 	debugInfo:setAlign(Text.RIGHT)
 	MenuState:add(debugInfo)
 	
-	self.bgm = love.audio.newSource("sounds/blast_network.mp3")
-	self.bgm:setLooping(true)
 	self.optionSound = love.audio.newSource("sounds/select_1.wav")
 	self.selectSound = love.audio.newSource("sounds/select_2.wav")
 	self.startSound = love.audio.newSource("sounds/select_long.wav")
@@ -43,11 +41,11 @@ end
 
 function MenuState:start()
 	State.start(self)
-	self.bgm:play()
+	SoundManager:playBgm("sounds/blast_network.mp3")
 end
 function MenuState:stop()
 	State.stop(self)
-	self.bgm:stop()
+	SoundManager:stopBgm()
 end
 
 function MenuState:update()
@@ -83,6 +81,7 @@ function MenuState:keypressed(key)
     elseif key == "return" or key == " " then
 		if self.selected == 1 then
 			General:getCamera():fade({255,255,255}, .2)
+			SoundManager:stopBgm()
 			Timer:new(.3, self, MenuState.loadGame)
 			--General:setState(GameLoadState) 
 			self.startSound:rewind()
