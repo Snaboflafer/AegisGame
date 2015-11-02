@@ -9,7 +9,7 @@ function Enemy3:new(X,Y)
 	self.__index = self
 
 	s.route = 1
-	s.health = 0
+	s.health = 4
 	s.maxHealth = 0
 	s.score = 50
 	s.NUMROUTES = 1

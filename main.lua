@@ -16,6 +16,7 @@ require("Utility/Camera")
 require("Utility/Timer")
 require("Utility/Effect")
 require("Utility/Emitter")
+require("Utility/SoundManager")
 require("States/State")
 require("States/TitleState")
 require("States/MenuState")
@@ -58,7 +59,7 @@ function love.update(dt)
 	General.elapsed = dt * General.timeScale
 	time = time + General.elapsed
 	General.activeState:update()
-
+    SoundManager:update(dt)
 	--Update stored frame times
 	if os.time() == frameStartTime then
 		table.insert(frameTimes, General.elapsed)
