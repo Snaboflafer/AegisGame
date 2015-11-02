@@ -81,6 +81,7 @@ function MenuState:keypressed(key)
     elseif key == "return" or key == " " then
 		if self.selected == 1 then
 			General:getCamera():fade({255,255,255}, .2)
+			SoundManager:stopBgm()
 			Timer:new(.3, self, MenuState.loadGame)
 			--General:setState(GameLoadState) 
 			self.startSound:rewind()

@@ -492,8 +492,8 @@ function GameState:start()
 	--self.bgmMusic:play()
 end
 function GameState:stop()
-	State.stop(self)
 	SoundManager:stopBgm()
+	State.stop(self)
 end
 
 function GameState:update()
@@ -639,6 +639,7 @@ end
 
 function GameState:nextStage()
 	General:getCamera():fade({255,255,255}, .2)
+	SoundManager:stopBgm()
 	Timer:new(.3, self, self.startNextStage)
 end
 
