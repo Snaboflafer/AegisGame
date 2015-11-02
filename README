@@ -50,7 +50,7 @@ The player can no longer fall through the floor, and the score updates now
 
 Code was refactored and reorganized the previous week, but additional minor refactoring occurred throughout. Methods and classes were also better commented to aid in future support. Our two most significant bugs, falling through the floor and the score failing to update, were also fixed.
 
-The majority of changes focused on our artwork. Level 1 graphics are now all original and consistent with our artistic style and overall vision for the game. The player HUD is updated and now animated. The Player can crouch in mech form, and the overall JUICE of the game was enhanced through the additional of new particles and sounds.
+The majority of changes focused on our artwork. Level 1 graphics are now all original and consistent with our artistic style and overall vision for the game. The player HUD is updated and now animated. The Player can crouch in mech form, and the overall JUICE of the game was enhanced through the addition of new particles and sounds.
 
 Controls:
 WASD - movement
