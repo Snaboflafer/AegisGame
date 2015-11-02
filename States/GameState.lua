@@ -133,7 +133,7 @@ function GameState:load()
 	self.playerMech = PlayerMech:new(100,100)
 	self.playerMech:loadSpriteSheet(image, height, width)
 	self.playerMech:setAnimations()
-	self.playerMech:setCollisionBox(68, 44, 50, 104)
+	self.playerMech:setCollisionBox(68, 44)
 	self.playerMech:lockToScreen(Sprite.ALL)
 	self.playerMech.showDebug = true
 	--self.camera:setTarget(self.player)
@@ -158,9 +158,10 @@ function GameState:load()
 	self.emitters:add(playerGun)
 	
 	local playerCasings = Emitter:new(0,0)
-	for i=1,7 do
+	for i=1,14 do
 		local curParticle = Sprite:new(0,0)
 		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet_casing"), 12, 12)
+		curParticle:setCollisionBox(2,2,8,8)
 		curParticle:addAnimation("default", {1,2,3,4}, .03, true)
 		curParticle:playAnimation("default")
 		playerCasings:addParticle(curParticle)
