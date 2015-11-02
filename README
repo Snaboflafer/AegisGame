@@ -4,16 +4,42 @@ Jung Yang jyang99@jhu.edu
 Andrew Shiau ashiau1@jhu.edu
 Team: SOL
 
-UPDATES (Assignment 7)
+Assignment 9 Updates
 
-Restructured directories
-Player shields/transform delay
-Set up high scores and stage layers in json
-Increased player mech mobility (Hover, gun can be aimed up/down)
-Prompt user with high score / name
-Two new enemies (with custom graphics / ai)
-Level 3. High-tech futuristic moon-based combat.
-Point system and ground collisions being revised, currently in progress
+10 Critical Fixes
+
+1. Inconsistent and unoriginal audio
+A new audio track was composed and added to our third level
+
+2. No movement sound effects for Mech
+Sound effects were added for the mech stepping, landing, and jumping. The explosion sound effect
+was also reworked.
+
+3. Inconsistent Level 1 Graphics
+All level 1 graphics are now original works and fit with our overall theme and art style.
+
+4. No sense of depth or immersion with game environment
+Multiple background layers with parallax scrolling were added on level one. Backgrounds
+with multiple layers will be supported on all levels
+
+5. Minimal particles and JUICE
+Shell casing and walking particles were added to enhance the game realism and JUICE
+
+6. Kamikaze level too easy
+The health of the kamikaze enemies was greatly increased along with their number
+
+7. Unattractive HUD
+The HUD was improved with an updated user interface and animations
+
+8. Unintuitive High Score State
+The old high score state simply asked the user to enter the name without revealing
+the purpose. The new high score state informs the user of their high score within the prompt.
+
+9. Unappealing Title Screen
+The game name was decided, and new, more visually appealing, title screen was created.
+
+10. Abrupt Level Transitions
+Level transitions are smoother now with an audio and visual fade out
 
 
 Controls:

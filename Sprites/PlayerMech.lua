@@ -4,9 +4,13 @@ PlayerMech = {
 	JUMPPOWER = 600,
 	GRAVITY = 1400,
 	DRAG = 200,
+	DEFAULTW = 50, 
+	DEFAULTH = 104,
 	fuel = 3,
 	maxFuel = 3,
-	jetThrust = -100
+	jetThrust = -100,
+	ducking = false,
+	attacking = false
 }
 
 function PlayerMech:new(X,Y,ImageFile)
@@ -31,9 +35,17 @@ function PlayerMech:setAnimations()
 	self:addAnimation("walk_f", {2,3,4,7,8,9,10,1}, .15, true)
 	self:addAnimation("walk_b", {10,9,8,7,4,3,2,1}, .2, true)
 	self:addAnimation("attack_f", {11,12,13,14,15}, .1, true)
+	self:addAnimation("attack_w_f", {2,3,4,7,8,9,10,1}, .1, true)
+	self:addAnimation("attack_w_b", {10,9,8,7,4,3,2,1}, .2, true)
 	self:addAnimation("jump_f_u", {16,17,18}, .2, false)
 	self:addAnimation("jump_f_d", {18}, 0, false)
+	self:addAnimation("duck", {21}, 0, false)
+	self:addAnimation("attack_duck", {22,23,24,25}, .1, true)
 	self:playAnimation("idle")
+end
+
+function PlayerMech:setCollisionBox(X, Y, W, H)
+	Sprite.setCollisionBox(self,X,Y,self.DEFAULTW,self.DEFAULTH)
 end
 
 --[[ Assign Jet and Smoke emitters for the thruster
@@ -45,57 +57,76 @@ end
 
 function PlayerMech:update()
 
-	local pressedUp 
+	local pressedUp
 	local pressedDown
 	local pressedLeft
 	local pressedRight
 	local pressedJump
+	local pressedAttack
+	
 	if self.enableControls then
 		pressedUp = love.keyboard.isDown("w")
 		pressedDown = love.keyboard.isDown("s")
 		pressedLeft = love.keyboard.isDown("a")
 		pressedRight = love.keyboard.isDown("d")
 		pressedJump = love.keyboard.isDown("k")
+		pressedAttack = love.keyboard.isDown(" ")
 	else
 		pressedUp = false
 		pressedDown = false
 		pressedLeft = false
 		pressedRight = false
 		pressedJump = false
+		pressedAttack = false
 	end
 	
 	--self.weapons[self.activeWeapon]:setPosition(self.x+66, self.y+12)
-	if pressedRight then
-		self.accelerationX = 800
-		self.maxVelocityX = 200
-	elseif pressedLeft then
-		self.accelerationX = -550
-		self.maxVelocityX = 120
-	else
-		self.accelerationX = 0
-	end
-	
 	local animStr = "idle"
+	local animRestart = false
+	local animForced = false
+	
 	if self.touching == Sprite.DOWN then
 		--On ground
 		
-		if (self.curAnimFrame == 1 and self.lastAnimFrame ~= 1) then
+		if (self.curAnim.name == "walk_f" or self.curAnim.name == "walk_b")
+			and (self.curAnimFrame == 1 and self.lastAnimFrame ~= 1) then
 			GameState.groundParticle:play(self.x + self.width*.65, self.y+self.height-6)
 			self.sfxStep:play()
-			--General:getCamera():screenShake(.003, .05)
-		elseif (self.curAnimFrame == 5 and self.lastAnimFrame ~= 5) then
+		elseif (self.curAnim.name == "walk_f" or self.curAnim.name == "walk_b")
+			and (self.curAnimFrame == 5 and self.lastAnimFrame ~= 5) then
 			GameState.groundParticle:play(self.x + self.width*.25, self.y+self.height-6)
 			self.sfxStep:play()
-			--General:getCamera():screenShake(.003, .05)
 		end
 		
 		self.accelerationY = self.GRAVITY
 		
+
+		if pressedDown and not (pressedRight or pressedLeft) then
+			if not self.ducking then
+				self.height = self.DEFAULTH - 16
+				self.y = self.y + 16
+				self.ducking = true
+			end
+			animStr = "duck"
+		else
+			if self.ducking then
+				self.height = self.DEFAULTH
+				self.y = self.y - 16
+				self.ducking = false
+			end
+		end
+
 		
 		self.dragX = self.DRAG
 		if pressedJump then
 			self.velocityY = -self.JUMPPOWER
 			self.sfxJump:play()
+			
+			if self.ducking then
+				self.height = self.DEFAULTH
+				self.y = self.y - 16
+				self.ducking = false
+			end
 		end
 		
 		if self.fuel < self.maxFuel then
@@ -107,7 +138,8 @@ function PlayerMech:update()
 	else
 		--In air
 		self.dragX = self.DRAG / 10
-
+		--self.ducking = false
+		
 		--	if self.velocityY < 0 then
 		--		animStr = "jump_f_u"
 		--	else
@@ -142,25 +174,50 @@ function PlayerMech:update()
 		end
 	end
 	
-
-	if pressedUp then
-		self.weapons[self.activeWeapon]:setAngle(20, 1)
-		self.weapons[self.activeWeapon]:lockParent(self, false, 87, -24)
-	elseif pressedDown then
-		self.weapons[self.activeWeapon]:setAngle(-20, 1)
-		self.weapons[self.activeWeapon]:lockParent(self, false, 87, 56)
+	--Handle horizontal movement
+	if pressedRight and not self.ducking then
+		self.accelerationX = 800
+		self.maxVelocityX = 200
+	elseif pressedLeft and not self.ducking then
+		self.accelerationX = -550
+		self.maxVelocityX = 120
 	else
-		self.weapons[self.activeWeapon]:setAngle(0,1)
-		self.weapons[self.activeWeapon]:lockParent(self, false, 100, 14)
+		self.accelerationX = 0
 	end
+
+	
 	
 	if self.velocityX > 0 then
 		animStr = "walk_f"
 	elseif self.velocityX < 0 then
 		animStr = "walk_b"
 	end
+	
+	if self.attacking then
+		if self.ducking then
+			animStr = "attack_duck"
+			--animForced = true
+		else
+			if self.velocityX == 0 then
+				animStr = "attack_f"
+			end
+			--animForced = true
+		end
+	end
+	--Handle aiming
+	if pressedUp then
+		self.weapons[self.activeWeapon]:setAngle(20, 1)
+		self.weapons[self.activeWeapon]:lockParent(self, false, 87, -24)
+	elseif pressedDown and not self.ducking then
+		self.weapons[self.activeWeapon]:setAngle(-15, 1)
+		self.weapons[self.activeWeapon]:lockParent(self, false, 87, 46)
+	else
+		self.weapons[self.activeWeapon]:setAngle(0,1)
+		self.weapons[self.activeWeapon]:lockParent(self, false, 100, 14)
+	end
+	
 
-	self:playAnimation(animStr)
+	self:playAnimation(animStr, animRestart, animForced)
 	
 	Player.update(self)
 end
@@ -201,9 +258,17 @@ end
 
 function PlayerMech:attackStart()
 	self.weapons[self.activeWeapon]:restart()
+	self.attacking = true
+	Timer:new(self.weapons[self.activeWeapon].emitDelay, self, PlayerMech.attackStop)
 end
 function PlayerMech:attackStop()
+	if love.keyboard.isDown(" ") then
+		Timer:new(self.weapons[self.activeWeapon].emitDelay, self, PlayerMech.attackStop)
+		return
+	end
+
 	self.weapons[self.activeWeapon]:stop()
+	self.attacking = false
 	if self.weaponCasings[self.activeWeapon] ~= nil then
 		self.weaponCasings[self.activeWeapon]:stop()
 	end
@@ -211,11 +276,17 @@ function PlayerMech:attackStop()
 		self.weaponFlashes[self.activeWeapon]:stop()
 	end
 	
-	self:playAnimation("idle")
+	--self:playAnimation("idle")
 end
 
 function PlayerMech:fireGun()
-	self:playAnimation("attack_f", true, true)
+	if self.ducking then
+		self:playAnimation("attack_duck", true)
+	else
+		if self.velocityX == 0 then
+			self:playAnimation("attack_f", true)
+		end
+	end
 	if self.weaponCasings[self.activeWeapon] ~= nil then
 		self.weaponCasings[self.activeWeapon]:restart()
 	end
