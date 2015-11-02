@@ -6,7 +6,7 @@ Team: SOL
 
 Assignment 9 Updates
 
-10 Critical Fixes
+10+ Critical Fixes
 
 1. Inconsistent and unoriginal audio
 A new audio track was composed and added to our third level
@@ -41,6 +41,16 @@ The game name was decided, and new, more visually appealing, title screen was cr
 10. Abrupt Level Transitions
 Level transitions are smoother now with an audio and visual fade out
 
+11. Inability to crouch
+The player can now crouch when playing as the Mech
+
+12. Fixed bugs with floor and score
+The player can no longer fall through the floor, and the score updates now
+
+
+Code was refactored and reorganized the previous week, but additional minor refactoring occurred throughout. Methods and classes were also better commented to aid in future support. Our two most significant bugs, falling through the floor and the score failing to update, were also fixed.
+
+The majority of changes focused on our artwork. Level 1 graphics are now all original and consistent with our artistic style and overall vision for the game. The player HUD is updated and now animated. The Player can crouch in mech form, and the overall JUICE of the game was enhanced through the additional of new particles and sounds.
 
 Controls:
 WASD - movement
