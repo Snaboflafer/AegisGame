@@ -21,6 +21,8 @@ elseif stage == 2 then
 	if not player:jetOn() then
 		timer = 0
 	end
+	--Show the message box.
+	GameState.messageBox.visible = true
 	--Advance timer, until 2 seconds has passed
 	if timer > 2 then
 		player:jetOff()
@@ -32,6 +34,7 @@ elseif stage == 3 then
 	player:attackStart()
 	--Mark stage with finished flag, and re-enable controls
 	stage = -1
+	GameState.messageBox.visible = false
 	player.enableControls = true
 end
 

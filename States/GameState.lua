@@ -304,11 +304,11 @@ function GameState:load()
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
 	
-	local messageBox = MessageBox:new()
-	messageBox:addBox()
-	messageBox:addText()
+	self.messageBox = MessageBox:new()
+	self.messageBox:addBox()
+	self.messageBox:addText()
 	
-	self.hud:add(messageBox)
+	self.hud:add(self.messageBox)
 	--Keep all Hud elements from moving
 	self.hud:setEach("scrollFactorX", 0)
 	self.hud:setEach("scrollFactorY", 0)

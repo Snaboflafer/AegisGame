@@ -11,8 +11,10 @@ function MessageBox:new(Label, TypeFace)
 	setmetatable(self, Sprite)
 	self.__index = self
 	s.members = {}
-	s.text = "a random long string which I pasted in to go over one line. actually i want four"
+	s.text = "This message box is toggled using a cutscene script. It has a lot of text in it."
 	s.text = wrap(s.text,22)
+	
+	s.visible = false
 	return s
 end
 
