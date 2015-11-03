@@ -119,14 +119,7 @@ function PlayerMech:update()
 		
 		self.dragX = self.DRAG
 		if pressedJump then
-			self.velocityY = -self.JUMPPOWER
-			self.sfxJump:play()
-			
-			if self.ducking then
-				self.height = self.DEFAULTH
-				self.y = self.y - 16
-				self.ducking = false
-			end
+			self:jump()
 		end
 		
 		if self.fuel < self.maxFuel then
@@ -138,39 +131,11 @@ function PlayerMech:update()
 	else
 		--In air
 		self.dragX = self.DRAG / 10
-		--self.ducking = false
 		
-		--	if self.velocityY < 0 then
-		--		animStr = "jump_f_u"
-		--	else
-		--		animStr = "jump_f_d"
-		--	end
-		
-		local accY = self.accelerationY
 		if pressedJump and self.velocityY>-50 and self.fuel > 0 then
-			--Enable boost
-			self.thrust_smoke:restart()
-			
-			local maxThrust = self.jetThrust
-			if accY	> maxThrust then
-				accY = accY - General.elapsed*12*(accY - maxThrust)
-			end
-			self.accelerationY = accY
-			self.fuel = self.fuel - General.elapsed
-			self.maxVelocityY = 45
-			--animStr = "jump_f_d"
+			self:jetOn()
 		else
-			self.thrust_smoke:stop()
-			local gravity = self.GRAVITY
-			if accY < gravity then
-				accY = accY + General.elapsed * 2 * (gravity - accY)
-				if accY > gravity then
-					accY = gravity
-				end
-				self.accelerationY = accY
-			end
-			
-			self.maxVelocityY = 1000
+			self:jetOff()
 		end
 	end
 	
@@ -220,6 +185,48 @@ function PlayerMech:update()
 	self:playAnimation(animStr, animRestart, animForced)
 	
 	Player.update(self)
+end
+
+function PlayerMech:jump()
+	self.velocityY = -self.JUMPPOWER
+	self.sfxJump:play()
+	
+	if self.ducking then
+		self.height = self.DEFAULTH
+		self.y = self.y - 16
+		self.ducking = false
+	end
+end
+
+function PlayerMech:jetOn()
+	--Enable boost
+	local accY = self.accelerationY
+	self.thrust_smoke:restart()
+	
+	local maxThrust = self.jetThrust
+	if accY	> maxThrust then
+		accY = accY - General.elapsed*12*(accY - maxThrust)
+	end
+	self.accelerationY = accY
+	self.fuel = self.fuel - General.elapsed
+	self.maxVelocityY = 45
+	--animStr = "jump_f_d"
+end
+
+function PlayerMech:jetOff()
+	local accY = self.accelerationY
+
+	self.thrust_smoke:stop()
+	local gravity = self.GRAVITY
+	if accY < gravity then
+		accY = accY + General.elapsed * 2 * (gravity - accY)
+		if accY > gravity then
+			accY = gravity
+		end
+		self.accelerationY = accY
+	end
+	
+	self.maxVelocityY = 1000
 end
 
 --[[ Enter mech mode

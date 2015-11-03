@@ -57,7 +57,7 @@
          ],
          "triggers":[
 			{
-				"distance":0,
+				"distance":50,
 				"type":"script",
 				"value":"Scripts/cutscene_1.lua",
 				"enemyType":0

@@ -5,7 +5,6 @@ GameState = {
 	score = 0,
 	lastTrigger = 0,
 	curTriggerIndex = 0,
-	scripts = {}
 }	
 GameState.__index = GameState
 setmetatable(GameState, State)
@@ -16,6 +15,8 @@ function GameState:load()
 	local currentLevel = General:getCurrentLevel()
 	
 	self.scripts = Group:new()
+	self.scripts.showDebug = true
+	GameState:add(self.scripts)
 
 	self.objects = Group:new()
 
@@ -569,7 +570,8 @@ function GameState:executeTrigger(Trigger)
 	elseif triggerType == "boss" then
 		GameState:spawnBoss(Trigger["enemyType"])
 	elseif triggerType == "script" then
-		self.scripts:add(Cutscene:loadScene( Trigger["value"] ))
+		self.scripts:add(Cutscene:loadScene(Trigger["value"]))
+		--self.scripts.members[1]:update()
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
 			self:nextStage()
