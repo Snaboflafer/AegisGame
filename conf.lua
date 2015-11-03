@@ -1,3 +1,5 @@
 function love.conf(t)
-	t.title = "SOL Game"
+	t.title = "Aegis"
+	
+	t.window.resizable = false
 end

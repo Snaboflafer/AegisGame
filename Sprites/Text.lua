@@ -77,8 +77,38 @@ function Text:draw()
 			self.y + self.size/16 - (camera.y * self.scrollFactorY)
 		)
 	end
+	
+	local color
+	if self.flashAlpha > 0 then
+		local flashAlpha = self.flashAlpha
+		
+		if not self.flashFinished then
+			flashAlpha = flashAlpha + 255*General.elapsed/self.flashDuration
+			if flashAlpha > 255 then
+				flashAlpha = 255
+				self.flashFinished = true
+			end
+		else
+			flashAlpha = flashAlpha - 255*General.elapsed/self.flashDuration
+			if flashAlpha < 0 then
+				if self.flashLoop then
+					flashAlpha = 0.001
+					self.flashFinished = false
+				else
+					flashAlpha = 0
+				end
+			end
+		end
+		local dR = 1-self.flashColor[1]/255
+		local dG = 1-self.flashColor[2]/255
+		local dB = 1-self.flashColor[3]/255
+		color = {255-flashAlpha*dR, 255-flashAlpha*dG, 255-flashAlpha*dB}
+		self.flashAlpha = flashAlpha
+	else
+		color = self.color
+	end
+	love.graphics.setColor(color[1], color[2], color[3], self.alpha)
 
-	love.graphics.setColor(self.color)
 	love.graphics.print(
 		self.label,
 		self.x - (self.align * (self.font:getWidth(self.label))) - (camera.x * self.scrollFactorX),

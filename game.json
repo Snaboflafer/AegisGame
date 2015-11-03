@@ -55,7 +55,13 @@
                "y":240
             }
          ],
-         "triggers":[  
+         "triggers":[
+			{
+				"distance":0,
+				"type":"script",
+				"value":"Scripts/cutscene_1.lua",
+				"enemyType":0
+			},
             {  
                "distance":500,
                "type":"enemy",

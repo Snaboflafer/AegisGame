@@ -4,14 +4,19 @@ GameState = {
 	playerGroundMode = false,
 	score = 0,
 	lastTrigger = 0,
-	curTriggerIndex = 0
+	curTriggerIndex = 0,
+	scripts = {}
 }	
 GameState.__index = GameState
 setmetatable(GameState, State)
 
 function GameState:load()
 	State.load(self)
+
+	local currentLevel = General:getCurrentLevel()
 	
+	self.scripts = Group:new()
+
 	self.objects = Group:new()
 
 	--Create camera
@@ -31,7 +36,6 @@ function GameState:load()
 
 	--Create background
 	self.wrapBg = Group:new()
-	local currentLevel = General:getCurrentLevel()
 
 	local bgLayers = LevelManager:getBgLayers(currentLevel)
 	for i=1, table.getn(bgLayers) do
@@ -542,7 +546,6 @@ function GameState:update()
 	--General:collide(self.player, self.ground, self.player, self.player.collideGround, true)
 	General:collide(self.player, self.groundCollide, self.player, self.player.collideGround, true)
 	
-	
 	self.cameraFocus.y = self.player.y
 	
 	highScoreText:setLabel("Score: " .. self.score)
@@ -565,6 +568,8 @@ function GameState:executeTrigger(Trigger)
 		GameState:spawnEnemyGroup(Trigger["value"], Trigger["enemyType"])
 	elseif triggerType == "boss" then
 		GameState:spawnBoss(Trigger["enemyType"])
+	elseif triggerType == "script" then
+		self.scripts:add(Cutscene:loadScene( Trigger["value"] ))
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
 			self:nextStage()

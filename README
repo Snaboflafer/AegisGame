@@ -20,7 +20,7 @@ All level 1 graphics are now original works and fit with our overall theme and a
 
 4. No sense of depth or immersion with game environment
 Multiple background layers with parallax scrolling were added on level one. Backgrounds
-with multiple layers will be supported on all levels
+with multiple layers are supported on all levels
 
 5. Minimal particles and JUICE
 Shell casing and walking particles were added to enhance the game realism and JUICE
@@ -62,7 +62,6 @@ I - toggle invincibility
 Credits
 Music: 	Nighogg soundtrack by Daedelus,
 		Spiral Knights soundtrack
-Images: Image: Stealth Hawk Alien Landscape
-		Image: http://www.forwallpaper.com/wallpaper/art-qauz-space-planets-moon-moon-rings-landscape-128478.html
+Images: Image: http://www.forwallpaper.com/wallpaper/art-qauz-space-planets-moon-moon-rings-landscape-128478.html
 		Explosion Sprite sheet http://rtype-2014-minetta.googlecode.com/svn/trunk/img/
 		
