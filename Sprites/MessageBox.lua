@@ -1,23 +1,64 @@
 MessageBox = {
-	box = nil,
-	text = nil,
+	members = {},
 	autoAdvance = true,
-	autoAdvanceTime = 2
+	autoAdvanceTime = 2,
+	text = {}
 }
 
-function MessageBox:new(X, Y, Label, TypeFace, Size)
-	s = Sprite:new(X,Y)
+function MessageBox:new(Label, TypeFace)
+	s = {}
 	setmetatable(s, self)
 	setmetatable(self, Sprite)
 	self.__index = self
-	
-	s.scrollFactorX = 0
-	s.scrollFactorY = 0
-
-	s.x = X or 0
-	s.y = Y or 0
-	
+	s.members = {}
+	s.text = "a random long string which I pasted in to go over one line. actually i want four"
+	s.text = wrap(s.text,22)
 	return s
+end
+
+function MessageBox:addBox()
+	local GROUNDDEPTH = 100
+	local box = Sprite:new()
+	box:createGraphic(General.screenW - General.screenW/80,General.screenH/3, {0,0,0}, 150)
+	box.scrollFactorX = 0
+	box.scrollFactorY = 0
+	box.x = General.screenW/(80*2)
+	box.y = General.screenH*2/3 - GROUNDDEPTH - General.screenH/30
+    table.insert(self.members, box)
+end
+
+function MessageBox:addText()
+	local GROUNDDEPTH = 100
+	local text = Text:new(General.screenW/80 + General.screenW/80, General.screenH*2/3 - GROUNDDEPTH - General.screenH/30 + General.screenW/80, self.text,"fonts/04b09.ttf", 44)
+	text:setAlign(Text.LEFT)
+	table.insert(self.members, text)
+end
+
+function MessageBox:destroy()
+	for k, v in pairs(self.members) do
+		v:destroy()
+		self.members[k] = nil
+	end
+	self.members = nil
+	self = nil
+end
+
+function MessageBox:update()
+	for k,v in pairs(self.members) do
+		if v.exists and v.active then
+			v:update()
+		end
+	end
+end
+
+--[[ Draw all members of the group
+]]
+function MessageBox:draw()
+	for k,v in pairs(self.members) do
+		if v.exists and v.visible then
+			v:draw()
+		end
+	end
 end
 
 function MessageBox:getDebug()
@@ -29,4 +70,22 @@ function MessageBox:getDebug()
 	debugStr = debugStr .. "\t Size = " .. self.size .. "\n"
 
 	return debugStr
+end
+
+function MessageBox:getType()
+	return "MessageBox"
+end
+
+function wrap(str, limit, indent, indent1)
+  indent = indent or ""
+  indent1 = indent1 or indent
+  limit = limit or 72
+  local here = 1-#indent1
+  return indent1..str:gsub("(%s+)()(%S+)()",
+                          function(sp, st, word, fi)
+                            if fi-here > limit then
+                              here = st - #indent
+                              return "\n"..indent..word
+                            end
+                          end)
 end
