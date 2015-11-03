@@ -9,8 +9,9 @@ PlayerMech = {
 	fuel = 3,
 	maxFuel = 3,
 	jetThrust = -100,
-	ducking = false,
-	attacking = false
+	isDucking = false,
+	isAttacking = false,
+	isHovering = false
 }
 
 function PlayerMech:new(X,Y,ImageFile)
@@ -87,6 +88,9 @@ function PlayerMech:update()
 	
 	if self.touching == Sprite.DOWN then
 		--On ground
+
+		self.dragX = self.DRAG
+		self.accelerationY = self.GRAVITY
 		
 		if (self.curAnim.name == "walk_f" or self.curAnim.name == "walk_b")
 			and (self.curAnimFrame == 1 and self.lastAnimFrame ~= 1) then
@@ -98,30 +102,27 @@ function PlayerMech:update()
 			self.sfxStep:play()
 		end
 		
-		self.accelerationY = self.GRAVITY
-		
-
 		if pressedDown and not (pressedRight or pressedLeft) then
-			if not self.ducking then
+			if not self.isDucking then
 				self.height = self.DEFAULTH - 16
 				self.y = self.y + 16
-				self.ducking = true
+				self.isDucking = true
 			end
 			animStr = "duck"
 		else
-			if self.ducking then
+			if self.isDucking then
 				self.height = self.DEFAULTH
 				self.y = self.y - 16
-				self.ducking = false
+				self.isDucking = false
 			end
 		end
 
 		
-		self.dragX = self.DRAG
 		if pressedJump then
 			self:jump()
 		end
 		
+		self:jetOff()
 		if self.fuel < self.maxFuel then
 			self.fuel = self.fuel + General.elapsed * 10
 			if self.fuel > self.maxFuel then
@@ -132,18 +133,38 @@ function PlayerMech:update()
 		--In air
 		self.dragX = self.DRAG / 10
 		
-		if pressedJump and self.velocityY>-50 and self.fuel > 0 then
+		if pressedJump then
 			self:jetOn()
+		end
+		
+		if self.isHovering then
+			local accY = self.accelerationY
+	
+			local maxThrust = self.jetThrust
+			if accY	> maxThrust then
+				accY = accY - General.elapsed*12*(accY - maxThrust)
+			end
+			self.accelerationY = accY
+			self.fuel = self.fuel - General.elapsed
+			--animStr = "jump_f_d"
 		else
-			self:jetOff()
+			local accY = self.accelerationY
+			local gravity = self.GRAVITY
+			if accY < gravity then
+				accY = accY + General.elapsed * 2 * (gravity - accY)
+				if accY > gravity then
+					accY = gravity
+				end
+				self.accelerationY = accY
+			end
 		end
 	end
 	
 	--Handle horizontal movement
-	if pressedRight and not self.ducking then
+	if pressedRight and not self.isDucking then
 		self.accelerationX = 800
 		self.maxVelocityX = 200
-	elseif pressedLeft and not self.ducking then
+	elseif pressedLeft and not self.isDucking then
 		self.accelerationX = -550
 		self.maxVelocityX = 120
 	else
@@ -158,8 +179,8 @@ function PlayerMech:update()
 		animStr = "walk_b"
 	end
 	
-	if self.attacking then
-		if self.ducking then
+	if self.isAttacking then
+		if self.isDucking then
 			animStr = "attack_duck"
 			--animForced = true
 		else
@@ -173,7 +194,7 @@ function PlayerMech:update()
 	if pressedUp then
 		self.weapons[self.activeWeapon]:setAngle(20, 1)
 		self.weapons[self.activeWeapon]:lockParent(self, false, 87, -24)
-	elseif pressedDown and not self.ducking then
+	elseif pressedDown and not self.isDucking then
 		self.weapons[self.activeWeapon]:setAngle(-15, 1)
 		self.weapons[self.activeWeapon]:lockParent(self, false, 87, 46)
 	else
@@ -191,42 +212,32 @@ function PlayerMech:jump()
 	self.velocityY = -self.JUMPPOWER
 	self.sfxJump:play()
 	
-	if self.ducking then
+	if self.isDucking then
 		self.height = self.DEFAULTH
 		self.y = self.y - 16
-		self.ducking = false
+		self.isDucking = false
 	end
 end
 
 function PlayerMech:jetOn()
-	--Enable boost
-	local accY = self.accelerationY
-	self.thrust_smoke:restart()
-	
-	local maxThrust = self.jetThrust
-	if accY	> maxThrust then
-		accY = accY - General.elapsed*12*(accY - maxThrust)
+	if self.fuel <= 0 or self.velocityY<-50 then
+		self:jetOff()
+		return false
 	end
-	self.accelerationY = accY
-	self.fuel = self.fuel - General.elapsed
+	--Enable boost
+
+	self.thrust_smoke:restart()
 	self.maxVelocityY = 45
-	--animStr = "jump_f_d"
+
+	self.isHovering = true
+	
+	return true
 end
 
 function PlayerMech:jetOff()
-	local accY = self.accelerationY
-
-	self.thrust_smoke:stop()
-	local gravity = self.GRAVITY
-	if accY < gravity then
-		accY = accY + General.elapsed * 2 * (gravity - accY)
-		if accY > gravity then
-			accY = gravity
-		end
-		self.accelerationY = accY
-	end
-	
 	self.maxVelocityY = 1000
+	self.isHovering = false
+	self.thrust_smoke:stop()
 end
 
 --[[ Enter mech mode
@@ -265,7 +276,7 @@ end
 
 function PlayerMech:attackStart()
 	self.weapons[self.activeWeapon]:restart()
-	self.attacking = true
+	self.isAttacking = true
 	Timer:new(self.weapons[self.activeWeapon].emitDelay, self, PlayerMech.attackStop)
 end
 function PlayerMech:attackStop()
@@ -275,7 +286,7 @@ function PlayerMech:attackStop()
 	end
 
 	self.weapons[self.activeWeapon]:stop()
-	self.attacking = false
+	self.isAttacking = false
 	if self.weaponCasings[self.activeWeapon] ~= nil then
 		self.weaponCasings[self.activeWeapon]:stop()
 	end
@@ -287,7 +298,7 @@ function PlayerMech:attackStop()
 end
 
 function PlayerMech:fireGun()
-	if self.ducking then
+	if self.isDucking then
 		self:playAnimation("attack_duck", true)
 	else
 		if self.velocityX == 0 then

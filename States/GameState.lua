@@ -570,7 +570,7 @@ function GameState:executeTrigger(Trigger)
 	elseif triggerType == "boss" then
 		GameState:spawnBoss(Trigger["enemyType"])
 	elseif triggerType == "script" then
-		self.scripts:add(Cutscene:loadScene(Trigger["value"]))
+		self.scripts:add(Script:loadScript(Trigger["value"]))
 		--self.scripts.members[1]:update()
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then

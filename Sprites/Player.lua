@@ -159,6 +159,8 @@ end
 function Player:keyreleased(Key)
 	if Key == " " and self.activeMode == "ship" then
 		self:attackStop()
+	elseif Key == "k" and self.activeMode == "mech" then
+		self:jetOff()
 	elseif Key == "i" then
 		self.invuln = not self.invuln
 		if self.invuln then

@@ -1,4 +1,4 @@
-Cutscene = {
+Script = {
 	scene = nil,
 	stage = 1,
 	timer = 0,
@@ -6,7 +6,7 @@ Cutscene = {
 	active = true
 }
 
-function Cutscene:loadScene(Scene)
+function Script:loadScript(File)
 	s = {}
 	setmetatable(s, self)
 	self.__index = self
@@ -18,18 +18,18 @@ function Cutscene:loadScene(Scene)
 	s.exists = true
 	s.active = true
 	
-	--s.scene = loadfile(Scene)
-	Cutscene.load(s, Scene)
+	--s.scene = loadfile(File)
+	Script.load(s, File)
 	
 	return s
 end
 
-function Cutscene:load(Scene)
-	self.scene = loadfile(Scene)
+function Script:load(File)
+	self.scene = loadfile(File)
 	--dofile("Scripts/cutscene_1.lua")
 end
 
-function Cutscene:update()
+function Script:update()
 	timer = self.timer + General.elapsed
 	stage = self.stage
 	self.stage = self.scene()
@@ -41,22 +41,22 @@ function Cutscene:update()
 	self.timer = timer
 end
 
-function Cutscene:draw()
+function Script:draw()
 end
 
 --[[ Dispose of the object
 ]]
-function Cutscene:destroy()
+function Script:destroy()
 	for k, v in ipairs(self) do
 		self[k] = nil
 	end
 	self = nil
 end
 
-function Cutscene:getType()
-	return "Cutscene"
+function Script:getType()
+	return "Script"
 end
-function Cutscene:getDebug()
+function Script:getDebug()
 	printStr = self:getType() .. "\n"
 	--printStr = printStr .. "\tActive: " .. self.active .. "\n"
 	printStr = printStr .. "\tStage: " .. self.stage .. "\n"

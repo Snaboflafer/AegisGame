@@ -193,10 +193,6 @@ function Emitter:update()
 	end
 end
 
---function Emitter:draw()
---	Group.draw(self)
---end
-
 --[[ Emit a single particle. Will cancel if no particles available.
 ]]
 function Emitter:emitParticle()
@@ -239,7 +235,7 @@ function Emitter:emitParticle()
 	particle.dragY = self.dragY
 	particle.exists = true
 	particle.alive = true
-	particle.visible = true
+	--particle.visible = true
 	
 	if particle.animated then
 		particle:restartAnimation()
