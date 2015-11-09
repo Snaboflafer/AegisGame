@@ -1,4 +1,5 @@
 GameState = {
+	ENEMYTYPES = 4,
 	loaded = false,
 	CAMERASCROLLSPEED = 200,
 	playerGroundMode = false,
@@ -210,7 +211,7 @@ function GameState:load()
 	
 	--Create enemies
 	self.enemies = Group:new()
-	for i=1, 3 do
+	for i=1, self.ENEMYTYPES do
 		self.enemies:add(Group:new())
 	end
 	self.enemyBullets = Group:new()	--Don't add to state, particle emitters handle bullets
@@ -344,6 +345,8 @@ function GameState:spawnEnemyGroup(NumEnemies, Type)
 		enemyClass = Enemy2
 	elseif Type == 3 then
 		enemyClass = Enemy3
+	elseif Type == 4 then
+		enemyClass = Enemy4
 	end
 	local image, height, width = LevelManager:getEnemy(Type)
 	for i=1, NumEnemies or 5 do
@@ -403,6 +406,8 @@ function GameState:spawnEnemyGroup(NumEnemies, Type)
 				curEnemy:setCollisionBox(40, 48, 122, 65)
 			elseif Type == 3 then
 				curEnemy:setCollisionBox(45,18, 42,32)
+			elseif Type == 4 then
+				curEnemy:setCollisionBox(13,16, 86,37)
 			end
 			curEnemy:lockToScreen(Sprite.UPDOWN)
 			self.enemies.members[Type]:add(curEnemy)

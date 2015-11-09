@@ -1,39 +1,44 @@
-{  
-	"player":{  
-      "ship":{  
-         "image":"images/sprites/player_ship.png",
-         "height":160,
-         "width":80
-      },
-      "mech":{  
-         "image":"images/sprites/player_mech.png",
-         "height":192,
-         "width":192
-      }
+{
+	"player":{
+		"ship":{
+			"image":"images/sprites/player_ship.png",
+			"height":160,
+			"width":80
+		},
+		"mech":{
+			"image":"images/sprites/player_mech.png",
+			"height":192,
+			"width":192
+		}
 	},
-	"enemies":[  
-      {  
-         "image":"images/sprites/enemy_1.png",
-         "height":64,
-         "width":64
-      },
-      {  
-         "image":"images/sprites/enemy_2.png",
-         "height":192,
-         "width":120
-      },
-      {  
-         "image":"images/sprites/enemy_3.png",
-         "height":128,
-         "width":64
-      }
+	"enemies":[
+		{
+			"image":"images/sprites/enemy_1.png",
+			"height":64,
+			"width":64
+		},
+		{
+			"image":"images/sprites/enemy_2.png",
+			"height":192,
+			"width":120
+		},
+		{
+			"image":"images/sprites/enemy_3.png",
+			"height":128,
+			"width":64
+		},
+		{
+			"image":"images/sprites/enemy_4.png",
+			"height":96,
+			"width":48
+		}
 	],
-	"levels":[  
+	"levels":[
 		{
 			"value":1,
 			"cut_scene":"images/scene_1.png",
 			"music":"sounds/music_Mines_Synth2.ogg",
-			"ground":"images/floor_snow_1.png",
+			"ground":"images/stages/floor_snow_1.png",
 			"levelTheme":"snow",
 			"layers":[  
 				{
@@ -50,7 +55,7 @@
 				},
 				{  
 				   "image":"images/stages/forest_trees.png",
-				   "scrollFactor":0.9,
+				   "scrollFactor":0.8,
 				   "offset":0,
 				   "y":240
 				}
@@ -66,33 +71,33 @@
 					"distance":500,
 					"type":"enemy",
 					"value":3,
-					"enemyType":1
+					"enemyType":4
 				},
-				{  
+				{
 					"distance":1500,
 					"type":"enemy",
 					"value":5,
 					"enemyType":1 
 				},
-				{  
+				{
 					"distance":2000,
 					"type":"enemy",
 					"value":10,
 					"enemyType":1
 				},
-				{  
+				{
 					"distance":2500,
 					"type":"enemy",
 					"value":2,
 					"enemyType":2
 				},
-				{  
+				{
 					"distance":3000,
 					"type":"enemy",
 					"value":10,
 					"enemyType":1
 				},
-				{  
+				{
 					"distance":3050,
 					"type":"waveClear",
 					"value":0,
@@ -104,48 +109,54 @@
 			"value":2,
 			"cut_scene":"images/scene_2.png",
 			"music":"sounds/music_Mines_Synth2.ogg",
-			"ground":"images/floor_stone_1.png",
+			"ground":"images/stages/floor_grass_1.png",
 			"levelTheme":"dirt",
 			"layers":[
-				{  
-					"image":"images/mountain.jpg",
-					"scrollFactor":0.8,
+				{
+					"image":"images/stages/sky_blue.png",
+					"scrollFactor":0,
 					"offset":0,
-					"y":0
+					"y":-50
+				},
+				{  
+					"image":"images/stages/mountains_snow.png",
+					"scrollFactor":0.6,
+					"offset":0,
+					"y":50
 				}
 			],
 			"triggers":[  
-				{  
+				{
 					"distance":500,
 					"type":"enemy",
 					"value":3,
 					"enemyType":1
 				},
-				{  
+				{
 					"distance":1500,
 					"type":"enemy",
 					"value":5,
 					"enemyType":1
 				},
-				{  
+				{
 					"distance":1750,
 					"type":"enemy",
 					"value":2,
 					"enemyType":2
 				},
-				{  
+				{
 					"distance":2000,
 					"type":"enemy",
 					"value":7,
 					"enemyType":1
 				},
-				{  
+				{
 					"distance":3000,
 					"type":"boss",
 					"value":0,
 					"enemyType":1
 				},
-				{  
+				{
 					"distance":3050,
 					"type":"waveClear",
 					"value":0,
@@ -156,37 +167,108 @@
 		{
 			"value":3,
 			"cut_scene":"images/scene_3.png",
-			"music":"sounds/Mishima.ogg",
-			"ground":"images/floor_snow_1.png",
-			"levelTheme":"snow",
+			"music":"sounds/music_Mines_Synth2.ogg",
+			"ground":"images/stages/floor_stone_1.png",
+			"levelTheme":"dirt",
 			"layers":[  
+				{
+					"image":"images/stages/sky_blue.png",
+					"scrollFactor":0,
+					"offset":0,
+					"y":-50
+				},
 				{  
-					"image":"images/moon.jpg",
-					"scrollFactor":1,
+					"image":"images/stages/mountains_desert.png",
+					"scrollFactor":0.5,
 					"offset":0,
 					"y":0
 				}
 			],
-			"triggers":[  
-				{  
+			"triggers":[
+				{
 					"distance":500,
 					"type":"enemy",
 					"value":3,
 					"enemyType":3
 				},
-				{  
+				{
 					"distance":1500,
 					"type":"enemy",
 					"value":5,
 					"enemyType":2
 				},
-				{  
+				{
 					"distance":2000,
 					"type":"enemy",
 					"value":10,
 					"enemyType":3
 				},
-				{  
+				{
+					"distance":3000,
+					"type":"enemy",
+					"value":15,
+					"enemyType":3
+				},
+				{
+					"distance":3050,
+					"type":"waveClear",
+					"value":0,
+					"enemyType":0
+				}
+			]
+		},
+		{
+			"value":4,
+			"cut_scene":"images/scene_4.png",
+			"music":"sounds/music_Mines_Synth2.ogg",
+			"ground":"images/stages/floor_tech_dirt.png",
+			"levelTheme":"snow",
+			"layers":[  
+				{
+					"image":"images/stages/sky_blue.png",
+					"scrollFactor":0,
+					"offset":0,
+					"y":0
+				},
+				{
+					"image":"images/stages/mountains_desert.png",
+					"scrollFactor":0.2,
+					"offset":0,
+					"y":0
+				},
+				{
+					"image":"images/stages/base_tower.png",
+					"scrollFactor":0.8,
+					"offset":800,
+					"y":50
+				},
+				{
+					"image":"images/stages/base_wall.png",
+					"scrollFactor":0.95,
+					"offset":0,
+					"y":310
+				}
+			],
+			"triggers":[  
+				{
+					"distance":500,
+					"type":"enemy",
+					"value":3,
+					"enemyType":3
+				},
+				{
+					"distance":1500,
+					"type":"enemy",
+					"value":5,
+					"enemyType":2
+				},
+				{
+					"distance":2000,
+					"type":"enemy",
+					"value":10,
+					"enemyType":3
+				},
+				{
 					"distance":3000,
 					"type":"enemy",
 					"value":15,
@@ -199,71 +281,71 @@
 		"explosion":{  
 			"src":"sounds/explosion.wav"
 		},
-		"cannon":{  
+		"cannon":{
 			"src":"sounds/cannon.wav"
 		},
-		"player_hurt_health":{  
+		"player_hurt_health":{
 			"src":"sounds/hurt.wav"
 		},
-		"ship_to_mech":{  
+		"ship_to_mech":{
 			"src":"sounds/coin.wav"
 		},
-		"mech_to_ship":{  
+		"mech_to_ship":{
 			"src":"sounds/powerup.wav"
 		},
-		"hit_ground":{  
+		"hit_ground":{
 			"src":"sounds/ground_hit.wav"
 		},
-		"laser":{  
+		"laser":{
 			"src":"sounds/laser.wav"
 		},
-		"hurt_2":{  
+		"hurt_2":{
 			"src":"sounds/hurt_2.wav"
 		},
-		"player_hurt_shield":{  
+		"player_hurt_shield":{
 			"src":"sounds/hurt_shield.wav"
 		},
-		"player_step":{  
+		"player_step":{
 			"src":"sounds/step_heavy.wav"
 		},
-		"player_jump":{  
+		"player_jump":{
 			"src":"sounds/jump.wav"
 		}
 	},
-	"particles":{  
-		"bullet-red":{  
+	"particles":{
+		"bullet-red":{
 			"src":"images/particles/bullet_red_16.png"
 		},
-		"bullet-orange":{  
+		"bullet-orange":{
 			"src":"images/particles/bullet_orange_16.png"
 		},
-		"bullet_casing":{  
+		"bullet_casing":{
 			"src":"images/particles/bullet_casing.png"
 		},
-		"thruster":{  
+		"thruster":{
 			"src":"images/particles/thruster_small.png"
 		},
-		"trail":{  
+		"trail":{
 			"src":"images/particles/player_trail.png"
 		},
-		"laser":{  
+		"laser":{
 			"src":"images/particles/laser.png"
 		},
-		"smoke":{  
+		"smoke":{
 			"src":"images/particles/smoke.png"
 		},
-		"fireball":{  
+		"fireball":{
 			"src":"images/particles/fireball.png"
 		},
-		"snowGround":{  
+		"snowGround":{
 			"src":"images/particles/snowGround.png"
 		},
-		"dirtGround":{  
+		"dirtGround":{
 			"src":"images/particles/dirtGround.png"
 		}
 	},
-	"images":{  
-		"explosion":{  
+	"images":{
+		"explosion":{
 			"src":"images/fx/explosion.png"
 		}
 	}
