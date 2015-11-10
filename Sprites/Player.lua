@@ -12,8 +12,6 @@ Player = {
 	maxShield = 0
 }
 
-thump = love.audio.newSource("sounds/thump.mp3")
-
 function Player:new(X,Y)
 	s = Sprite:new(X,Y)
 	setmetatable(s, self)
@@ -28,9 +26,10 @@ function Player:new(X,Y)
 	s.shield = 3
 	s.maxShield = 3
 	
-	s.sfxHurtHealth = love.audio.newSource(LevelManager:getSound("player_hurt_health"))
+	s.sfxHurtHealthA = love.audio.newSource(LevelManager:getSound("player_hurt_health_a"))
+	s.sfxHurtHealthB = love.audio.newSource(LevelManager:getSound("player_hurt_health_b"))
 	s.sfxHurtShield = love.audio.newSource(LevelManager:getSound("player_hurt_shield"))
-
+	s.sfxDeath = love.audio.newSource(LevelManager:getSound("player_death"))
 	return s
 end
 
@@ -54,9 +53,16 @@ function Player:kill()
 	self.enableControls = false
 	self:disableTransform()
 	self.accelerationY = self.accelerationY + 200
+	--Timer:new(1, Player, Player.playDeathSfx)
+	SoundManager:playBgm("sounds/handel.ogg")
+
+	self:playDeathSfx()
 	Timer:new(2, GameState, GameState.gameOver)
 end
 
+function Player:playDeathSfx()
+	self.sfxDeath:play()
+end
 function Player:updateScore(S)
 	self.score = self.score + S
 end
@@ -97,7 +103,11 @@ function Player:hurt(Damage)
 		Sprite.hurt(self, Damage)
 		self:flicker(1)
 		self:flash({243,17,17}, .5)
-		self.sfxHurtHealth:play()
+		if self.health >= 2 then
+			self.sfxHurtHealthB:play()
+		else
+			self.sfxHurtHealthA:play()
+		end
 		GameState.hpMask:flicker(.2)
 		GameState.hpMask:flash({126,0,0}, .2)
 		self:updateHealth()

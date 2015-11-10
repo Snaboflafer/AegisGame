@@ -24,7 +24,6 @@ function MessageBox:new(Label, TypeFace)
 	local line = ""
 	--make lines that fit in the text box
 	for word in string.gmatch(s.text, "[^%s]+") do
-		print(word)
 		if (s.font:getWidth(line .. word .. " ") > 800) then
 			table.insert(lines,line)
 			line = word .. " "

@@ -288,34 +288,40 @@
 			"src":"sounds/explosion.wav"
 		},
 		"cannon":{
-			"src":"sounds/cannon.wav"
+			"src":"sounds/player_sounds/cannon.wav"
 		},
-		"player_hurt_health":{
-			"src":"sounds/hurt.wav"
+		"player_hurt_health_a":{
+			"src":"sounds/player_sounds/hurt.wav"
+		},
+		"player_hurt_health_b":{
+			"src":"sounds/player_sounds/watch_it_hurt.wav"
 		},
 		"ship_to_mech":{
-			"src":"sounds/coin.wav"
+			"src":"sounds/player_sounds/coin.wav"
 		},
 		"mech_to_ship":{
-			"src":"sounds/powerup.wav"
+			"src":"sounds/player_sounds/powerup.wav"
 		},
 		"hit_ground":{
-			"src":"sounds/ground_hit.wav"
+			"src":"sounds/player_sounds/ground_hit.wav"
 		},
 		"laser":{
-			"src":"sounds/laser.wav"
+			"src":"sounds/player_sounds/laser.wav"
 		},
 		"hurt_2":{
 			"src":"sounds/hurt_2.wav"
 		},
+		"player_death":{
+			"src":"sounds/player_sounds/game_over.wav"
+		},
 		"player_hurt_shield":{
-			"src":"sounds/hurt_shield.wav"
+			"src":"sounds/player_sounds/hurt_shield.wav"
 		},
 		"player_step":{
-			"src":"sounds/step_heavy.wav"
+			"src":"sounds/player_sounds/step_heavy.wav"
 		},
 		"player_jump":{
-			"src":"sounds/jump.wav"
+			"src":"sounds/player_sounds/jump.wav"
 		}
 	},
 	"particles":{
