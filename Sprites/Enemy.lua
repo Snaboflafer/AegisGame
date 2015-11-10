@@ -20,7 +20,7 @@ function Enemy:new(X,Y)
 end
 
 function Enemy:kill()
-	GameState.explosion:play(self.x, self.y)
+	GameState.explosion:play(self.x + self.width / 2, self.y + self.height / 2)
 	Enemy:addToScore(self.score)
 	Sprite.kill(self)
 end
