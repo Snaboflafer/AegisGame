@@ -28,8 +28,10 @@ function PauseState:load()
 	end
 	PauseState:add(self.options)
 	
-	self.optionSound = love.audio.newSource("sounds/select_1.wav")
-	self.selectSound = love.audio.newSource("sounds/select_2.wav")
+	self.optionSound = love.audio.newSource("sounds/menu_sounds/cw_sound27.wav")
+	self.selectSound = love.audio.newSource("sounds/menu_sounds/cw_sound44.wav")
+	self.failSound = love.audio.newSource("sounds/menu_sounds/cw_sound39.wav")
+	self.exitSound = love.audio.newSource("sounds/menu_sounds/cw_sound34.wav")
 end
 
 function PauseState:start()
@@ -72,14 +74,18 @@ function PauseState:keypressed(key)
 		self.optionSound:play()
 		self.selected = (self.selected + self.options:getSize()) % self.options:getSize() + 1
     elseif key == "return" or key == " " then
-		self.selectSound:rewind()
-		self.selectSound:play()
-		if self.selected == 1 then 
+		if self.selected == 1 then
+			self.selectSound:rewind()
+			self.selectSound:play()
 			General:setState(GameState)
 		elseif self.selected == 2 then
+			self.failSound:rewind()
+			self.failSound:play()
 			--General:setState(OptionsState, false)
 		elseif self.selected == 3 then
 	--DONT CLOSE GAMESTATE until state state closure is properly worked out
+			self.exitSound:rewind()
+			self.exitSound:play()
 			General:closeState(GameState)
 			General:setState(MenuState)
 		end
