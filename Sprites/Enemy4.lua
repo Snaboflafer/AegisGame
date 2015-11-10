@@ -29,6 +29,11 @@ function Enemy4:setAnimations()
 	self:addAnimation("detonate", {2,3,4,5,6,7,8,9,10,11,12,13,14,5,2}, .03, false)
 end
 
+function Enemy4:respawn(SpawnX, SpawnY)
+	Enemy.respawn(self, SpawnX, SpawnY)
+	self.y = General.screenH - 150
+end 
+
 function Enemy4:update()
 
 	xCenter, yCenter = self:getCenter()
