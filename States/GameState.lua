@@ -305,9 +305,10 @@ function GameState:load()
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
 	
-	self.messageBox = MessageBox:new()
+	self.messageBox = MessageBox:new("No significant changes have been made to the cello since then, although musicians continue to experiment with different strings, tailpieces, and other peripherals. In general, the changes made the cello a lot louder and gave it the full and lustrous sound we have come to expect but often do not receive.")
 	self.messageBox:addBox()
 	self.messageBox:addText()
+	self.messageBox:addPointer()
 	
 	self.hud:add(self.messageBox)
 	--Keep all Hud elements from moving
@@ -614,7 +615,9 @@ function GameState:keypressed(Key)
 	if Key == "lshift" then
 		self:togglePlayerMode()
 	end
-
+	if Key == "t" then
+		self.messageBox:keypressed()
+	end
 	--Temporary until input manager
 	self.player:keypressed(Key)
 end

@@ -34,7 +34,7 @@ elseif stage == 3 then
 	player:attackStart()
 	--Mark stage with finished flag, and re-enable controls
 	stage = -1
-	GameState.messageBox.visible = false
+	--GameState.messageBox.visible = false
 	player.enableControls = true
 end
 
