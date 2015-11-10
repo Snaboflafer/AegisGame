@@ -404,6 +404,25 @@ function GameState:spawnEnemyGroup(NumEnemies, Type)
 				self.emitters:add(enemyGun)
 			elseif Type == 2 then
 				curEnemy:setCollisionBox(40, 48, 122, 65)
+
+				--Create enemy gun
+				local enemyGun = Emitter:new(spawnX, spawnY)
+				for j=1, 4 do
+					--Create bullets
+					local curBullet = Sprite:new(spawnX, spawnY, LevelManager:getParticle("bullet-red"))
+					curBullet.attackPower = 1
+					enemyGun:addParticle(curBullet)
+					self.enemyBullets:add(curBullet)
+				end
+				enemyGun:setSpeed(100, 150)
+				enemyGun:start(false, 10, 1, -1)
+				enemyGun:stop()
+				enemyGun:lockParent(curEnemy, true, 0, 0)
+				--enemyGun:lockTarget(self.player)		(Use this to target the player)
+				enemyGun:setAngle(180, 0)
+				--curEnemy:addChild(enemyGun)
+				self.emitters:add(enemyGun)
+				curEnemy:setWeapon(enemyGun)
 			elseif Type == 3 then
 				curEnemy:setCollisionBox(45,18, 42,32)
 			elseif Type == 4 then
