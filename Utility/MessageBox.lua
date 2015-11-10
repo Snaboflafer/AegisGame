@@ -8,6 +8,10 @@ MessageBox = {
 	displayedCharacters = 0,
 	lineGroups = {},
 	pointer = nil,
+	width = 0,
+	height = 0,
+	x = 0,
+	y = 0,
 	font = nil
 }
 
@@ -17,6 +21,10 @@ function MessageBox:new(Label, TypeFace)
 	setmetatable(self, Sprite)
 	self.__index = self
 	s.members = {}
+	s.width = General.screenW - General.screenW/80
+	s.height = General.screenH/3
+	s.x = General.screenW/(80*2)
+	s.y = General.screenW/160
 	s.font = love.graphics.newFont("fonts/HelveticaNeue.ttf", 44)
 	s.text = Label
 	local lines = {}
@@ -24,7 +32,7 @@ function MessageBox:new(Label, TypeFace)
 	local line = ""
 	--make lines that fit in the text box
 	for word in string.gmatch(s.text, "[^%s]+") do
-		if (s.font:getWidth(line .. word .. " ") > 800) then
+		if (s.font:getWidth(line .. word .. " ") > s.width * .95) then
 			table.insert(lines,line)
 			line = word .. " "
 		else
@@ -50,16 +58,16 @@ end
 function MessageBox:addBox()
 	local GROUNDDEPTH = 100
 	local box = Sprite:new()
-	box:createGraphic(General.screenW - General.screenW/80,General.screenH/3, {0,0,0}, 150)
+	box:createGraphic(self.width,self.height, {0,0,0}, 75)
 	box.scrollFactorX = 0
 	box.scrollFactorY = 0
-	box.x = General.screenW/(80*2)
-	box.y = General.screenH*2/3 - GROUNDDEPTH - General.screenH/30
+	box.x = self.x
+	box.y = self.y
     table.insert(self.members, box)
 end
 
 function MessageBox:addPointer()
-	self.pointer = Sprite:new(720,440, "images/UI/Pointing.png")
+	self.pointer = Sprite:new(self.x + self.width - self.width/10,self.y + self.height - self.height/5, "images/UI/Pointing.png")
 	table.insert(self.members,self.pointer)
 	self.pointer.scrollFactorY = 0
 	self.pointer.scrollFactorX = 0
@@ -77,14 +85,16 @@ end
 
 function MessageBox:addText()
 	local GROUNDDEPTH = 100
-	self.currentText = Text:new(General.screenW/80 + General.screenW/80, General.screenH*2/3 - GROUNDDEPTH - General.screenH/30 + General.screenW/80, "","fonts/HelveticaNeue.ttf", 44)
+	self.currentText = Text:new(self.x + self.width/20, self.y + self.height/10, "","fonts/HelveticaNeue.ttf", 44)
 	self.currentText:setAlign(Text.LEFT)
 	table.insert(self.members, self.currentText)
 	self:nextText()
 end
 
 function MessageBox:nextText()
-	if (self.lineGroups[self.currentTextPosition+1] == nil) then
+	if self:onLastLine() then
+		self:setVisible(false)
+		-- return false as an indication to start the next trigger
 		return false;
 	end
 	if self.pointer ~= nil then
@@ -93,6 +103,14 @@ function MessageBox:nextText()
 	self.currentTextPosition = self.currentTextPosition + 1
 	self.displayedCharacters = 0
 	return true
+end
+
+function MessageBox:onLastLine()
+	if (self.lineGroups[self.currentTextPosition+1] == nil) then
+		return true;
+	else
+		return false;
+	end
 end
 
 function MessageBox:displayAll()
@@ -125,7 +143,9 @@ function MessageBox:displayNextCharacter()
 		self.displayedCharacters = self.displayedCharacters + 1
 		self.currentText:setLabel(string.sub(self.lineGroups[self.currentTextPosition],1,self.displayedCharacters))
 	else
-		self.pointer:setVisible(true)
+		if self:onLastLine() == false then 
+			self.pointer:setVisible(true)
+		end
 	end
 end
 
