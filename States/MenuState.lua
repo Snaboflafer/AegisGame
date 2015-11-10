@@ -34,9 +34,11 @@ function MenuState:load()
 	debugInfo:setAlign(Text.RIGHT)
 	MenuState:add(debugInfo)
 	
-	self.optionSound = love.audio.newSource("sounds/select_1.wav")
-	self.selectSound = love.audio.newSource("sounds/select_2.wav")
+	self.optionSound = love.audio.newSource("sounds/menu_sounds/cw_sound27.wav")
+	self.selectSound = love.audio.newSource("sounds/menu_sounds/cw_sound44.wav")
+	self.failSound = love.audio.newSource("sounds/menu_sounds/cw_sound39.wav")
 	self.startSound = love.audio.newSource("sounds/select_long.wav")
+	self.exitSound = love.audio.newSource("sounds/menu_sounds/cw_sound34.wav")
 end
 
 function MenuState:start()
@@ -92,12 +94,12 @@ function MenuState:keypressed(key)
 			self.selectSound:play()
 			General:setState(HighScoreState)
 		elseif self.selected == 3 then
-			self.selectSound:rewind()
-			self.selectSound:play()
+			self.failSound:rewind()
+			self.failSound:play()
 			--General:setState(OptionState)
 		elseif self.selected == 4 then
-			self.selectSound:rewind()
-			self.selectSound:play()
+			self.exitSound:rewind()
+			self.exitSound:play()
 			love.event.quit()
 		end
     end

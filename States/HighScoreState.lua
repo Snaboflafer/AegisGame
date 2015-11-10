@@ -25,6 +25,9 @@ function HighScoreState:load()
 						highScores, "fonts/Commodore.ttf", 32)
 	scoresText:setAlign(Text.LEFT)
 	HighScoreState:add(scoresText)
+
+	self.exitSound = love.audio.newSource("sounds/menu_sounds/cw_sound34.wav")
+
 end
 
 function HighScoreState:start()
@@ -56,5 +59,7 @@ function HighScoreState:readHighScores(path)
 end
 
 function HighScoreState:keypressed(key)
+	self.exitSound:rewind()
+	self.exitSound:play()
 	General:setState(MenuState)
 end
