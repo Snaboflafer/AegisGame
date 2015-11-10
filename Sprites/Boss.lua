@@ -56,9 +56,10 @@ function Boss:kill()
 end
 
 function Boss:update()
-	self.velocityX = 2*(General:getCamera().x + General.screenW*3/4 - self.x)
+	local target = 0
 
 	if self.route == 0 then 
+		target = General.screenW*3/4;
 		i = 0
 		for k, v in pairs(self.weapons[0].members) do 
 			v:setAngle(120+self.lifetime*15 + i*10, 0)
@@ -69,6 +70,7 @@ function Boss:update()
 			self.route = 1
 		end
 	elseif self.route == 1 then
+		target = General.screenW*3/4;
 		if self.lifetime < 4 then
 			i = 0
 			for k, v in pairs(self.weapons[0].members) do 
@@ -89,12 +91,11 @@ function Boss:update()
 			end
 			for k, v in pairs(self.weapons[1].members) do 
 				v:restart()
+				v:setAngle(270, 0)
 			end
 		end
 	elseif self.route == 2 then
-		for k, v in pairs(self.weapons[1].members) do 
-			v:setAngle(200+self.lifetime*5, 0)
-		end
+		target = General.screenW*1/4;
 		if self.lifetime > 8 then
 			self.lifetime = 0
 			self.route = 1
@@ -106,6 +107,8 @@ function Boss:update()
 			end
 		end
 	end
+
+	self.velocityX = 2*(General:getCamera().x + target - self.x)
 
 	if self.velocityY < 50 then
 		self:playAnimation("up")

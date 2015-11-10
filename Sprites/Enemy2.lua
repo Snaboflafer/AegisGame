@@ -1,6 +1,7 @@
 --Class for sprites. Should extend Object
 Enemy2 = {
-	maxVelocityX = 100
+	maxVelocityX = 100,
+	weapon = {}
 }
 
 function Enemy2:new(X,Y)
@@ -9,7 +10,7 @@ function Enemy2:new(X,Y)
 	setmetatable(self, Enemy)
 	self.__index = self
 
-	s.route = math.floor(math.random()*1)
+	s.aiStage = 1
 	s.health = 2
 	s.maxHealth = 2
 	s.score = 200
@@ -21,6 +22,10 @@ function Enemy2:new(X,Y)
 	s.sfxHurt = love.audio.newSource(LevelManager:getSound("hurt_2"))
 	
 	return s
+end
+
+function Enemy2:setWeapon(Gun)
+	self.weapon = Gun
 end
 
 function Enemy2:setAnimations()
@@ -37,33 +42,54 @@ function Enemy2:setAnimations()
 end
 
 function Enemy2:update()
+	local actualAngle = math.asin((self.y - GameState.player.y)/(self.x - GameState.player.x))*180/math.pi
+	local weaponAngle = 0
+	if (GameState.player.activeMode == "mech") then
+		weaponAngle = actualAngle
+	else
+		weaponAngle = math.asin((self.y - GameState.player.y)/(self.x - GameState.player.x - GameState.cameraFocus.velocityX))*180/math.pi
+	end
 	if self.aiStage == 1 then
-		self.accelerationX = (math.random()+.5)*50
-		if self:getScreenX() < General.screenW * .8 then
-			--self.aiStage = self.aiStage + 1
+		if self:getScreenX() <= General.screenW - 200 then
+			self.aiStage = self.aiStage + 1
+			self.lifetime = 0
+			self.weapon:restart()
+			self.weapon:setAngle(180 - weaponAngle, 0)
+			self.weapon:setSpeed(100,150)
+		end
+		if actualAngle < 10 then
+			self:playAnimation("idle_0")
+		elseif actualAngle < 20 then
+			self:playAnimation("idle_10")
+		elseif actualAngle < 30 then
+			self:playAnimation("idle_20")
+		elseif actualAngle < 35 then
+			self:playAnimation("idle_30")
+		else
+			self:playAnimation("idle_35")
 		end
 	elseif self.aiStage == 2 then
-		self:kill()
+		self.weapon:setAngle(180 - weaponAngle, 0)
+		if self.lifetime > 4 then
+			self.aiStage = self.aiStage + 1
+		end
+		self.x = General:getCamera().x + General.screenW - 200
+		if actualAngle < 10 then
+			self:playAnimation("fire_0")
+		elseif actualAngle < 20 then
+			self:playAnimation("fire_10")
+		elseif actualAngle < 30 then
+			self:playAnimation("fire_20")
+		elseif actualAngle < 35 then
+			self:playAnimation("fire_30")
+		else
+			self:playAnimation("fire_35")
+		end
+	else
+		s.velocityX = 0
+		self.weapon:stop()
+		self:playAnimation("idle_0")
 	end
-	--if self.route == 0 and self:onScreen() == true then
-	--	self.accelerationY = 400*math.cos(5*self.lifetime)
-	--elseif self.route == 1 then
-	--	if self.lifetime < 2 and self:onScreen() == true then
-	--		self.accelerationY = -50
-	--	else
-	--		self.accelerationY = 15
-	--		self.accelerationX = -100
-	--	end
-	--elseif self.route == 2 then
-	--	if self.lifetime < 2 and self:onScreen() == true then
-	--		self.accelerationY = 50
-	--	else
-	--		self.accelerationY = -15
-	--		self.accelerationX = -100
-	--	end
-	--end
-	--
-	self:playAnimation("idle_0")
 	
 	if self:getScreenX() + self.width < 0 then
 		self:setExists(false)
