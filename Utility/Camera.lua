@@ -1,5 +1,7 @@
 --Class for camera
 Camera = {
+	LETTERBOX_SIZE = 72,
+	LETTERBOX_TIME = .15,
 	x = 0,
 	y = 0,
 	width = General.screenW,
@@ -12,7 +14,9 @@ Camera = {
 	fadeAlpha = 0,
 	bounds = nil,
 	target = nil,
-	deadzone = nil
+	deadzone = nil,
+	letterboxActive = false,
+	letterboxSize = 0
 }
 
 --[[ Create a new Camera object
@@ -83,6 +87,20 @@ function Camera:update()
 		self.fadeAlpha = fadeAlpha
 	end
 	
+	if self.letterboxActive then
+		if self.letterboxSize < Camera.LETTERBOX_SIZE then
+			self.letterboxSize = self.letterboxSize + Camera.LETTERBOX_SIZE * General.elapsed / Camera.LETTERBOX_TIME
+			if self.letterboxSize > Camera.LETTERBOX_SIZE then
+				self.letterboxSize = Camera.LETTERBOX_SIZE
+			end
+		end
+	elseif self.letterboxSize > 0 then
+		self.letterboxSize = self.letterboxSize - Camera.LETTERBOX_SIZE * General.elapsed / Camera.LETTERBOX_TIME
+		if self.letterboxSize < 0 then
+			self.letterboxSize = 0
+		end
+	end
+	
 	--Prevent camera from moving past bounds
 	if self.bounds ~= nil then
 		if self.x < self.bounds.left then
@@ -115,6 +133,24 @@ function Camera:drawEffects()
 			General.screenH
 		)
 	end
+	
+	if self.letterboxSize > 0 then
+		love.graphics.setColor(0, 0, 0, 255)
+		love.graphics.rectangle(
+			"fill",
+			0,
+			0,
+			General.screenW,
+			self.letterboxSize
+		)
+		love.graphics.rectangle(
+			"fill",
+			0,
+			General.screenH - self.letterboxSize,
+			General.screenW,
+			self.letterboxSize
+		)
+	end
 end
 
 --[[ Shake the screen
@@ -130,6 +166,13 @@ function Camera:fade(FadeColor, FadeDuration)
 	self.fadeColor = FadeColor
 	self.fadeDuration = FadeDuration
 	self.fadeAlpha = 0.001
+end
+
+function Camera:letterbox(Enable)
+	if Enable == nil then
+		Enable = true
+	end
+	self.letterboxActive = Enable
 end
 
 --[[ Prevent camera from scrolling past certain points

@@ -86,8 +86,8 @@ function MenuState:keypressed(key)
 			SoundManager:stopBgm()
 			Timer:new(.3, self, MenuState.loadGame)
 			--General:setState(GameLoadState) 
-			self.startSound:rewind()
-			self.startSound:play()
+			--self.startSound:rewind()
+			--self.startSound:play()
 			--HighScoreState.loaded = false
 		elseif self.selected == 2 then
 			self.selectSound:rewind()

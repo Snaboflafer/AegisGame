@@ -192,6 +192,11 @@ function Sprite:createGraphic(Width, Height, Color, Alpha)
 	self.alpha = Alpha or 255
 end
 
+function Sprite:loadImage(ImageFile)
+	self.imageFile = ImageFile
+	self.image = love.graphics.newImage(ImageFile)
+end
+
 --[[ Set a color to draw over the object
 	Color	{R,G,B} color to draw. {255,255,255} = no overlay
 ]]
@@ -410,7 +415,7 @@ function Sprite:draw()
 		love.graphics.rectangle(
 			"fill",
 			self.x - (self.scaleX * self.originX),
-			self.y,
+			self.y - (self.scaleY * self.originY),
 			self.width * self.scaleX,
 			self.height * self.scaleY
 		)

@@ -90,7 +90,7 @@ function GameState:load()
 
 	--Create player (flying)
 	local image, height, width = LevelManager:getPlayerShip()
-	self.playerShip = PlayerShip:new(100, 100)
+	self.playerShip = PlayerShip:new(100, General.screenH-200)
 	self.playerShip:loadSpriteSheet(image, height, width)
 	self.playerShip:setAnimations()
 	self.playerShip:setCollisionBox(46, 34, 91, 20)
@@ -136,7 +136,7 @@ function GameState:load()
 	--Create player Mech
 	image, height, width = LevelManager:getPlayerMech()
 
-	self.playerMech = PlayerMech:new(100,100)
+	self.playerMech = PlayerMech:new(100,General.screenH-100)
 	self.playerMech:loadSpriteSheet(image, height, width)
 	self.playerMech:setAnimations()
 	self.playerMech:setCollisionBox(68, 44)
@@ -305,12 +305,11 @@ function GameState:load()
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
 	
-	self.messageBox = MessageBox:new("No significant changes have been made to the cello since then, although musicians continue to experiment with different strings, tailpieces, and other peripherals. In general, the changes made the cello a lot louder and gave it the full and lustrous sound we have come to expect but often do not receive.")
-	self.messageBox:addBox()
-	self.messageBox:addText()
-	self.messageBox:addPointer()
+	self.messageBox = MessageBox:init()
+	self.messageBox:genComponents()
+	self:addOverlay(self.messageBox)
+
 	
-	self.hud:add(self.messageBox)
 	--Keep all Hud elements from moving
 	self.hud:setEach("scrollFactorX", 0)
 	self.hud:setEach("scrollFactorY", 0)
@@ -653,8 +652,8 @@ function GameState:keyreleased(Key)
 	self.player:keyreleased(Key)
 end
 
-function GameState:togglePlayerMode()
-	if self.player.lockTransform then
+function GameState:togglePlayerMode(Force)
+	if self.player.lockTransform and Force ~= true then
 		return
 	end	
 	local playerMode = self.player.activeMode

@@ -62,9 +62,9 @@
 			],
 			"triggers":[
 				{
-					"distance":20,
+					"distance":40,
 					"type":"script",
-					"value":"Scripts/sample_1.lua",
+					"value":"Scripts/sample_2_letterbox.lua",
 					"enemyType":0
 				},
 				{
@@ -294,7 +294,7 @@
 			"src":"sounds/player_sounds/hurt.wav"
 		},
 		"player_hurt_health_b":{
-			"src":"sounds/player_sounds/watch_it_hurt.wav"
+			"src":"sounds/player_sounds/hurt.wav"
 		},
 		"ship_to_mech":{
 			"src":"sounds/player_sounds/coin.wav"
@@ -359,6 +359,12 @@
 	"images":{
 		"explosion":{
 			"src":"images/fx/explosion.png"
+		},
+		"message_next":{
+			"src":"images/ui/message_next.png"
+		},
+		"message_close":{
+			"src":"images/ui/message_close.png"
 		}
 	}
 }
