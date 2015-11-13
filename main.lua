@@ -38,7 +38,7 @@ require("Sprites/Enemy1")
 require("Sprites/Enemy2")
 require("Sprites/Enemy3")
 require("Sprites/Enemy4")
-require("Sprites/Boss")
+require("Sprites/Boss1")
 
 function love.load()
 	General:init()

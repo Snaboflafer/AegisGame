@@ -51,6 +51,10 @@ function LevelManager:getEnemy(enemyNumber)
 	local enemy = LevelManager.jsonObject["enemies"][enemyNumber]
 	return enemy["image"], enemy["height"], enemy["width"]
 end
+function LevelManager:getBoss(bossNumber)
+	local boss = LevelManager.jsonObject["bosses"][bossNumber]
+	return boss["image"], boss["height"], boss["width"]
+end
 
 function LevelManager:getSound(id)
 	return LevelManager.jsonObject["sounds"][id]["src"]

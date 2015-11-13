@@ -43,12 +43,14 @@ function Enemy:respawn(SpawnX, SpawnY)
 	self.route = math.floor(math.random()*self.NUMROUTES)
 	self.velocityX = 0
 	self.velocityY = 0
-	self.accelerationX = 0
-	self.accelerationY = 0
 	self.exists = true
 	self.aiStage = 1
 end
 
+function Enemy:doConfig()
+	self:setAnimations()
+	self:lockToScreen(Sprite.UPDOWN)
+end
 
 function Enemy:update()
 	Sprite.update(self)
@@ -56,6 +58,10 @@ function Enemy:update()
 	if self:getScreenX() + self.width < 0 then
 		self:setExists(false)
 	end
+end
+
+function Enemy:updateStage()
+	self.aiStage = self.aiStage + 1
 end
 
 function Enemy:getType()

@@ -1,5 +1,6 @@
 GameState = {
 	ENEMYTYPES = 4,
+	BOSSTYPES = 1,
 	loaded = false,
 	CAMERASCROLLSPEED = 200,
 	playerGroundMode = false,
@@ -214,6 +215,9 @@ function GameState:load()
 	for i=1, self.ENEMYTYPES do
 		self.enemies:add(Group:new())
 	end
+	for i=1, self.BOSSTYPES do
+		self.enemies:add(Group:new())
+	end
 	self.enemyBullets = Group:new()	--Don't add to state, particle emitters handle bullets
 	GameState:add(self.enemies)
 	
@@ -347,177 +351,40 @@ function GameState:spawnEnemyGroup(NumEnemies, Type)
 		enemyClass = Enemy3
 	elseif Type == 4 then
 		enemyClass = Enemy4
+	elseif Type == -1 then
+		enemyClass = Boss1
 	end
-	local image, height, width = LevelManager:getEnemy(Type)
+
+	--Get image and size
+	local image, height, width
+	if Type > 0 then
+		--Normal enemy
+		image, height, width = LevelManager:getEnemy(Type)
+	else
+		--Boss, so also need to modify Type value
+		image, height, width = LevelManager:getBoss(-Type)
+		Type = GameState.ENEMYTYPES - Type
+	end
+	
 	for i=1, NumEnemies or 5 do
 		--Calculate location
-		local spawnX = cameraX + General.screenW + (i * 128)
-		local spawnY = spawnY + 256 * (math.random()-.5)
+		local spawnX = cameraX + General.screenW + (i * 256)
+		--local spawnY = spawnY + 256 * (math.random()-.5)
 
 		--Attempt to recycle an enemy
 		local curEnemy = self.enemies.members[Type]:getFirstAvailable(true)
 		if curEnemy == nil then
 			--None found, need to create a new enemy
 			curEnemy = {}
-			curEnemy = enemyClass:new(spawnX, spawnY)
+			curEnemy = enemyClass:new(spawnX, 0)
 			curEnemy:loadSpriteSheet(image, height, width)
-			curEnemy:setAnimations()
+			curEnemy:doConfig()
 			
-			if Type == 1 then
-				curEnemy:setCollisionBox(7, 26, 44, 19)
-				curEnemy:lockToScreen(Sprite.UPDOWN)
-
-				--Create enemy gun
-				local enemyGun = Emitter:new(spawnX, spawnY)
-				for j=1, 2 do
-					--Create bullets
-					local curBullet = Sprite:new(spawnX, spawnY, LevelManager:getParticle("bullet-red"))
-					curBullet.attackPower = 1
-					enemyGun:addParticle(curBullet)
-					self.enemyBullets:add(curBullet)
-				end
-				enemyGun:setSpeed(100, 150)
-				enemyGun:lockParent(curEnemy, true, 0)
-				--enemyGun:lockTarget(self.player)		(Use this to target the player)
-				enemyGun:setAngle(180, 0)
-				enemyGun:addDelay(2 + math.random() * i)
-				enemyGun:start(false, 10, 2, -1)
-				--curEnemy:addChild(enemyGun)
-
-				--Thruster particles
-				local enemyThruster = Emitter:new(spawnX, spawnY)
-				for j=1, 10 do
-					local curParticle = Sprite:new(spawnX, spawnY)
-					curParticle:loadSpriteSheet(LevelManager:getParticle("thruster"), 16, 8)
-					curParticle:addAnimation("default", {1,2,3,4}, .025, false)
-					curParticle:playAnimation("default")
-					enemyThruster:addParticle(curParticle)
-				end
-				enemyThruster:setSpeed(50, 60)
-				enemyThruster:setAngle(0, 30)
-				enemyThruster:lockParent(curEnemy, true, curEnemy.width-4, curEnemy.height/2 - 3)
-				enemyThruster:start(false, .1, 0)
-
-				--Register emitter, so that it will be updated
-				self.emitters:add(enemyThruster)
-				
-				self.emitters:add(enemyGun)
-			elseif Type == 2 then
-				curEnemy:setCollisionBox(40, 48, 122, 65)
-
-				--Create enemy gun
-				local enemyGun = Emitter:new(spawnX, spawnY)
-				for j=1, 4 do
-					--Create bullets
-					local curBullet = Sprite:new(spawnX, spawnY, LevelManager:getParticle("bullet-red"))
-					curBullet.attackPower = 1
-					enemyGun:addParticle(curBullet)
-					self.enemyBullets:add(curBullet)
-				end
-				enemyGun:setSpeed(100, 150)
-				enemyGun:start(false, 10, 1, -1)
-				enemyGun:stop()
-				enemyGun:lockParent(curEnemy, true, 0, 0)
-				--enemyGun:lockTarget(self.player)		(Use this to target the player)
-				enemyGun:setAngle(180, 0)
-				--curEnemy:addChild(enemyGun)
-				self.emitters:add(enemyGun)
-				curEnemy:setWeapon(enemyGun)
-			elseif Type == 3 then
-				curEnemy:setCollisionBox(45,18, 42,32)
-			elseif Type == 4 then
-				curEnemy:setCollisionBox(13,16, 86,37)
-			end
-			curEnemy:lockToScreen(Sprite.UPDOWN)
 			self.enemies.members[Type]:add(curEnemy)
-		else
-			--Found an available enemy, respawn it
-			curEnemy:respawn(spawnX, spawnY)
 		end
 
-	end
-end
-
-function GameState:spawnBoss(value)
-	local cameraX, cameraY = self.camera:getPosition()
-	local spawnX = cameraX + General.screenW
-	local spawnY = General.screenH/3
-	if self.boss == nil then
-		self.boss = {}
-		self.boss = Boss:new(spawnX, spawnY)
-		self.boss:loadSpriteSheet(LevelManager:getEnemy(1), 64, 64)
-		self.boss:setAnimations()
-		self.boss:setPointValue(1000)
-		self.boss:setCollisionBox(7, 26, 44, 19)
-		self.boss:lockToScreen(Sprite.UPDOWN)
-		self.boss:setScale(5,5)
-
-		local bossGuns1 = Group:new()
-		--Create enemy gun
-		for i=1, 3 do
-			local enemyGun = Emitter:new(spawnX, spawnY)
-			for j=1, 10 do
-				--Create bullets
-				local curBullet = Sprite:new(spawnX, spawnY, LevelManager:getParticle("bullet-red"))
-				curBullet.attackPower = 1
-				enemyGun:addParticle(curBullet)
-				self.enemyBullets:add(curBullet)
-			end
-			enemyGun:setSpeed(100, 150)
-			enemyGun:lockParent(self.boss, false, 0)
-			--enemyGun:lockTarget(self.player)		(Use this to target the player)
-			enemyGun:setAngle(140+20*i, 0)
-			enemyGun:start(false, 10, .8, -1)
-			self.emitters:add(enemyGun)
-			bossGuns1:add(enemyGun)
-		--curEnemy:addChild(enemyGun)
-		end
-		self.boss:addWeapon(bossGuns1, 0)
-
-		local bossGuns2 = Group:new()
-		--Create enemy gun
-		for i=0, 3 do
-			local enemyGun = Emitter:new(spawnX, spawnY)
-			for j=1, 10 do
-				--Create bullets
-				local curBullet = Sprite:new(spawnX, spawnY, LevelManager:getParticle("bullet-red"))
-				curBullet.attackPower = 1
-				enemyGun:addParticle(curBullet)
-				self.enemyBullets:add(curBullet)
-			end
-			enemyGun:setSpeed(100, 150)
-			enemyGun:lockParent(self.boss, false, i*20, 80)
-			--enemyGun:lockTarget(self.player)		(Use this to target the player)
-			enemyGun:setAngle(140+20*i, 0)
-			enemyGun:start(false, 10, .8, -1)
-			enemyGun:stop()
-			self.emitters:add(enemyGun)
-			bossGuns2:add(enemyGun)
-		--curEnemy:addChild(enemyGun)
-		end
-		self.boss:addWeapon(bossGuns2, 1)
-
-		--Thruster particles
-		local enemyThruster = Emitter:new(spawnX, spawnY)
-		for j=1, 5 do
-			local curParticle = Sprite:new(spawnX, spawnY)
-			curParticle:loadSpriteSheet("images/particles/thruster_small.png", 16, 8)
-			curParticle:addAnimation("default", {1,2,3,4}, .05, false)
-			curParticle:playAnimation("default")
-			curParticle:setScale(5,5)
-			enemyThruster:addParticle(curParticle)
-		end
-		enemyThruster:setSpeed(50, 60)
-		enemyThruster:setAngle(0, 30)
-		enemyThruster:lockParent(self.boss, true, self.boss.width-20, self.boss.height/2 - 3)
-		enemyThruster:start(false, .2, 0)
-
-		--Register emitter, so that it will be updated
-		self.emitters:add(enemyThruster)
-		
-		self.enemies:add(self.boss)
-	else 
-		self.boss:respawn(spawnX, spawnY)
+		--Spawn the enemy at a horizontal distance
+		curEnemy:respawn(spawnX)
 	end
 end
 
@@ -596,11 +463,8 @@ function GameState:executeTrigger(Trigger)
 	local triggerType = Trigger["type"]
 	if triggerType == "enemy" then
 		GameState:spawnEnemyGroup(Trigger["value"], Trigger["enemyType"])
-	elseif triggerType == "boss" then
-		GameState:spawnBoss(Trigger["enemyType"])
 	elseif triggerType == "script" then
 		self.scripts:add(Script:loadScript(Trigger["value"]))
-		--self.scripts.members[1]:update()
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
 			self:nextStage()
@@ -617,11 +481,7 @@ function GameState:isWaveClear()
 	else
 		return false
 	end
-	--for key, enemy in pairs(self.enemies.members) do
-	--	if enemy.exists == true then
-	--		clear = false
-	--	end
-	--end
+
 	return clear
 end
 

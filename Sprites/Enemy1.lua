@@ -26,6 +26,55 @@ function Enemy1:setAnimations()
 	self:addAnimation("down", {5,6}, .1, true)
 end
 
+function Enemy1:respawn(SpawnX, SpawnY)
+	if SpawnY == nil then
+		Enemy.respawn(self, SpawnX, General.screenH/3 + 256*(math.random()-.5))
+	else
+		Enemy.respawn(self, SpawnX, SpawnY)
+	end
+	self.accelerationX = 0
+	self.accelerationY = 0
+end
+
+function Enemy1:doConfig()
+	Enemy.doConfig(self)
+	self:setCollisionBox(7,26,44,19)
+	
+	--Create enemy gun
+	local enemyGun = Emitter:new(0,0)
+	for j=1, 2 do
+		--Create bullets
+		local curBullet = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
+		curBullet.attackPower = 1
+		enemyGun:addParticle(curBullet)
+		GameState.enemyBullets:add(curBullet)
+	end
+	enemyGun:setSpeed(100, 150)
+	enemyGun:lockParent(self, true, 0)
+	--enemyGun:lockTarget(self.player)		(Use this to target the player)
+	enemyGun:setAngle(180, 0)
+	enemyGun:addDelay(2 + math.random())
+	enemyGun:start(false, 10, 2, -1)
+	--curEnemy:addChild(enemyGun)
+
+	--Thruster particles
+	local enemyThruster = Emitter:new(0,0)
+	for j=1, 10 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("thruster"), 16, 8)
+		curParticle:addAnimation("default", {1,2,3,4}, .025, false)
+		curParticle:playAnimation("default")
+		enemyThruster:addParticle(curParticle)
+	end
+	enemyThruster:setSpeed(50, 60)
+	enemyThruster:setAngle(0, 30)
+	enemyThruster:lockParent(self, true, self.width-4, self.height/2 - 3)
+	enemyThruster:start(false, .1, 0)
+
+	GameState.emitters:add(enemyGun)
+	GameState.emitters:add(enemyThruster)
+end
+
 function Enemy1:update()
 	if self.route == 0 and self:onScreen() == true then
 		self.accelerationY = 400*math.cos(5*self.lifetime)

@@ -33,6 +33,13 @@
 			"width":48
 		}
 	],
+	"bosses":[
+		{
+			"image":"images/sprites/enemy_1.png",
+			"height":64,
+			"width":64
+		}
+	],
 	"levels":[
 		{
 			"value":1,
@@ -71,7 +78,7 @@
 					"distance":500,
 					"type":"enemy",
 					"value":3,
-					"enemyType":3
+					"enemyType":1
 				},
 				{
 					"distance":1500,
@@ -152,9 +159,9 @@
 				},
 				{
 					"distance":3000,
-					"type":"boss",
-					"value":0,
-					"enemyType":1
+					"type":"enemy",
+					"value":1,
+					"enemyType":-1
 				},
 				{
 					"distance":3050,

@@ -15,7 +15,7 @@ function Enemy4:new(X,Y)
 	s.attackPower = 1
 	s.maxVelocityY = 200
 	--s.accelerationY = 50
-	s.y = General.screenH - 150
+	s.y = General.screenH - 142
 	s.immovable = true
 	
 	s.sfxHurt = love.audio.newSource(LevelManager:getSound("hurt_2"))
@@ -27,6 +27,22 @@ function Enemy4:setAnimations()
 	self:addAnimation("idle", {1}, 0, false)
 	self:addAnimation("blink", {1,2,1}, .2, true)
 	self:addAnimation("detonate", {2,3,4,5,6,7,8,9,10,11,12,13,14,5,2}, .03, false)
+end
+
+function Enemy4:respawn(SpawnX, SpawnY)
+	if SpawnY == nil then
+		Enemy.respawn(self, SpawnX, General.screenH-142)
+	else
+		Enemy.respawn(self, SpawnX, SpawnY)
+	end
+	self.accelerationX = 0
+	self.accelerationY = 0
+end
+
+function Enemy4:doConfig()
+	Enemy.doConfig(self)
+
+	self:setCollisionBox(13,16, 86,37)
 end
 
 function Enemy4:respawn(SpawnX, SpawnY)

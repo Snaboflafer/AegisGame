@@ -24,10 +24,6 @@ function Enemy2:new(X,Y)
 	return s
 end
 
-function Enemy2:setWeapon(Gun)
-	self.weapon = Gun
-end
-
 function Enemy2:setAnimations()
 	self:addAnimation("idle_0",   {1,2}, .1, true)
 	self:addAnimation("fire_0",  {3}, .5, false)
@@ -41,52 +37,73 @@ function Enemy2:setAnimations()
 	self:addAnimation("fire_35", {15}, .5, false)
 end
 
-function Enemy2:update()
-	local actualAngle = math.asin((self.y - GameState.player.y)/(self.x - GameState.player.x))*180/math.pi
-	local weaponAngle = 0
-	if (GameState.player.activeMode == "mech") then
-		weaponAngle = actualAngle
+function Enemy2:respawn(SpawnX, SpawnY)
+	if SpawnY == nil then
+		Enemy.respawn(self, SpawnX, General.screenH-120)
 	else
-		weaponAngle = math.asin((self.y - GameState.player.y)/(self.x - GameState.player.x - GameState.cameraFocus.velocityX))*180/math.pi
+		Enemy.respawn(self, SpawnX, SpawnY)
 	end
+end
+
+function Enemy2:doConfig()
+	Enemy.doConfig(self)
+	self:setCollisionBox(40, 48, 122, 65)
+
+	--Create gun
+	self.weapon = Emitter:new(0, 0)
+	for j=1, 2 do
+		--Create bullets
+		local curBullet = Sprite:new(0, 0, LevelManager:getParticle("bullet-red"))
+		curBullet.attackPower = 1
+		self.weapon:addParticle(curBullet)
+		GameState.enemyBullets:add(curBullet)
+	end
+	self.weapon:setSpeed(300, 350)
+	self.weapon:start(false, 10, 1, -1)
+	self.weapon:stop()
+	self.weapon:lockParent(self, true, 0, 0)
+	GameState.emitters:add(self.weapon)
+end
+
+function Enemy2:update()
+	self.weapon:lockTarget(GameState.player, 0, 250)
+	local fireAngle = self.weapon:getAngle() * (180/math.pi)
 	if self.aiStage == 1 then
+		--Move to firing point
 		if self:getScreenX() <= General.screenW - 200 then
-			self.aiStage = self.aiStage + 1
-			self.lifetime = 0
+			self:updateStage()
+			Timer:new(8, self, Enemy.updateStage)
 			self.weapon:restart()
-			self.weapon:setAngle(180 - weaponAngle, 0)
-			self.weapon:setSpeed(100,150)
 		end
-		if actualAngle < 10 then
+		
+		if fireAngle < 10 then
 			self:playAnimation("idle_0")
-		elseif actualAngle < 20 then
+		elseif fireAngle < 20 then
 			self:playAnimation("idle_10")
-		elseif actualAngle < 30 then
+		elseif fireAngle < 30 then
 			self:playAnimation("idle_20")
-		elseif actualAngle < 35 then
+		elseif fireAngle < 35 then
 			self:playAnimation("idle_30")
 		else
 			self:playAnimation("idle_35")
 		end
+		
 	elseif self.aiStage == 2 then
-		self.weapon:setAngle(180 - weaponAngle, 0)
-		if self.lifetime > 4 then
-			self.aiStage = self.aiStage + 1
-		end
+		--self.weapon:setAngle(180 - weaponAngle, 0)
 		self.x = General:getCamera().x + General.screenW - 200
-		if actualAngle < 10 then
+		if fireAngle < 10 then
 			self:playAnimation("fire_0")
-		elseif actualAngle < 20 then
+		elseif fireAngle < 20 then
 			self:playAnimation("fire_10")
-		elseif actualAngle < 30 then
+		elseif fireAngle < 30 then
 			self:playAnimation("fire_20")
-		elseif actualAngle < 35 then
+		elseif fireAngle < 35 then
 			self:playAnimation("fire_30")
 		else
 			self:playAnimation("fire_35")
 		end
 	else
-		s.velocityX = 0
+		s.velocityX = 10
 		self.weapon:stop()
 		self:playAnimation("idle_0")
 	end

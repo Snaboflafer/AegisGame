@@ -26,6 +26,22 @@ function Enemy3:setAnimations()
 	self:addAnimation("forward", {5,6,7,8}, .02, true)
 end
 
+function Enemy3:respawn(SpawnX, SpawnY)
+	if SpawnY == nil then
+		Enemy.respawn(self, SpawnX, General.screenH/3 + 256*(math.random()-.5))
+	else
+		Enemy.respawn(self, SpawnX, SpawnY)
+	end
+	self.accelerationX = 0
+	self.accelerationY = 0
+end
+
+function Enemy3:doConfig()
+	Enemy.doConfig(self)
+	
+	self:setCollisionBox(45,18, 42,32)
+end
+
 function Enemy3:update()
 	if self.aiStage == 1 then
 		if self:getScreenX() <= General.screenW - 150 then

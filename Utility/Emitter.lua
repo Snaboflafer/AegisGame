@@ -2,11 +2,14 @@
 Emitter = {
 	x = 0,	--Initial X location of emitter
 	y = 0,	--Initial Y location of emitter
-	velocityX = 0,	--Horizontal velocity of the emitter
+	width = 0,	--Horizontal area where particles can be emitted from (emitter position is centered, not top left)
+	height = 0,	--Vertical area where particles can be emitted from
+	velocityX = 0,	--Horizontal velocity of the emitter (not used)
 	velocityY = 0,	--Vertical velocity of the emitter
 	gravity = 0,	--Acceleration applied to all particles (Y only)
 	dragX = 0,		--Drag applied to all particles (X)
 	dragY = 0,		--Drag applied to all particles (Y)
+	emitOffset = 0,	--Distance from emitter point that particles are launched from
 	emitAngle = 0,	--Base angle (radians) that particles are launched at
 	angleRange = math.pi,	--Max angle deviation in either direction
 	velocityMin = 0,		--Minimum launch velocity
@@ -160,6 +163,12 @@ function Emitter:update()
 		return
 	end
 	
+	--Set angle if there is a target
+	if self.target ~= nil then
+		self.emitAngle = math.atan2(self.y - (self.target.y + self.targetOffsetY),
+									(self.target.x + self.targetOffsetX) - self.x)
+	end
+	
 	--Emission
 	self.emitTimer = self.emitTimer - General.elapsed
 	if self.emitTimer > 0 then
@@ -208,11 +217,6 @@ function Emitter:emitParticle()
 		--self.velocityX = self.parent.velocityX
 		--self.velocityY = self.parent.velocityY
 	end
-	if self.target ~= nil then
-		--Set angle if there is a target
-		self.emitAngle = math.atan2(self.y - (self.target.y + self.targetOffsetY),
-									(self.target.x + self.targetOffsetX) - self.x)
-	end
 
 	--Find the first available particle
 	--local particle = self:getFirstAvailable(true)
@@ -225,10 +229,17 @@ function Emitter:emitParticle()
 	
 	self.numActive = self.numActive + 1
 	
+	--Calculate random velocity and angle
+	local velocity = math.random(self.velocityMin, self.velocityMax)
+	local angle = self.emitAngle + (2 * math.random()-1) * self.angleRange
+	--Set particle velocity, using calculated value and emitter movement
+	particle.velocityX = velocity * math.cos(angle) + self.velocityX
+	particle.velocityY = -velocity * math.sin(angle) + self.velocityY
+
 	--Reset particle values
 	particle.lifetime = 0
-	particle.x = self.x
-	particle.y = self.y
+	particle.x = self.x + .5*self.width*(math.random()-.5)  + self.emitOffset * math.cos(angle)
+	particle.y = self.y + .5*self.height*(math.random()-.5) + self.emitOffset * math.sin(angle)
 	particle.accelerationY = self.gravity
 	particle.accelerationX = 0
 	particle.dragX = self.dragX
@@ -237,16 +248,11 @@ function Emitter:emitParticle()
 	particle.alive = true
 	--particle.visible = true
 	
+	--Handle animation
 	if particle.animated then
 		particle:restartAnimation()
 	end
 
-	--Calculate random velocity and angle
-	local velocity = math.random(self.velocityMin, self.velocityMax)
-	local angle = self.emitAngle + (2 * math.random()-1) * self.angleRange
-	--Set particle velocity, using calculated value and emitter movement
-	particle.velocityX = velocity * math.cos(angle) + self.velocityX
-	particle.velocityY = -velocity * math.sin(angle) + self.velocityY
 	
 	--Play sound if specified
 	if self.emitSound ~= nil then
@@ -278,6 +284,14 @@ function Emitter:setAngle(Angle, Range)
 	else
 		self.angleRange = (Range % 180) * (math.pi/180) or 0
 	end
+end
+
+function Emitter:setSize(Width, Height)
+	self.width = Width or 0
+	self.height = Height or 0
+end
+function Emitter:setOffset(Offset)
+	self.emitOffset = Offset or 0
 end
 --[[ Set angle by specifying a target position
 	TargetX		X position of target
@@ -329,6 +343,10 @@ end
 function Emitter:setCallback(CallbackObject, CallbackFunction)
 	self.callbackObject = CallbackObject
 	self.callbackFunction = CallbackFunction
+end
+
+function Emitter:getAngle()
+	return self.emitAngle
 end
 
 --[[ Lock a parent object for the emitter.  Emitter will sync
