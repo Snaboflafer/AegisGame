@@ -551,5 +551,4 @@ function GameState:gameOver()
 	local lastScore = General:getScore()
 	General:setScore(self.score + lastScore)
 	General:setState(NewHighScoreState)
-	SoundManager:playBgm("sounds/handel.ogg")
 end

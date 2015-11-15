@@ -304,16 +304,16 @@
 			"src":"sounds/player_sounds/hurt.wav"
 		},
 		"ship_to_mech":{
-			"src":"sounds/player_sounds/coin.wav"
+			"src":"sounds/player_sounds/sfx13.wav"
 		},
 		"mech_to_ship":{
-			"src":"sounds/player_sounds/powerup.wav"
+			"src":"sounds/player_sounds/buzz.wav"
 		},
 		"hit_ground":{
 			"src":"sounds/player_sounds/ground_hit.wav"
 		},
 		"laser":{
-			"src":"sounds/player_sounds/laser.wav"
+			"src":"sounds/player_sounds/Galaga_Fire.wav"
 		},
 		"hurt_2":{
 			"src":"sounds/hurt_2.wav"
@@ -329,6 +329,12 @@
 		},
 		"player_jump":{
 			"src":"sounds/player_sounds/jump.wav"
+		},
+		"ship_engine_a":{
+			"src":"sounds/player_sounds/defender_thrust.wav"
+		},
+		"ship_engine_b":{
+			"src":"sounds/player_sounds/synth_bass.wav"
 		}
 	},
 	"particles":{
