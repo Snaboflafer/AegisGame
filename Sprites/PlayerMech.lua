@@ -4,14 +4,21 @@ PlayerMech = {
 	JUMPPOWER = 600,
 	GRAVITY = 1400,
 	DRAG = 200,
-	DEFAULTW = 50, 
-	DEFAULTH = 104,
+	DEFAULTOFFX = 22,
+	DEFAULTOFFY = 16,
+	DEFAULTW = 48, 
+	DEFAULTH = 112,
+	ANGLEU = 20,
+	ANGLEF = 0,
+	ANGLED = -15,
 	fuel = 3,
 	maxFuel = 3,
+	gunAngle = 0,
 	jetThrust = -100,
 	isDucking = false,
 	isAttacking = false,
-	isHovering = false
+	isHovering = false,
+	onFloor = false
 }
 
 function PlayerMech:new(X,Y,ImageFile)
@@ -32,17 +39,26 @@ function PlayerMech:new(X,Y,ImageFile)
 end
 
 function PlayerMech:setAnimations()
-	self:addAnimation("idle", {1}, 0, false)
-	self:addAnimation("walk_f", {2,3,4,7,8,9,10,1}, .15, true)
-	self:addAnimation("walk_b", {10,9,8,7,4,3,2,1}, .2, true)
-	self:addAnimation("attack_f", {11,12,13,14,15}, .1, true)
-	self:addAnimation("attack_w_f", {2,3,4,7,8,9,10,1}, .1, true)
-	self:addAnimation("attack_w_b", {10,9,8,7,4,3,2,1}, .2, true)
-	self:addAnimation("jump_f_u", {16,17,18}, .2, false)
-	self:addAnimation("jump_f_d", {18}, 0, false)
-	self:addAnimation("duck", {21}, 0, false)
-	self:addAnimation("attack_duck", {22,23,24,25}, .1, true)
-	self:playAnimation("idle")
+	self:addAnimation("idle_u", {1}, 0, false)
+	self:addAnimation("idle_f", {9}, 0, false)
+	self:addAnimation("idle_d", {41}, 0, false)
+	self:addAnimation("walk_f_u", {2,3,4,5,6,7,8,1}, .12, true)
+	self:addAnimation("walk_b_u", {8,7,6,5,4,3,2,1}, .14, true)
+	self:addAnimation("walk_f_f", {10,11,12,13,14,15,16,9}, .12, true)
+	self:addAnimation("walk_b_f", {16,15,14,13,12,11,10,9}, .14, true)
+	self:addAnimation("walk_f_d", {18,19,20,21,22,23,24,17}, .12, true)
+	self:addAnimation("walk_b_d", {24,23,22,21,20,19,18,17}, .14, true)
+	self:addAnimation("fire_u",   {26,27,28,29,30,31,32,25}, .05, true)
+	self:addAnimation("fire_f",   {34,35,36,37,38,39,40,33}, .05, true)
+	self:addAnimation("fire_d",   {42,43,44,45,46,47,48,41}, .05, true)
+	self:addAnimation("jump_u_u", {49}, 0, false)
+	self:addAnimation("jump_d_u", {50}, 0, false)
+	self:addAnimation("jump_u_f", {51}, 0, false)
+	self:addAnimation("jump_d_f", {52}, 0, false)
+	self:addAnimation("jump_u_d", {53}, 0, false)
+	self:addAnimation("jump_d_d", {54}, 0, false)
+	
+	self:playAnimation("idle_f")
 end
 
 function PlayerMech:setCollisionBox(X, Y, W, H)
@@ -85,36 +101,61 @@ function PlayerMech:update()
 	local animStr = "idle"
 	local animRestart = false
 	local animForced = false
-	
+	local lastAnim = string.sub(self.curAnim.name, 1, 4)
 	if self.touching == Sprite.DOWN then
+		self.onFloor = true
+	else
+		self.onFloor = false
+	end
+	
+	if self.onFloor then
 		--On ground
 
 		self.dragX = self.DRAG
 		self.accelerationY = self.GRAVITY
+
+		--Handle horizontal movement
+		if pressedRight and not self.isDucking then
+			self.accelerationX = 800
+			self.maxVelocityX = 200
+			animStr = "walk_f"
+		elseif pressedLeft and not self.isDucking then
+			self.accelerationX = -550
+			self.maxVelocityX = 120
+			animStr = "walk_b"
+		else
+			self.accelerationX = 0
+			animStr = "idle"
+		end
 		
-		if (self.curAnim.name == "walk_f" or self.curAnim.name == "walk_b")
-			and (self.curAnimFrame == 1 and self.lastAnimFrame ~= 1) then
+		--Footstep effects
+		if lastAnim == "walk" and self.curAnimFrame == 1 and self.lastAnimFrame ~= 1 then
 			GameState.groundParticle:play(self.x + self.width*.65, self.y+self.height-6)
 			self.sfxStep:play()
-		elseif (self.curAnim.name == "walk_f" or self.curAnim.name == "walk_b")
-			and (self.curAnimFrame == 5 and self.lastAnimFrame ~= 5) then
+		elseif lastAnim == "walk" and self.curAnimFrame == 5 and self.lastAnimFrame ~= 5 then
 			GameState.groundParticle:play(self.x + self.width*.25, self.y+self.height-6)
 			self.sfxStep:play()
 		end
 		
+		--Handle ducking
 		if pressedDown and not (pressedRight or pressedLeft) then
 			if not self.isDucking then
-				self.height = self.DEFAULTH - 16
-				self.y = self.y + 16
+				self.height = self.DEFAULTH - 20
+				self.offsetY = self.DEFAULTOFFY + 20
+				self.y = self.y + 20
 				self.isDucking = true
 			end
-			animStr = "duck"
 		else
 			if self.isDucking then
 				self.height = self.DEFAULTH
-				self.y = self.y - 16
+				self.offsetY = self.DEFAULTOFFY
+				self.y = self.y - 20
 				self.isDucking = false
 			end
+		end
+
+		if self.isAttacking and self.velocityX == 0 then
+			animStr = "fire"
 		end
 
 		
@@ -133,6 +174,17 @@ function PlayerMech:update()
 		--In air
 		self.dragX = self.DRAG / 10
 		
+		--Handle horizontal movement
+		if pressedRight then
+			self.accelerationX = 400
+			self.maxVelocityX = 200
+		elseif pressedLeft then
+			self.accelerationX = -350
+			self.maxVelocityX = 120
+		else
+			self.accelerationX = 0
+		end
+
 		if pressedJump then
 			self:jetOn()
 		end
@@ -158,49 +210,34 @@ function PlayerMech:update()
 				self.accelerationY = accY
 			end
 		end
-	end
-	
-	--Handle horizontal movement
-	if pressedRight and not self.isDucking then
-		self.accelerationX = 800
-		self.maxVelocityX = 200
-	elseif pressedLeft and not self.isDucking then
-		self.accelerationX = -550
-		self.maxVelocityX = 120
-	else
-		self.accelerationX = 0
-	end
-
-	
-	
-	if self.velocityX > 0 then
-		animStr = "walk_f"
-	elseif self.velocityX < 0 then
-		animStr = "walk_b"
-	end
-	
-	if self.isAttacking then
-		if self.isDucking then
-			animStr = "attack_duck"
-			--animForced = true
+		
+		if self.velocityY < -10 then
+			animStr = "jump_u"
 		else
-			if self.velocityX == 0 then
-				animStr = "attack_f"
-			end
-			--animForced = true
+			animStr = "jump_d"
 		end
 	end
+	
 	--Handle aiming
 	if pressedUp then
-		self.weapons[self.activeWeapon]:setAngle(20, 1)
+		self.gunAngle = PlayerMech.ANGLEU
 		self.weapons[self.activeWeapon]:lockParent(self, false, 87, -24)
+		animStr = animStr .. "_u"
 	elseif pressedDown and not self.isDucking then
-		self.weapons[self.activeWeapon]:setAngle(-15, 1)
+		self.gunAngle = PlayerMech.ANGLED
 		self.weapons[self.activeWeapon]:lockParent(self, false, 87, 46)
+		animStr = animStr .. "_d"
 	else
-		self.weapons[self.activeWeapon]:setAngle(0,1)
-		self.weapons[self.activeWeapon]:lockParent(self, false, 100, 14)
+		self.gunAngle = PlayerMech.ANGLEF
+		if self.isDucking then
+			self.weapons[self.activeWeapon]:lockParent(self, false, 100, 28)
+			animStr = animStr .. "_d"
+		else
+			self.weapons[self.activeWeapon]:lockParent(self, false, 100, 14)
+			animStr = animStr .. "_f"
+		end
 	end
+	self.weapons[self.activeWeapon]:setAngle(self.gunAngle, 1)
 	
 
 	self:playAnimation(animStr, animRestart, animForced)
@@ -220,7 +257,7 @@ function PlayerMech:jump()
 end
 
 function PlayerMech:jetOn()
-	if self.fuel <= 0 or self.velocityY<-50 then
+	if self.fuel <= 0 or self.velocityY < -50 then
 		self:jetOff()
 		return false
 	end
@@ -298,12 +335,30 @@ function PlayerMech:attackStop()
 end
 
 function PlayerMech:fireGun()
-	if self.isDucking then
-		self:playAnimation("attack_duck", true)
-	else
-		if self.velocityX == 0 then
-			self:playAnimation("attack_f", true)
+	if self.onFloor and self.velocityX == 0 then
+		local animStr = "fire"
+		if self.gunAngle == PlayerMech.ANGLEU then
+			self.weapons[self.activeWeapon]:setAngle(20, 1)
+			self.weapons[self.activeWeapon]:lockParent(self, false, 87, -24)
+			animStr = animStr .. "_u"
+		elseif self.gunAngle == PlayerMech.ANGLED and not self.isDucking then
+			self.weapons[self.activeWeapon]:setAngle(-15, 1)
+			self.weapons[self.activeWeapon]:lockParent(self, false, 87, 46)
+			animStr = animStr .. "_d"
+		else
+			self.weapons[self.activeWeapon]:setAngle(0,1)
+			self.weapons[self.activeWeapon]:lockParent(self, false, 100, 14)
+			if self.isDucking then
+				animStr = animStr .. "_d"
+			else
+				animStr = animStr .. "_f"
+			end
 		end
+		self:playAnimation(animStr, true)
+	end
+	if not self.onFloor then
+		self.x = self.x - 5
+		self.velocityX = self.velocityX - 25
 	end
 	if self.weaponCasings[self.activeWeapon] ~= nil then
 		self.weaponCasings[self.activeWeapon]:restart()

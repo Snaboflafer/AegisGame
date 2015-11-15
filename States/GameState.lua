@@ -140,7 +140,7 @@ function GameState:load()
 	self.playerMech = PlayerMech:new(100,General.screenH-100)
 	self.playerMech:loadSpriteSheet(image, height, width)
 	self.playerMech:setAnimations()
-	self.playerMech:setCollisionBox(68, 44)
+	self.playerMech:setCollisionBox(22,16,PlayerMech.DEFAULTW, PlayerMech.DEFAULTH)
 	self.playerMech:lockToScreen(Sprite.ALL)
 	self.playerMech.showDebug = true
 	--self.camera:setTarget(self.player)

@@ -7,8 +7,8 @@
 		},
 		"mech":{
 			"image":"images/sprites/player_mech.png",
-			"height":192,
-			"width":192
+			"height":144,
+			"width":144
 		}
 	},
 	"enemies":[
