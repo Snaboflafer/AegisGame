@@ -15,10 +15,13 @@ if stage == 1 then
 	stage = stage + 1
 elseif stage == 2 then
 	if timer > .5 then
-		GameState.messageBox:show("Lorem ipsum dolor sit amet, consectetur adipiscing elit. " ..
-			"Suspendisse cursus ante in aliquam aliquam. In tempor mi nec accumsan lobortis. " ..
-			"Maecenas pulvinar, nunc id fringilla, urna enim semper odio, sed varius " ..
-			"lorem massa eget ex.")
+		GameState.messageBox:show(
+			"Great work Taylor. Our airstrikes destroyed what was left of the weapons lab. " ..
+			"Every assault we make on the capital is thwarted. The Empire's moon based defense " ..
+			"system is too strong. We need you to destroy it. " ..
+			"Unfortunately, Aegis is incapable of space flight. You'll have to fight your " ..
+			"way into the Empire's launch facility and commandeer a shuttle. " ..
+			"Be careful you're entering enemy controlled territory.")
 		stage = stage + 1
 	end
 elseif stage == 3 then
