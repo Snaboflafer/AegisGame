@@ -35,9 +35,9 @@
 	],
 	"bosses":[
 		{
-			"image":"images/sprites/enemy_1.png",
-			"height":64,
-			"width":64
+			"image":"images/sprites/boss_3.png",
+			"height":320,
+			"width":160
 		}
 	],
 	"levels":[
@@ -75,13 +75,13 @@
 					"enemyType":0
 				},
 				{
-					"distance":500,
+					"distance":100,
 					"type":"enemy",
 					"value":3,
 					"enemyType":1
 				},
 				{
-					"distance":1500,
+					"distance":2500,
 					"type":"enemy",
 					"value":5,
 					"enemyType":1 
@@ -337,6 +337,12 @@
 		},
 		"bullet-orange":{
 			"src":"images/particles/bullet_orange_16.png"
+		},
+		"bullet_small":{
+			"src":"images/particles/bullet_mg.png"
+		},
+		"bullet_rocket":{
+			"src":"images/particles/rocket.png"
 		},
 		"bullet_casing":{
 			"src":"images/particles/bullet_casing.png"
