@@ -74,7 +74,7 @@
 					"enemyType":0
 				},
 				{
-					"distance":100,
+					"distance":200,
 					"type":"enemy",
 					"value":3,
 					"enemyType":1
@@ -399,5 +399,6 @@
 		"message_close":{
 			"src":"images/ui/message_close.png"
 		}
-	}
+	},
+	"font": "fonts/forgotten_futurist_bd.ttf"
 }

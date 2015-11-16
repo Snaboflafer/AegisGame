@@ -13,6 +13,10 @@ function LevelManager:getNumLevels()
 	return table.getn(LevelManager.jsonObject["levels"])
 end
 
+function LevelManager:getFont()
+	return LevelManager.jsonObject["font"]
+end
+
 function LevelManager:getGroundImage(levelNumber)
 	return LevelManager.jsonObject["levels"][levelNumber]["ground"]
 end

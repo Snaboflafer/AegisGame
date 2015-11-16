@@ -15,18 +15,18 @@ function TitleState:load()
 	imageTitle1:flash({255,160,0}, 1, true)
 	local imageTitle2 = Sprite:new(100,40, "images/GameTitle.png")
 	TitleState:add(imageTitle2)
-
+	local typeFace = LevelManager:getFont()
 
 	local txtTitle = "•2015 Team SOL"
 	local txtInstructions = "Press any key..."
 	
 	local creditText = Text:new(General.screenW * .5, General.screenH - 64,
-							txtTitle, "fonts/Commodore.ttf", 32)
+							txtTitle, typeFace, 32)
 	creditText:setAlign(Text.CENTER)
 	TitleState:add(creditText)
 	
 	local instructionText = Text:new(General.screenW * .5, General.screenH * .6,
-							txtInstructions, "fonts/Commodore.ttf", 32)
+							txtInstructions, typeFace, 32)
 	instructionText:setAlign(Text.CENTER)
 	instructionText:flash({127,127,127}, .8, true)
 	TitleState:add(instructionText)

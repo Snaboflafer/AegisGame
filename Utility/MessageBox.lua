@@ -17,7 +17,7 @@ MessageBox = {
 	height = 0,
 	x = 0,
 	y = 0,
-	typeFace = "fonts/forgotten_futurist_bd.ttf",
+	typeFace,
 	font = nil,
 	text = ""
 }
@@ -33,7 +33,8 @@ function MessageBox:init()
 	s.height = General.screenH/3
 	s.x = General.screenW/(80*2)
 	s.y = General.screenW/160
-	s.font = love.graphics.newFont(self.typeFace, 44)
+	s.typeFace = LevelManager:getFont()
+	s.font = love.graphics.newFont(s.typeFace, 44)
 	s.visible = false
 	s.lineGroups = {}
 	s.currentTextPosition = 1
