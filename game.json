@@ -70,11 +70,11 @@
 				{
 					"distance":40,
 					"type":"script",
-					"value":"Scripts/sample_2_letterbox.lua",
+					"value":"Scripts/cutscene_1.lua",
 					"enemyType":0
 				},
 				{
-					"distance":100,
+					"distance":200,
 					"type":"enemy",
 					"value":3,
 					"enemyType":1
@@ -131,6 +131,12 @@
 				}
 			],
 			"triggers":[  
+				{
+					"distance":40,
+					"type":"script",
+					"value":"Scripts/cutscene_2.lua",
+					"enemyType":0
+				},
 				{
 					"distance":500,
 					"type":"enemy",
@@ -189,6 +195,12 @@
 				}
 			],
 			"triggers":[
+				{
+					"distance":40,
+					"type":"script",
+					"value":"Scripts/cutscene_3.lua",
+					"enemyType":0
+				},
 				{
 					"distance":500,
 					"type":"enemy",
@@ -252,7 +264,13 @@
 					"y":310
 				}
 			],
-			"triggers":[  
+			"triggers":[
+				{
+					"distance":40,
+					"type":"script",
+					"value":"Scripts/cutscene_4.lua",
+					"enemyType":0
+				},  
 				{
 					"distance":500,
 					"type":"enemy",
@@ -381,5 +399,6 @@
 		"message_close":{
 			"src":"images/ui/message_close.png"
 		}
-	}
+	},
+	"font": "fonts/forgotten_futurist_bd.ttf"
 }

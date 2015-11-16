@@ -17,7 +17,9 @@ function GameState:load()
 	State.load(self)
 
 	local currentLevel = General:getCurrentLevel()
-	
+	self.triggerDistance = 0
+	self.storedPlayerX = 0
+
 	self.scripts = Group:new()
 	self.scripts.showDebug = true
 	GameState:add(self.scripts)
@@ -450,19 +452,17 @@ function GameState:update()
 	highScoreText:setLabel("Score: " .. self.score)
 end
 
-local triggerDistance = 0
-local storedPlayerX = 0
 function GameState:checkTriggers()
-	elapsedPlayerX = self.player.x - storedPlayerX
-	storedPlayerX = self.player.x
+	elapsedPlayerX = self.player.x - self.storedPlayerX
+	self.storedPlayerX = self.player.x
 	if self.advanceTriggerDistance then
-		triggerDistance = triggerDistance + elapsedPlayerX
+		self.triggerDistance = self.triggerDistance + elapsedPlayerX
 	end
-	print(triggerDistance)
+	print(self.triggerDistance)
 	if self.lastTrigger == table.getn(self.stageTriggers) then
 		return
 	end
-	if triggerDistance > self.stageTriggers[self.lastTrigger+1]["distance"] then
+	if self.triggerDistance > self.stageTriggers[self.lastTrigger+1]["distance"] then
 		self.lastTrigger = self.lastTrigger + 1
 		GameState:executeTrigger(self.stageTriggers[self.lastTrigger])
 	end
@@ -554,6 +554,7 @@ function GameState:nextStage()
 end
 
 function GameState:startNextStage()
+	self.advanceTriggerDistance = true
 	local currentLevel = General:getCurrentLevel()
 	General:setCurrentLevel(currentLevel + 1)
 	General:setState(GameState)

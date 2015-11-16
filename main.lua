@@ -51,11 +51,10 @@ function love.load()
 	frameTimes = {60}	--First value is average
 	frameStartTime = os.time()
 	
-	General:setState(TitleState)
-	General:setCurrentLevel(1)
-
 	LevelManager:parseJSON("game.json")
 
+	General:setState(TitleState)
+	General:setCurrentLevel(1)
 end
 
 function love.update(dt)

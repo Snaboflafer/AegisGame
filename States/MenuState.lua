@@ -12,9 +12,9 @@ function MenuState:load()
 	local txtTitle = "MENU"
 	local txtOptions = {"Start", "High Scores", "Options", "Quit"}
 	local txtInfo = "[Press ~ for debug]"
-	
+	local typeFace = LevelManager:getFont()
 	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
-						txtTitle, "fonts/Commodore.ttf", 64)
+						txtTitle, typeFace, 64)
 	headerText:setAlign(Text.CENTER)
 	headerText:setColor(240, 240, 240, 255)
 	headerText:setShadow(0, 150, 150, 255)
@@ -24,13 +24,13 @@ function MenuState:load()
 	self.selected = 1
 	for i=1, table.getn(txtOptions), 1 do
 		local curText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (i-1),
-						txtOptions[i], "fonts/Commodore.ttf", 48)
+						txtOptions[i], typeFace, 48)
 		self.options:add(curText)
 	end
 	MenuState:add(self.options)
 	
 	local debugInfo = Text:new(General.screenW, General.screenH - 16,
-						txtInfo, "fonts/Commodore.ttf", 16)
+						txtInfo, typeFace, 16)
 	debugInfo:setAlign(Text.RIGHT)
 	MenuState:add(debugInfo)
 	
