@@ -25,10 +25,6 @@ function LevelManager:getBgLayers(levelNumber)
 	return LevelManager.jsonObject["levels"][levelNumber]["layers"]
 end
 
-function LevelManager:getCutScene(levelNumber)
-	return LevelManager.jsonObject["levels"][levelNumber]["cut_scene"]
-end
-
 function LevelManager:getLevelMusic(levelNumber)
 	return LevelManager.jsonObject["levels"][levelNumber]["music"]
 end

@@ -15,7 +15,7 @@ function Enemy4:new(X,Y)
 	s.attackPower = 1
 	s.maxVelocityY = 200
 	--s.accelerationY = 50
-	s.y = General.screenH - 142
+	s.y = General.screenH - 130
 	s.immovable = true
 	
 	s.sfxHurt = love.audio.newSource(LevelManager:getSound("hurt_2"))
@@ -31,7 +31,7 @@ end
 
 function Enemy4:respawn(SpawnX, SpawnY)
 	if SpawnY == nil then
-		Enemy.respawn(self, SpawnX, General.screenH-142)
+		Enemy.respawn(self, SpawnX, General.screenH - 130)
 	else
 		Enemy.respawn(self, SpawnX, SpawnY)
 	end
@@ -47,7 +47,7 @@ end
 
 function Enemy4:respawn(SpawnX, SpawnY)
 	Enemy.respawn(self, SpawnX, SpawnY)
-	self.y = General.screenH - 150
+	self.y = General.screenH - 130
 end 
 
 function Enemy4:update()
