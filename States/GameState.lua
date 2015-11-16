@@ -7,7 +7,9 @@ GameState = {
 	score = 0,
 	lastTrigger = 0,
 	curTriggerIndex = 0,
+	advanceTriggerDistance = true
 }	
+
 GameState.__index = GameState
 setmetatable(GameState, State)
 
@@ -448,12 +450,19 @@ function GameState:update()
 	highScoreText:setLabel("Score: " .. self.score)
 end
 
-
+local triggerDistance = 0
+local storedPlayerX = 0
 function GameState:checkTriggers()
+	elapsedPlayerX = self.player.x - storedPlayerX
+	storedPlayerX = self.player.x
+	if self.advanceTriggerDistance then
+		triggerDistance = triggerDistance + elapsedPlayerX
+	end
+	print(triggerDistance)
 	if self.lastTrigger == table.getn(self.stageTriggers) then
 		return
 	end
-	if self.camera.x > self.stageTriggers[self.lastTrigger+1]["distance"] then
+	if triggerDistance > self.stageTriggers[self.lastTrigger+1]["distance"] then
 		self.lastTrigger = self.lastTrigger + 1
 		GameState:executeTrigger(self.stageTriggers[self.lastTrigger])
 	end
@@ -465,6 +474,7 @@ function GameState:executeTrigger(Trigger)
 		GameState:spawnEnemyGroup(Trigger["value"], Trigger["enemyType"])
 	elseif triggerType == "script" then
 		self.scripts:add(Script:loadScript(Trigger["value"]))
+		self.advanceTriggerDistance = false
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
 			self:nextStage()
