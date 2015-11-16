@@ -31,7 +31,8 @@ Emitter = {
 	callbackObject = nil,	--Callback (object) for when a particle is emitted
 	callbackFunction = nil,
 	activeStart = 1,	--Starting index of the active particle block
-	numActive = 0		--Number of active particles
+	numActive = 0,		--Number of active particles
+	faceAngle = 0		--based on where the enemy was, so where the cannon's pointing
 }
 
 --[[Create a new Emitter at the given location
@@ -167,6 +168,8 @@ function Emitter:update()
 	if self.target ~= nil then
 		self.emitAngle = math.atan2(self.y - (self.target.y + self.targetOffsetY),
 									(self.target.x + self.targetOffsetX) - self.x)
+		self.faceAngle = math.atan2(self.y - self.target.y,
+									self.target.x - self.x)
 	end
 	
 	--Emission
@@ -238,8 +241,8 @@ function Emitter:emitParticle()
 
 	--Reset particle values
 	particle.lifetime = 0
-	particle.x = self.x + .5*self.width*(math.random()-.5)  + self.emitOffset * math.cos(angle)
-	particle.y = self.y + .5*self.height*(math.random()-.5) + self.emitOffset * math.sin(angle)
+	particle.x = self.x + .5*self.width*(math.random()-.5)  + self.emitOffset * math.cos(self.faceAngle)
+	particle.y = self.y + .5*self.height*(math.random()-.5) - self.emitOffset * math.sin(self.faceAngle)
 	particle.accelerationY = self.gravity
 	particle.accelerationX = 0
 	particle.dragX = self.dragX
@@ -347,6 +350,10 @@ end
 
 function Emitter:getAngle()
 	return self.emitAngle
+end
+
+function Emitter:getFaceAngle()
+	return self.faceAngle
 end
 
 --[[ Lock a parent object for the emitter.  Emitter will sync

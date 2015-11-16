@@ -141,8 +141,10 @@ function MessageBox:onLastLine()
 end
 
 function MessageBox:displayAll()
-	self.displayedCharacters = string.len(self.lineGroups[self.currentTextPosition])
-	self.currentText:setLabel(string.sub(self.lineGroups[self.currentTextPosition],1,self.displayedCharacters))
+	if (self.lineGroups[self.currentTextPosition] ~= null) then
+		self.displayedCharacters = string.len(self.lineGroups[self.currentTextPosition])
+		self.currentText:setLabel(string.sub(self.lineGroups[self.currentTextPosition],1,self.displayedCharacters))
+	end
 end
 
 function MessageBox:destroy()
@@ -207,7 +209,7 @@ function MessageBox:displayNextCharacter()
 end
 
 function MessageBox:allCharactersDisplayed()
-	if self.displayedCharacters < string.len(self.lineGroups[self.currentTextPosition]) then
+	if self.lineGroups[self.currentTextPosition] == null or self.displayedCharacters < string.len(self.lineGroups[self.currentTextPosition]) then
 		return false;
 	else
 		return true;
