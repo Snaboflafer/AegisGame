@@ -500,11 +500,13 @@ function GameState:draw()
 end
 
 function GameState:keypressed(Key)
+	if self.messageBox.visible and 
+		(Key == "return" or Key == " ") then
+		self.messageBox:keypressed()
+		return
+	end
 	if Key == "lshift" then
 		self:togglePlayerMode()
-	end
-	if Key == "t" then
-		self.messageBox:keypressed()
 	end
 	--Temporary until input manager
 	self.player:keypressed(Key)
