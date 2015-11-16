@@ -16,9 +16,11 @@ function Boss1:new(X,Y,ImageFile)
 	
 	s.NUMROUTES = 3
 	s.route = 1
-	s.health = 20
-	s.maxHealth = 20
+	s.health = 30
+	s.maxHealth = 30
 	s.score = 1000
+	
+	s.weapons = {}
 	
 	s.immovable = true
 	
@@ -26,7 +28,7 @@ function Boss1:new(X,Y,ImageFile)
 end
 
 function Boss1:setAnimations()
-	self:addAnimation("idle", {1}, 0, false)
+	self:addAnimation("default", {1}, 0, false)
 end
 
 function Boss1:respawn(SpawnX, SpawnY)
@@ -51,13 +53,14 @@ function Boss1:doConfig()
 	self:setCollisionBox(32, 44, 244, 48)
 	
 	--self:setScale(5,5)
-
+	self.immovable = true
 	
 	local gunMG = Emitter:new(0,0)
 	for j=1, 20 do
 		--Create bullets
 		local curBullet = Sprite:new(0,0, LevelManager:getParticle("bullet_small"))
-		curBullet.attackPower = 1
+		curBullet.attackPower = .2
+		curBullet.massless = true
 		gunMG:addParticle(curBullet)
 		GameState.enemyBullets:add(curBullet)
 	end
@@ -71,16 +74,17 @@ function Boss1:doConfig()
 
 
 	local gunRPG = Emitter:new(0,0)
-	for j=1, 10 do
+	for j=1, 20 do
 		--Create bullets
 		local curBullet = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
 		curBullet.attackPower = 1
 		gunRPG:addParticle(curBullet)
 		GameState.enemyBullets:add(curBullet)
 	end
-	gunRPG:setSpeed(100, 150)
+	gunRPG:setSpeed(100, 160)
+	gunRPG:setAngle(180,60)
 	gunRPG:lockParent(self, false, 99, 13)
-	gunRPG:start(false, 10, .2, -1)
+	gunRPG:start(false, 10, .1, -1)
 	gunRPG:stop()
 	GameState.emitters:add(gunRPG)
 	self:addWeapon(gunRPG, 2)
@@ -102,6 +106,8 @@ function Boss1:doConfig()
 
 	--Register emitter, so that it will be updated
 	GameState.emitters:add(enemyThruster)
+	
+	self:nextRoute()
 end
 
 function Boss1:kill()
@@ -111,48 +117,100 @@ function Boss1:kill()
 end
 
 function Boss1:update()
-
 	if self.route == 1 then
-		self.targetX = General.screenW * .75
-		self.targetY = General.screenH * .4
-		self.weapons[1]:setAngle(180, 0)
-		if self.lifetime > 4 then
-			self.lifetime = 0
-			self.route = 2
+		if self.aiStage == 1 then
+			--Initialize
+			self.weapons[1]:setAngle(180, 0)
+			self.weapons[1]:start(false, 10, .15, 10)
+			self.weapons[1]:stop()
+			Timer:new(1, self, Boss1.updateStage)
+			self:updateStage()
+		elseif self.aiStage == 2 then
+			--Travel (1)
+			self.targetX = General.screenW * .75
+			self.targetY = General.screenH * .2
+		elseif self.aiStage == 3 then
+			--Fire (1)
+			self.weapons[1]:restart()
+			Timer:new(2, self, Boss1.updateStage)
+			self:updateStage()
+		elseif self.aiStage == 4 then
+			--Firing (1)
+		elseif self.aiStage == 5 then
+			self.weapons[1]:stop()
+			Timer:new(1, self, Boss1.updateStage)
+			self:updateStage()
+		elseif self.aiStage == 6 then
+			--Travel (2)
+			self.targetY = General.screenH * .4
+		elseif self.aiStage == 7 then
+			--Fire (2)
+			self.weapons[1]:restart()
+			Timer:new(2, self, Boss1.updateStage)
+			self:updateStage()
+		elseif self.aiStage == 8 then
+			--Firing (2)
+		elseif self.aiStage == 9 then
+			self.weapons[1]:stop()
+			Timer:new(1, self, Boss1.updateStage)
+			self:updateStage()
+		elseif self.aiStage == 10 then
+			--Travel (3)
+			self.targetY = General.screenH * .6
+		elseif self.aiStage == 11 then
+			--Fire (3)
+			self.weapons[1]:restart()
+			Timer:new(2, self, Boss1.updateStage)
+			self:updateStage()
+		elseif self.aiStage == 12 then
+			--Firing (3)
+		elseif self.aiStage == 13 then
+			self:nextRoute()
 		end
 	elseif self.route == 2 then
-		self.targetX = General.screenW * .6
-		self.targetY = General.screenH * .6
-		if self.lifetime < 2 then
-			self.weapons[1]:setAngle(200 + math.sin(self.lifetime)*10, 0)
-		elseif self.lifetime < 4 then
-			self.weapons[1]:setAngle(180,0)
-		else
-			self.lifetime = 0
-			self.route = 3
-			self.weapons[1]:stop()
-			self.weapons[2]:restart()
+		if self.aiStage == 1 then
+			self.weapons[1]:start(false, 10, .1, -1)
+			self.targetX = General.screenW * .6
+			self.targetY = General.screenH * .2
+			Timer:new(4, self, Boss1.updateStage)
+			self:updateStage()
+		elseif self.aiStage == 2 then
+			self.weapons[1]:setAngle(200 + math.sin(self.lifetime*.5)*30, 0)
+		elseif self.aiStage == 3 then
+			self:nextRoute()
 		end
 	elseif self.route == 3 then
-		self.targetX = General.screenW * .8
-		self.targetY = General.screenH * .4
-		self.weapons[2]:lockTarget(GameState.player, 15)
-
-		if self.lifetime > 2 then
-			self.lifetime = 0
-			self.route = 0
-			self.weapons[2]:stop()
-			self.weapons[1]:restart()
+		if self.aiStage == 1 then
+			self.weapons[2]:lockTarget(GameState.player, 5)
+			self.weapons[2]:restart()
+			self.targetX = General.screenW * .4
+			self.targetY = General.screenH * .4
+			Timer:new(2, self, Boss1.updateStage)
+			self:updateStage()
+		elseif self.aiStage == 2 then
+			self.weapons[2]:lockTarget(GameState.player, 5)
+		elseif self.aiStage == 3 then
+			self:nextRoute()
 		end
+	else
+		--Default (determine a route)
+		self:nextRoute()
 	end
 
-	self.velocityX = General:getCamera().x + self.targetX - self.x
+	self.velocityX = General:getCamera().x + self.targetX - self.x + 15*math.cos(self.lifetime)
 	self.velocityY = General:getCamera().y + self.targetY - self.y + 10*math.sin(self.lifetime)
 
-	self:playAnimation("idle")
+	self:playAnimation("default")
 	
 
 	Sprite.update(self)
+end
+
+function Boss1:nextRoute()
+	self.weapons[1]:stop()
+	self.weapons[2]:stop()
+	self.route = math.random(1, self.NUMROUTES)
+	self.aiStage = 1
 end
 
 function Boss1:getType()

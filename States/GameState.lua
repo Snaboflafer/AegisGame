@@ -77,7 +77,7 @@ function GameState:load()
 	--self.wrappingSprites:add(self.ground) (Nested groups not yet fully supported)
 	local GROUNDDEPTH = 100
 	self.groundCollide = Sprite:new(-32, General.screenH-GROUNDDEPTH)
-	self.groundCollide:createGraphic(32000, GROUNDDEPTH, {255,255,255})
+	self.groundCollide:createGraphic(3200000, GROUNDDEPTH, {255,255,255})
 	self.groundCollide.immovable = true
 	self.groundCollide.visible = false
 	
@@ -153,7 +153,7 @@ function GameState:load()
 	playerGun = Emitter:new(0,0)
 	for i=1, 7 do
 		local curParticle = Sprite:new(0,0, LevelManager:getParticle("bullet-orange"))
-		curParticle.attackPower = 2
+		curParticle.attackPower = 1.5
 		playerGun:addParticle(curParticle)
 		self.playerBullets:add(curParticle)
 	end
@@ -525,7 +525,7 @@ function GameState:keyreleased(Key)
 end
 
 function GameState:togglePlayerMode(Force)
-	if self.player.lockTransform and Force ~= true then
+	if (Player.lockTransform or not Player.enableControls) and Force ~= true then
 		return
 	end	
 	local playerMode = self.player.activeMode
