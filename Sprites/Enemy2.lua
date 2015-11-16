@@ -60,14 +60,17 @@ function Enemy2:doConfig()
 	end
 	self.weapon:setSpeed(300, 350)
 	self.weapon:start(false, 10, 1, -1)
+	self.weapon:setOffset(58)
 	self.weapon:stop()
-	self.weapon:lockParent(self, true, 0, 0)
+	self.weapon:lockParent(self, true, 51, -4)
 	GameState.emitters:add(self.weapon)
 end
 
 function Enemy2:update()
-	self.weapon:lockTarget(GameState.player, 0, 250)
-	local fireAngle = self.weapon:getAngle() * (180/math.pi)
+	self.weapon:lockTarget(GameState.player, 0, GameState.player.velocityX/3)
+	fireAngle = self.weapon:getFaceAngle()
+	fireAngle = fireAngle * 180 / math.pi
+	fireAngle = 180 - fireAngle
 	if self.aiStage == 1 then
 		--Move to firing point
 		if self:getScreenX() <= General.screenW - 200 then
@@ -75,7 +78,6 @@ function Enemy2:update()
 			Timer:new(8, self, Enemy.updateStage)
 			self.weapon:restart()
 		end
-		
 		if fireAngle < 10 then
 			self:playAnimation("idle_0")
 		elseif fireAngle < 20 then
@@ -84,23 +86,27 @@ function Enemy2:update()
 			self:playAnimation("idle_20")
 		elseif fireAngle < 35 then
 			self:playAnimation("idle_30")
-		else
+		elseif fireAngle < 90 then
 			self:playAnimation("idle_35")
+		else
+			self:playAnimation("idle_0")
 		end
 		
 	elseif self.aiStage == 2 then
 		--self.weapon:setAngle(180 - weaponAngle, 0)
 		self.x = General:getCamera().x + General.screenW - 200
 		if fireAngle < 10 then
-			self:playAnimation("fire_0")
+			self:playAnimation("idle_0")
 		elseif fireAngle < 20 then
-			self:playAnimation("fire_10")
+			self:playAnimation("idle_10")
 		elseif fireAngle < 30 then
-			self:playAnimation("fire_20")
+			self:playAnimation("idle_20")
 		elseif fireAngle < 35 then
-			self:playAnimation("fire_30")
+			self:playAnimation("idle_30")
+		elseif fireAngle < 90 then
+			self:playAnimation("idle_35")
 		else
-			self:playAnimation("fire_35")
+			self:playAnimation("idle_0")
 		end
 	else
 		s.velocityX = 10
