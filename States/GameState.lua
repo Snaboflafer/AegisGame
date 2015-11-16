@@ -556,7 +556,7 @@ end
 function GameState:startNextStage()
 	local currentLevel = General:getCurrentLevel()
 	General:setCurrentLevel(currentLevel + 1)
-	General:setState(GameLoadState)
+	General:setState(GameState)
 end
 
 function GameState:gameOver()
