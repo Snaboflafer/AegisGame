@@ -43,7 +43,6 @@
 	"levels":[
 		{
 			"value":1,
-			"cut_scene":"images/scene_1.png",
 			"music":"sounds/music_Mines_Synth2.ogg",
 			"ground":"images/stages/floor_snow_1.png",
 			"levelTheme":"snow",
@@ -114,7 +113,6 @@
 		},
 		{
 			"value":2,
-			"cut_scene":"images/scene_2.png",
 			"music":"sounds/music_Mines_Synth2.ogg",
 			"ground":"images/stages/floor_grass_1.png",
 			"levelTheme":"dirt",
@@ -173,7 +171,6 @@
 		},
 		{
 			"value":3,
-			"cut_scene":"images/scene_3.png",
 			"music":"sounds/music_Mines_Synth2.ogg",
 			"ground":"images/stages/floor_stone_1.png",
 			"levelTheme":"dirt",
@@ -226,7 +223,6 @@
 		},
 		{
 			"value":4,
-			"cut_scene":"images/scene_2.png",
 			"music":"sounds/music_Mines_Synth2.ogg",
 			"ground":"images/stages/floor_tech_dirt.png",
 			"levelTheme":"snow",
