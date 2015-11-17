@@ -221,6 +221,7 @@ function Boss1:updateHealth()
 	if self.health <= 1 then
 		GameState.bossHpBar:flash({128,0,0}, 1, true)
 	end
+end
 function Boss1:nextRoute()
 	self.weapons[1]:stop()
 	self.weapons[2]:stop()
