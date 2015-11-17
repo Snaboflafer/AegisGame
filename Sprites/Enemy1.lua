@@ -76,16 +76,16 @@ function Enemy1:doConfig()
 end
 
 function Enemy1:update()
-	if self.route == 0 and self:onScreen() == true then
+	if self.route == 1 and self:onScreen() == true then
 		self.accelerationY = 400*math.cos(5*self.lifetime)
-	elseif self.route == 1 then
+	elseif self.route == 2 then
 		if self.lifetime < 2 and self:onScreen() == true then
 			self.accelerationY = -50
 		else
 			self.accelerationY = 15
 			self.accelerationX = -60
 		end
-	elseif self.route == 2 then
+	elseif self.route == 3 then
 		if self.lifetime < 2 and self:onScreen() == true then
 			self.accelerationY = 50
 		else
