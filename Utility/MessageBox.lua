@@ -5,8 +5,9 @@ MessageBox = {
 	alive = false,
 	members = {},
 	lineGroups = {},
-	autoAdvance = true,
+	autoAdvance = false,
 	autoAdvanceTime = 2,
+	autoAdvanced = false,
 	text = {},
 	currentText = nil,
 	currentTextPosition = 1,
@@ -19,7 +20,9 @@ MessageBox = {
 	y = 0,
 	typeFace,
 	font = nil,
-	text = ""
+	text = "",
+	title = nil,
+	titlebox = nil
 }
 
 function MessageBox:init()
@@ -42,15 +45,15 @@ function MessageBox:init()
 	return s
 end
 
-function MessageBox:show(Label)
+function MessageBox:show(Label, Title, Auto)
 	self.text = Label
 	self.visible = true
 	self.alive = true
 	self.currentText:setVisible(true)
 	self.currentTextPosition = 1
-	
+	self.autoAdvance = Auto or false
 	self.lineGroups = {}
-	
+
 	local lines = {}
 	local line = ""
 	--make lines that fit in the text box
@@ -67,6 +70,17 @@ function MessageBox:show(Label)
 	--Register the last line
 	table.insert(lines, line)
 	
+	if Title ~= nil then
+		self.titlebox = Sprite:new()
+		self.titlebox:createGraphic(16 * string.len(Title) + 15, 30, {30,30,30}, 130)
+		self.titlebox.x = self.x + self.width/40
+		self.titlebox.y = self.y + self.height
+		table.insert(self.members, self.titlebox)
+		self.title = Text:new(self.x + self.width/40 + 8 , self.y + self.height - 10, Title, self.typeFace, 30)
+		self.currentText:setAlign(Text.LEFT)
+		table.insert(self.members, self.title)
+	end
+
 	--Group text into chunks of three lines
 	for index = 1, table.getn(lines), 3 do
 		--Skip through lines by every third
@@ -111,13 +125,16 @@ end
 
 function MessageBox:keypressed()
 	if self:allCharactersDisplayed() then
-		self:nextText();
+		self:nextText()
 	else
-		self:displayAll();
+		self:displayAll()
 	end
 end
 
 function MessageBox:nextText()
+	if self.autoAdvance then
+		self.autoAdvanced = false
+	end
 	if self:onLastLine() then
 		self.alive = false
 		self.currentText:setVisible(false)
@@ -158,6 +175,10 @@ function MessageBox:destroy()
 end
 
 function MessageBox:update()
+	if self:allCharactersDisplayed() and self.autoAdvance and not self.autoAdvanced then
+		self.autoAdvanced = true
+		Timer:new(self.autoAdvanceTime, self, self.nextText)
+	end 
 	if self.alive then
 		if self.box.scaleY < 1 then
 			self.box.scaleY = self.box.scaleY + General.elapsed / MessageBox.BOXEXPANDTIME
@@ -200,7 +221,9 @@ function MessageBox:displayNextCharacter()
 		self.displayedCharacters = self.displayedCharacters + 1
 		self.currentText:setLabel(string.sub(self.lineGroups[self.currentTextPosition],1,self.displayedCharacters))
 	else
-		self.pointer:setVisible(true)
+		if not self.autoAdvance then
+			self.pointer:setVisible(true)
+		end
 		if not self:onLastLine() then
 			self.pointer:loadImage(LevelManager:getImage("message_next"))
 		else
