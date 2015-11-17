@@ -5,7 +5,7 @@
 
 local player = GameState.player
 if stage == 1 then
-	player.enableControls = false
+	Player.enableControls = false
 	GameState.camera:letterbox(true)
 	if player.activeMode == "ship" then
 		GameState:togglePlayerMode(true)

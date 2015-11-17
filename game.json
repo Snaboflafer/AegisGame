@@ -1,5 +1,4 @@
 {
-<<<<<<< Updated upstream
 	"player":{
 		"ship":{
 			"image":"images/sprites/player_ship.png",
@@ -75,7 +74,7 @@
 					"enemyType":0
 				},
 				{
-					"distance":200,
+					"distance":2000,
 					"type":"enemy",
 					"value":3,
 					"enemyType":1
@@ -87,7 +86,7 @@
 					"enemyType":1 
 				},
 				{
-					"distance":2000,
+					"distance":2400,
 					"type":"enemy",
 					"value":10,
 					"enemyType":1
@@ -401,9 +400,6 @@
 			"src":"images/ui/message_close.png"
 		}
 	},
-	"font": "fonts/forgotten_futurist_bd.ttf"
-}
-=======
    "player":{
       "ship":{
          "image":"images/sprites/player_ship.png",
@@ -837,6 +833,6 @@
 			"You're in the base. Our satellites are showing proximity mines.
 			Best to not get too close ..."
       }
-   ]
+   ],
+   "font": "fonts/forgotten_futurist_bd.ttf"
 }
->>>>>>> Stashed changes
