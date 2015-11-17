@@ -241,9 +241,45 @@ function GameState:load()
 
 	--Put particles on top of everything else
 	GameState:add(self.emitters)
-	
+
 	--Hud
 	self.hud = Group:new()
+
+	--Boss Hud
+
+	local bossHudX = General.screenW - 150
+	local bossHudY = 40
+	
+	--Create hp bar
+	local bossHpX = bossHudX
+	local bossHpY = bossHudY
+	local bossHpW = 105
+	local bossHpH = 16
+	--[[
+	self.hpBack = Sprite:new(bossHpX+28,bossHpY+8)
+	self.hpBack:createGraphic(bossHpW, bossHpH, {127,127,127}, 255)
+	GameState.hud:add(self.hpBack)--]]
+
+	self.bossHpMask = Sprite:new(bossHudX + bossHpW +28, bossHpY + 8)
+	self.bossHpMask:createGraphic(bossHpW, bossHpH, {100,100,100}, 255)
+	self.bossHpMask.originX = bossHpW
+	self.bossHpMask.scaleX = 1
+	self.hud:add(self.bossHpMask)
+	self.bossHpBar = Sprite:new(bossHpX+28,bossHpY+8)
+	self.bossHpBar:loadSpriteSheet("images/ui/hud_healthBar.png", 105, 16)
+	self.bossHpBar:addAnimation("default", {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, .05, true)
+	self.bossHpBar:playAnimation("default")
+	self.bossHpBar.scaleX = 1
+	--self.bossHpBar:createGraphic(bossHpW, bossHpH, {255,59,0}, 255)
+	self.hud:add(self.bossHpBar)
+	self.bossHpBar.visible = false
+	self.bossHpMask.visible = false
+	--[[
+	self.hpOverlay = Sprite:new(bossHpX, bossHpY, "images/ui/hud_health.png")
+	GameState.hud:add(self.hpOverlay)
+	--]]
+
+	--Player Hud
 	
 	local hudX = 10
 	local hudY = 10
@@ -458,7 +494,6 @@ function GameState:checkTriggers()
 	if self.advanceTriggerDistance then
 		self.triggerDistance = self.triggerDistance + elapsedPlayerX
 	end
-	print(self.triggerDistance)
 	if self.lastTrigger == table.getn(self.stageTriggers) then
 		return
 	end

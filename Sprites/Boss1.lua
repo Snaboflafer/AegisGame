@@ -21,7 +21,8 @@ function Boss1:new(X,Y,ImageFile)
 	s.score = 1000
 	
 	s.immovable = true
-	
+	GameState.bossHpBar.visible = true
+	GameState.bossHpMask.visible = true
 	return s
 end
 
@@ -52,7 +53,6 @@ function Boss1:doConfig()
 	
 	--self:setScale(5,5)
 
-	
 	local gunMG = Emitter:new(0,0)
 	for j=1, 20 do
 		--Create bullets
@@ -108,10 +108,12 @@ function Boss1:kill()
 	Enemy.kill(self)
 	self.weapons[1]:stop()
 	self.weapons[2]:stop()
+	GameState.bossHpBar.visible = false
+	GameState.bossHpMask.visible = false
 end
 
 function Boss1:update()
-
+	self:updateHealth()
 	if self.route == 1 then
 		self.targetX = General.screenW * .75
 		self.targetY = General.screenH * .4
@@ -153,6 +155,18 @@ function Boss1:update()
 	
 
 	Sprite.update(self)
+end
+
+function Boss1:updateHealth()
+	--Width is relative to size of health bar (value is defined in GameState, hardcoded here)
+	local hpWidth = (self.health/self.maxHealth) * 105
+	if hpWidth < 0 then
+		hpWidth = 0
+	end
+	GameState.bossHpBar.scaleX = self.health/self.maxHealth
+	if self.health <= 1 then
+		GameState.bossHpBar:flash({128,0,0}, 1, true)
+	end
 end
 
 function Boss1:getType()
