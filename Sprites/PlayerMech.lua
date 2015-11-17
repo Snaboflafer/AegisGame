@@ -218,19 +218,23 @@ function PlayerMech:update()
 	--Handle aiming
 	if pressedUp then
 		self.gunAngle = PlayerMech.ANGLEU
-		self.weapons[self.activeWeapon]:lockParent(self, false, 87, -24)
+		self.weapons[self.activeWeapon]:lockParent(self, false, 87, -20)
+			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 87, -20)
 		animStr = animStr .. "_u"
 	elseif pressedDown and not self.isDucking then
 		self.gunAngle = PlayerMech.ANGLED
-		self.weapons[self.activeWeapon]:lockParent(self, false, 87, 46)
+		self.weapons[self.activeWeapon]:lockParent(self, false, 97, 46)
+		self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 100, 36)
 		animStr = animStr .. "_d"
 	else
 		self.gunAngle = PlayerMech.ANGLEF
 		if self.isDucking then
 			self.weapons[self.activeWeapon]:lockParent(self, false, 100, 28)
+			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 90, 28)
 			animStr = animStr .. "_d"
 		else
 			self.weapons[self.activeWeapon]:lockParent(self, false, 100, 14)
+			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 90, 14)
 			animStr = animStr .. "_f"
 		end
 	end

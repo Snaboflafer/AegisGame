@@ -16,9 +16,10 @@ function Boss1:new(X,Y,ImageFile)
 	
 	s.NUMROUTES = 3
 	s.route = 1
-	s.health = 30
-	s.maxHealth = 30
+	s.health = 50
+	s.maxHealth = 50
 	s.score = 1000
+	s.massless = false
 	
 	s.weapons = {}
 	
@@ -66,6 +67,7 @@ function Boss1:doConfig()
 		gunMG:addParticle(curBullet)
 		GameState.enemyBullets:add(curBullet)
 	end
+	gunMG:setSound(LevelManager:getSound("fire_1"))
 	gunMG:setSpeed(300, 350)
 	gunMG:lockParent(self, false, 14, 45)
 	gunMG:setAngle(self.aimAngle, 10)
@@ -73,21 +75,21 @@ function Boss1:doConfig()
 	GameState.emitters:add(gunMG)
 	self:addWeapon(gunMG, 1)
 
-
-
 	local gunRPG = Emitter:new(0,0)
 	for j=1, 20 do
 		--Create rockets
-		--local curRocket = HomingRocket:new(0,0)
-		--curRocket:doConfig()
-		local curRocket = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
+		local curRocket = HomingRocket:new(0,0)
+		curRocket:doConfig()
+		curRocket:lockTarget(GameState.playerMech, GameState.player.width, GameState.player.height)
+		--local curRocket = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
 		gunRPG:addParticle(curRocket)
 		GameState.enemyBullets:add(curRocket)
 	end
-	gunRPG:setSpeed(100, 160)
-	gunRPG:setAngle(180,60)
+	gunRPG:setSound(LevelManager:getSound("fire_2"))
+	gunRPG:setSpeed(.100, .160)
+	gunRPG:setRadial(true)
 	gunRPG:lockParent(self, false, 99, 13)
-	gunRPG:start(false, 10, .1, -1)
+	gunRPG:start(false, 10, .4, -1)
 	gunRPG:stop()
 	GameState.emitters:add(gunRPG)
 	self:addWeapon(gunRPG, 2)
@@ -122,6 +124,7 @@ function Boss1:kill()
 end
 
 function Boss1:update()
+	--self.route = 3
 	self:updateHealth()
 	if self.route == 1 then
 		if self.aiStage == 1 then
@@ -187,15 +190,21 @@ function Boss1:update()
 		end
 	elseif self.route == 3 then
 		if self.aiStage == 1 then
-			self.weapons[2]:lockTarget(GameState.player, 5)
-			self.weapons[2]:restart()
 			self.targetX = General.screenW * .4
 			self.targetY = General.screenH * .4
 			Timer:new(2, self, Boss1.updateStage)
 			self:updateStage()
+			love.audio.newSource(LevelManager:getSound("charge")):play()
 		elseif self.aiStage == 2 then
-			self.weapons[2]:lockTarget(GameState.player, 5)
+			--Travel
 		elseif self.aiStage == 3 then
+			self.weapons[2]:setAngle(90, 0)
+			self.weapons[2]:restart()
+			Timer:new(2, self, Boss1.updateStage)
+			self:updateStage()
+		elseif self.aiStage == 4 then
+			--Firing
+		elseif self.aiStage == 5 then
 			self:nextRoute()
 		end
 	else
@@ -208,7 +217,6 @@ function Boss1:update()
 
 	self:playAnimation("default")
 	
-
 	Sprite.update(self)
 end
 

@@ -153,4 +153,7 @@ function love.keypressed(key)
 	if key == "=" then
 		General.timeScale = General.timeScale + .5
 	end
+	if key == "b" then
+		General.showBounds = not General.showBounds
+	end
 end

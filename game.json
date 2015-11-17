@@ -76,8 +76,8 @@
 				{
 					"distance":2000,
 					"type":"enemy",
-					"value":3,
-					"enemyType":1
+					"value":1,
+					"enemyType":-1
 				},
 				{
 					"distance":2500,
@@ -475,10 +475,10 @@
                "type":"Scripts/cutscene_1.lua"
             },
             {
-               "distance":100,
+               "distance":200,
                "triggerType":"enemy",
-               "value":3,
-               "type":1
+               "value":1,
+               "type":-1
             },
             {
                "distance":2500,
@@ -750,7 +750,16 @@
       },
       "jet_loop":{
          "src":"sounds/player_sounds/jet_loop.wav"
-      }
+      },
+	  "fire_1":{
+		"src":"sounds/sfx/fire_mg.wav"
+	  },
+	  "fire_2":{
+		"src":"sounds/sfx/fire_2.wav"
+	  },
+	  "charge":{
+		"src":"sounds/sfx/chargeup.wav"
+	  }
    },
    "particles":{
       "bullet-red":{
@@ -799,6 +808,9 @@
       },
       "message_close":{
          "src":"images/ui/message_close.png"
+      },
+      "muzzleFlash":{
+         "src":"images/fx/muzzleFlash.png"
       }
    },
    "scenes":[

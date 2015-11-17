@@ -23,6 +23,7 @@ elseif stage == 3 then
 		Player.enableControls = true
 		GameState.camera:letterbox(false)
 		GameState.advanceTriggerDistance = true
+		stage = -1
 	end
 end
 

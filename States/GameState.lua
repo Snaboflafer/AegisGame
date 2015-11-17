@@ -57,6 +57,7 @@ function GameState:load()
 			spriteBg.scrollFactorX = scroll
 			spriteBg.scrollFactorY = scroll
 			spriteBg.width = width
+			spriteBg.solid = false
 			layerGroup:add(spriteBg)
 		end
 		self.wrapBg:add(layerGroup)
@@ -119,7 +120,7 @@ function GameState:load()
 	playerGun:stop()
 	self.emitters:add(playerGun)
 	self.playerShip:addWeapon(playerGun, 1)
-	
+
 	
 	local jetLocations = {{-22, -16},{-26, 25}}
 	for i=1, table.getn(jetLocations) do
@@ -137,6 +138,7 @@ function GameState:load()
 		jetTrail:start(false, .3, 0)
 		self.emitters:add(jetTrail)
 	end
+	
 	
 	--Create player Mech
 	image, height, width = LevelManager:getPlayerMech()
@@ -187,7 +189,22 @@ function GameState:load()
 	playerCasings:stop()
 	self.emitters:add(playerCasings)
 
-	self.playerMech:addWeapon(playerGun, 1, playerCasings)
+	local playerFlash = Emitter:new(0,0)
+	for i=1,2 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getImage("muzzleFlash"), 32, 32)
+		curParticle:addAnimation("default", {1, 2}, .01, false)
+		curParticle:playAnimation("default")
+		curParticle:setCollisionBox(4,4,24,24)
+		playerFlash:addParticle(curParticle)
+	end
+	playerFlash:setSpeed(0)
+	playerFlash:lockParent(self.playerMech, false, 90, 14)
+	playerFlash:start(false, .02, 1, 1)
+	playerFlash:stop()
+	self.emitters:add(playerFlash)
+
+	self.playerMech:addWeapon(playerGun, 1, playerCasings, playerFlash)
 
 	
 	--Create mech thruster

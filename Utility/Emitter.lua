@@ -12,6 +12,7 @@ Emitter = {
 	emitOffset = 0,	--Distance from emitter point that particles are launched from
 	emitAngle = 0,	--Base angle (radians) that particles are launched at
 	angleRange = math.pi,	--Max angle deviation in either direction
+	emitRadial = false,
 	velocityMin = 0,		--Minimum launch velocity
 	velocityMax = 100,		--Maximum launch velocity
 	emitDelay = 0,		--Time delay between emissions (does not apply if launchBurst==true)
@@ -31,8 +32,7 @@ Emitter = {
 	callbackObject = nil,	--Callback (object) for when a particle is emitted
 	callbackFunction = nil,
 	activeStart = 1,	--Starting index of the active particle block
-	numActive = 0,		--Number of active particles
-	faceAngle = 0		--based on where the enemy was, so where the cannon's pointing
+	numActive = 0		--Number of active particles
 }
 
 --[[Create a new Emitter at the given location
@@ -48,6 +48,7 @@ function Emitter:new(X, Y)
 	s.velocityX = 0
 	s.velocityY = 0
 	
+	s.emitRadial = false
 	s.emitDelay = 0
 	s.emitTimer = 0
 	s.emitCount = -1
@@ -168,8 +169,6 @@ function Emitter:update()
 	if self.target ~= nil then
 		self.emitAngle = math.atan2(self.y - (self.target.y + self.targetOffsetY),
 									(self.target.x + self.targetOffsetX) - self.x)
-		self.faceAngle = math.atan2(self.y - self.target.y,
-									self.target.x - self.x)
 	end
 	
 	--Emission
@@ -238,11 +237,14 @@ function Emitter:emitParticle()
 	--Set particle velocity, using calculated value and emitter movement
 	particle.velocityX = velocity * math.cos(angle) + self.velocityX
 	particle.velocityY = -velocity * math.sin(angle) + self.velocityY
+	if self.emitRadial then
+		particle.angle = -angle
+	end
 
 	--Reset particle values
 	particle.lifetime = 0
-	particle.x = self.x + .5*self.width*(math.random()-.5)  + self.emitOffset * math.cos(self.faceAngle)
-	particle.y = self.y + .5*self.height*(math.random()-.5) - self.emitOffset * math.sin(self.faceAngle)
+	particle.x = self.x + .5*self.width*(math.random()-.5)  + self.emitOffset * math.cos(angle)
+	particle.y = self.y + .5*self.height*(math.random()-.5) - self.emitOffset * math.sin(angle)
 	particle.accelerationY = self.gravity
 	particle.accelerationX = 0
 	particle.dragX = self.dragX
@@ -287,6 +289,13 @@ function Emitter:setAngle(Angle, Range)
 	else
 		self.angleRange = (Range % 180) * (math.pi/180) or 0
 	end
+end
+
+function Emitter:setRadial(Enable)
+	if Enable == nil then
+		Enable = true
+	end
+	self.emitRadial = Enable
 end
 
 function Emitter:setSize(Width, Height)
@@ -350,10 +359,6 @@ end
 
 function Emitter:getAngle()
 	return self.emitAngle
-end
-
-function Emitter:getFaceAngle()
-	return self.faceAngle
 end
 
 --[[ Lock a parent object for the emitter.  Emitter will sync

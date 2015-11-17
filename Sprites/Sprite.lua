@@ -196,6 +196,8 @@ end
 function Sprite:loadImage(ImageFile)
 	self.imageFile = ImageFile
 	self.image = love.graphics.newImage(ImageFile)
+	self.width = self.image:getWidth()
+	self.height = self.image:getHeight()
 end
 
 --[[ Set a color to draw over the object
@@ -437,6 +439,26 @@ function Sprite:draw()
 			self.angle,
 			self.scaleX, self.scaleY,
 			self.offsetX, self.offsetY
+		)
+	end
+	if General.showBounds then
+		local r,g,b = 0,0,0
+		if self.solid then
+			r = 255
+		end
+		if self.massless then
+			g = 255
+		end
+		if self.immovable then
+			b = 255
+		end
+		love.graphics.setColor(r,g,b,255)
+		love.graphics.rectangle(
+			"line",
+			self.x - (self.scaleX * self.originX) - (camera.x * self.scrollFactorX),
+			self.y - (self.scaleY * self.originY) - (camera.y * self.scrollFactorY),
+			self.width,
+			self.height
 		)
 	end
 end

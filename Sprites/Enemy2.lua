@@ -68,7 +68,7 @@ end
 
 function Enemy2:update()
 	self.weapon:lockTarget(GameState.player, 0, GameState.player.velocityX/3)
-	fireAngle = self.weapon:getFaceAngle()
+	fireAngle = self.weapon:getAngle()
 	fireAngle = fireAngle * 180 / math.pi
 	fireAngle = 180 - fireAngle
 	if self.aiStage == 1 then

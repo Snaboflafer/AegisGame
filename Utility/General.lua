@@ -3,6 +3,7 @@ General = {
 	elapsed = 0,
 	volume = 1,
 	timeScale = 1,
+	showBounds = false,
 	screenW = 0,
 	screenH = 0,
 	activeState = nil,
@@ -14,7 +15,6 @@ General = {
 	colDivisionsX = 16,
 	colDivisionsY = 16,
 	camera = nil,
-	mem1 = nil,
 	score = 0,
 	curLevel = 1
 }
@@ -33,14 +33,6 @@ end
 
 function General:getScore()
 	return General.score
-end
-
-function General:setMem1(Value)
-	General.mem1 = Value
-end
-
-function General:getMem1()
-	return General.mem1
 end
 
 function General:init()
