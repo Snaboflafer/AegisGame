@@ -37,7 +37,6 @@ function MenuState:load()
 	self.optionSound = love.audio.newSource("sounds/menu_sounds/cw_sound27.wav")
 	self.selectSound = love.audio.newSource("sounds/menu_sounds/cw_sound44.wav")
 	self.failSound = love.audio.newSource("sounds/menu_sounds/cw_sound39.wav")
-	self.startSound = love.audio.newSource("sounds/menu_sounds/lets_end_this_tron.wav")
 	self.exitSound = love.audio.newSource("sounds/menu_sounds/cw_sound34.wav")
 end
 
@@ -86,8 +85,6 @@ function MenuState:keypressed(key)
 			SoundManager:stopBgm()
 			Timer:new(.3, self, MenuState.loadGame)
 			--General:setState(GameLoadState) 
-			--self.startSound:rewind()
-			--self.startSound:play()
 			--HighScoreState.loaded = false
 		elseif self.selected == 2 then
 			self.selectSound:rewind()

@@ -32,7 +32,7 @@ function Effect:initExplosion()
 	
 	--Create particle system
 	local explosion = Emitter:new()
-	for i=1, 18 do
+	for i=1, 24 do
 		--Create invisible fireball objects to be used for explosions
 		--(Enough for 3 concurrent explosions)
 		local fireball = Sprite:new(0,0)

@@ -27,8 +27,8 @@ Sprite = {
 	maxVelocityY = -1,
 	dragX = 0,	--Drag when no acceleration active
 	dragY = 0,
-	rotation = 0,	--Rotation of sprite, in radians
-	originX = 0,	--Origin for rotation
+	angle = 0,	--Rotation of sprite, in radians
+	originX = 0,	--Origin for transformations
 	originY = 0,	
 	offsetX = 0,	--Offset from top left of sprite to collision start
 	offsetY = 0,
@@ -118,6 +118,7 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	s.scrollFactorY = 1
 	s.offsetX = 0
 	s.offsetY = 0
+	s.angle = 0
 	
 	s.color = {255,255,255}
 	s.alpha = 255
@@ -424,7 +425,7 @@ function Sprite:draw()
 			self.image, self.imageQuads[self.curAnim.frames[self.curAnimFrame]],
 			self.x - (camera.x * self.scrollFactorX),
 			self.y - (camera.y * self.scrollFactorY),
-			self.rotation,
+			self.angle,
 			self.scaleX, self.scaleY,
 			self.offsetX, self.offsetY
 		)
@@ -433,7 +434,7 @@ function Sprite:draw()
 			self.image,
 			self.x - (camera.x * self.scrollFactorX),
 			self.y - (camera.y * self.scrollFactorY),
-			self.rotation,
+			self.angle,
 			self.scaleX, self.scaleY,
 			self.offsetX, self.offsetY
 		)

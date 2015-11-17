@@ -8,12 +8,6 @@ function PlayerShip:new(X,Y,ImageFile)
 	setmetatable(s, self)
 	setmetatable(self, Player)
 	self.__index = self
-	s.engineSoundA = love.audio.newSource(LevelManager:getSound("ship_engine_a"))
-	s.engineSoundA:setLooping(true)
-	s.engineSoundA:setVolume(.4)
-	s.engineSoundB = love.audio.newSource(LevelManager:getSound("ship_engine_b"))
-	s.engineSoundB:setLooping(true)
-	s.engineSoundB:setVolume(.2)
 	s.magnitude = 400
 	s.momentArm = math.sqrt(s.magnitude^2/2)
     s.change = love.audio.newSource(LevelManager:getSound("ship_to_mech"))
@@ -39,14 +33,6 @@ end
 function PlayerShip:update()
     
 	if Player.enableControls then
-		if love.keyboard.isDown('w', 'a', 's', 'd') then
-			self.engineSoundA:setVolume(1)
-			self.engineSoundB:setVolume(.5)
-		else
-			self.engineSoundA:setVolume(.4)
-			self.engineSoundB:setVolume(.2)
-		end
-
 		if love.keyboard.isDown('w') and love.keyboard.isDown('d') then
 			self.velocityX = self.momentArm
 			self.velocityY = -self.momentArm
@@ -141,8 +127,6 @@ function PlayerShip:enterMode(X, Y, VX, VY, HP, SP)
 	self.health = HP
 	self.shield = SP
 	self.exists = true
-	self.engineSoundA:play()
-	self.engineSoundB:play()
 	if GameState.shieldOverlay ~= nil and GameState.shieldBar ~= nil then
 		GameState.shieldOverlay:setColor({127,127,127})
 		GameState.shieldBar:setAlpha(127)
@@ -153,16 +137,12 @@ end
 ]]
 function PlayerShip:exitMode()
 	self.weapons[self.activeWeapon]:stop()
-	self.engineSoundA:stop()
-	self.engineSoundB:stop()
 	self.exists = false
 	return self.x, self.y, self.velocityX, self.velocityY, self.health, self.shield
 end
 
 function PlayerShip:destroy()
 	Sprite.destroy(self)
-	self.engineSoundA:stop()
-	self.engineSoundB:stop()
 end
 function PlayerShip:attackStart()
 	self.weapons[self.activeWeapon]:restart()

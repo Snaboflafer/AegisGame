@@ -77,11 +77,12 @@ function Boss1:doConfig()
 
 	local gunRPG = Emitter:new(0,0)
 	for j=1, 20 do
-		--Create bullets
-		local curBullet = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
-		curBullet.attackPower = 1
-		gunRPG:addParticle(curBullet)
-		GameState.enemyBullets:add(curBullet)
+		--Create rockets
+		--local curRocket = HomingRocket:new(0,0)
+		--curRocket:doConfig()
+		local curRocket = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
+		gunRPG:addParticle(curRocket)
+		GameState.enemyBullets:add(curRocket)
 	end
 	gunRPG:setSpeed(100, 160)
 	gunRPG:setAngle(180,60)

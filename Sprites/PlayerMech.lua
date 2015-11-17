@@ -34,6 +34,13 @@ function PlayerMech:new(X,Y,ImageFile)
 	s.sfxStep = love.audio.newSource(LevelManager:getSound("player_step"))
 	s.sfxJump = love.audio.newSource(LevelManager:getSound("player_jump"))
 
+	s.sfxJetStart = love.audio.newSource(LevelManager:getSound("jet_start"))
+	s.sfxJetStart:setLooping(false)
+	s.sfxJetStart:setVolume(.4)
+	s.sfxJetLoop = love.audio.newSource(LevelManager:getSound("jet_loop"))
+	s.sfxJetLoop:setLooping(true)
+	s.sfxJetLoop:setVolume(.2)
+
 	return s
 end
 
@@ -138,19 +145,9 @@ function PlayerMech:update()
 		
 		--Handle ducking
 		if pressedDown and not (pressedRight or pressedLeft) then
-			if not self.isDucking then
-				self.height = self.DEFAULTH - 20
-				self.offsetY = self.DEFAULTOFFY + 20
-				self.y = self.y + 20
-				self.isDucking = true
-			end
+			self:duck(true)
 		else
-			if self.isDucking then
-				self.height = self.DEFAULTH
-				self.offsetY = self.DEFAULTOFFY
-				self.y = self.y - 20
-				self.isDucking = false
-			end
+			self:duck(false)
 		end
 
 		if self.isAttacking and self.velocityX == 0 then
@@ -160,6 +157,7 @@ function PlayerMech:update()
 		
 		if pressedJump then
 			self:jump()
+			self:duck(false)
 		end
 		
 		self:jetOff()
@@ -255,13 +253,37 @@ function PlayerMech:jump()
 	end
 end
 
+function PlayerMech:duck(Enable)
+	if Enable then
+		if not self.isDucking then
+			self.height = self.DEFAULTH - 20
+			self.offsetY = self.DEFAULTOFFY + 20
+			self.y = self.y + 20
+			self.isDucking = true
+		end
+	else
+		if self.isDucking then
+			self.height = self.DEFAULTH
+			self.offsetY = self.DEFAULTOFFY
+			self.y = self.y - 20
+			self.isDucking = false
+		end
+	end
+end
+
 function PlayerMech:jetOn()
 	if self.fuel <= 0 or self.velocityY < -50 then
 		self:jetOff()
 		return false
 	end
 	--Enable boost
+	if not self.isHovering then
+		self.sfxJetStart:rewind()
+		self.sfxJetStart:play()
+	end
+	self.sfxJetLoop:play()
 
+	
 	self.thrust_smoke:restart()
 	self.maxVelocityY = 45
 
@@ -274,6 +296,8 @@ function PlayerMech:jetOff()
 	self.maxVelocityY = 1000
 	self.isHovering = false
 	self.thrust_smoke:stop()
+	--self.sfxJetStart:stop()
+	self.sfxJetLoop:stop()
 end
 
 --[[ Enter mech mode
