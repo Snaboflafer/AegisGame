@@ -67,3 +67,7 @@ end
 function LevelManager:getImage(id)
 	return LevelManager.jsonObject["images"][id]["src"]
 end
+
+function LevelManager:getScene(sceneNumber)
+	return LevelManager.jsonObject["scenes"][sceneNumber]
+end

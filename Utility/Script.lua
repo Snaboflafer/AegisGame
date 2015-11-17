@@ -3,10 +3,11 @@ Script = {
 	stage = 1,
 	timer = 0,
 	exists = true,
-	active = true
+	active = true,
+	text = ""
 }
 
-function Script:loadScript(File)
+function Script:loadScript(File, Text)
 	s = {}
 	setmetatable(s, self)
 	self.__index = self
@@ -14,11 +15,11 @@ function Script:loadScript(File)
 	s.finished = false
 	s.stage = 1
 	s.timer = 0
-	
+	s.text = Text
+
 	s.exists = true
 	s.active = true
-	
-	--s.scene = loadfile(File)
+
 	Script.load(s, File)
 	
 	return s
@@ -30,6 +31,7 @@ function Script:load(File)
 end
 
 function Script:update()
+	text = self.text
 	timer = self.timer + General.elapsed
 	stage = self.stage
 	self.stage = self.scene()
@@ -56,6 +58,7 @@ end
 function Script:getType()
 	return "Script"
 end
+
 function Script:getDebug()
 	printStr = self:getType() .. "\n"
 	--printStr = printStr .. "\tActive: " .. self.active .. "\n"

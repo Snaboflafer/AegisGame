@@ -15,12 +15,7 @@ if stage == 1 then
 	stage = stage + 1
 elseif stage == 2 then
 	if timer > .5 then
-		GameState.messageBox:show(
-			"Well done stealing the Aegis prototype. This is how we'll win the war. " ..
-			"Our satellites are showing heavy enemy resistance blocking your escape. " ..
-			"Imperial forces want their weapon back. " .. 
-			"Let's not give it to them. " ..
-			"(WASD to move, space to shoot) ")
+		GameState.messageBox:show(text)
 		stage = stage + 1
 	end
 elseif stage == 3 then

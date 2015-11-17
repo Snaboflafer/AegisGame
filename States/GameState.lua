@@ -504,12 +504,17 @@ function GameState:checkTriggers()
 end
 
 function GameState:executeTrigger(Trigger)
-	local triggerType = Trigger["type"]
+	local triggerType = Trigger["triggerType"]
 	if triggerType == "enemy" then
-		GameState:spawnEnemyGroup(Trigger["value"], Trigger["enemyType"])
+		GameState:spawnEnemyGroup(Trigger["value"], Trigger["type"])
 	elseif triggerType == "script" then
-		self.scripts:add(Script:loadScript(Trigger["value"]))
+
+		local value = Trigger["value"]
+		local scene = LevelManager:getScene(value)
+
+		self.scripts:add(Script:loadScript(Trigger["type"], scene["text"]))
 		self.advanceTriggerDistance = false
+
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
 			self:nextStage()
