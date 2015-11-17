@@ -1,5 +1,4 @@
 PlayerMech = {
-	enableControls = true,
 	activeMode = "mech",
 	JUMPPOWER = 600,
 	GRAVITY = 1400,
@@ -81,7 +80,7 @@ function PlayerMech:update()
 	local pressedJump
 	local pressedAttack
 	
-	if self.enableControls then
+	if Player.enableControls then
 		pressedUp = love.keyboard.isDown("w")
 		pressedDown = love.keyboard.isDown("s")
 		pressedLeft = love.keyboard.isDown("a")
@@ -307,6 +306,7 @@ end
 function PlayerMech:exitMode()
 	self.weapons[self.activeWeapon]:stop()
 	self.thrust_smoke:stop()
+	self:jetOff()
 	self.exists = false
 	return self.x+self.width/2, self.y+self.height/2, self.velocityX, self.velocityY, self.health, self.shield
 end

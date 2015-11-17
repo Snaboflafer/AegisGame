@@ -26,6 +26,9 @@ function Player:new(X,Y)
 	s.shield = 3
 	s.maxShield = 3
 	
+	s.enableControls = true
+	s.lockTransform = false
+	
 	s.sfxHurtHealthA = love.audio.newSource(LevelManager:getSound("player_hurt_health_a"))
 	s.sfxHurtHealthB = love.audio.newSource(LevelManager:getSound("player_hurt_health_b"))
 	s.sfxHurtShield = love.audio.newSource(LevelManager:getSound("player_hurt_shield"))
@@ -49,10 +52,10 @@ end
 
 --Kill the player
 function Player:kill()
-	self.alive = false
-	self.enableControls = false
-	self:disableTransform()
-	self.accelerationY = self.accelerationY + 200
+	Player.alive = false
+	Player.enableControls = false
+	Player.lockTransform = true
+	Player.accelerationX = self.accelerationY + 200
 	--Timer:new(1, Player, Player.playDeathSfx)
 	SoundManager:playBgm("sounds/handel.ogg")
 
@@ -92,13 +95,17 @@ function Player:hurt(Damage)
 		return
 	end
 	if self.activeMode == "mech" and self.shield > 0 then
-		--Try rerouting damage to shields if in mech mode
+		--Reroute damage to shields if in mech mode
 		Sprite.hurt(self, Damage, "shield")
 		self:flash({0,174,239}, 1)
 		self.sfxHurtShield:play()
 		GameState.shieldMask:flicker(.2)
 		GameState.shieldMask:flash({255,0,0}, .2)
 		self:updateShield()
+		if Damage >= 1 or self.shield == math.ceil(self.shield) then
+			self:invulnOn()
+			Timer:new(1, self, Player.invulnOff)
+		end
 	else
 		Sprite.hurt(self, Damage)
 		self:flicker(1)
@@ -111,12 +118,13 @@ function Player:hurt(Damage)
 		GameState.hpMask:flicker(.2)
 		GameState.hpMask:flash({126,0,0}, .2)
 		self:updateHealth()
+		if Damage >= 1 or self.health == math.ceil(self.health) then
+			self:invulnOn()
+			Timer:new(1, self, Player.invulnOff)
+		end
 	end
 	
-
-	--Flicker and make invulnerable for one second
-	self:invulnOn()
-	Timer:new(1, self, Player.invulnOff)
+	--Shake camera
 	General:getCamera():screenShake(.01, .5)
 end
 
@@ -128,7 +136,7 @@ function Player:updateHealth()
 	if hpWidth < 0 then
 		hpWidth = 0
 	end
-	GameState.hpMask.scaleX = 1 - self.health/self.maxHealth
+	GameState.hpMask.scaleX = 1 - math.ceil(self.health)/self.maxHealth
 	
 	if self.health <= 1 then
 		GameState.hpBar:flash({128,0,0}, 1, true)

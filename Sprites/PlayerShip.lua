@@ -1,5 +1,4 @@
 PlayerShip = {
-	enableControls = true,
 	activeMode = "ship",
 	SHIELDCHARGERATE = .3
 }
@@ -39,7 +38,7 @@ end
 
 function PlayerShip:update()
     
-	if self.enableControls then
+	if Player.enableControls then
 		if love.keyboard.isDown('w', 'a', 's', 'd') then
 			self.engineSoundA:setVolume(1)
 			self.engineSoundB:setVolume(.5)
@@ -73,11 +72,15 @@ function PlayerShip:update()
 			self.velocityX = self.magnitude
 			self.velocityY = 0
 		else
-			self.velocityX = 0;
-			self.velocityY = 0;
+			self.velocityX = 0
+			self.velocityY = 0
 		end
 		--Keep up with screen scrolling
 		self.velocityX = self.velocityX + GameState.cameraFocus.velocityX
+	else
+		self.velocityX = 0 + GameState.cameraFocus.velocityX
+		self.velocityY = 0
+	
 	end
 	
 	--Determine animation to play

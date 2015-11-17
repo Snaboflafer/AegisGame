@@ -40,7 +40,7 @@ function Enemy:respawn(SpawnX, SpawnY)
 	self.health = self.maxHealth
 	self.x = SpawnX
 	self.y = SpawnY
-	self.route = math.floor(math.random()*self.NUMROUTES)
+	self.route = math.random(1, self.NUMROUTES)
 	self.velocityX = 0
 	self.velocityY = 0
 	self.exists = true

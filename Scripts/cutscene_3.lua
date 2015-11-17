@@ -5,11 +5,8 @@
 
 local player = GameState.player
 if stage == 1 then
-	player.enableControls = false
+	Player.enableControls = false
 	GameState.camera:letterbox(true)
-	if player.activeMode == "ship" then
-		GameState:togglePlayerMode(true)
-	end
 	--Clear timer, and advance stage
 	timer = 0
 	stage = stage + 1
@@ -22,7 +19,7 @@ elseif stage == 2 then
 	end
 elseif stage == 3 then
 	if not GameState.messageBox.visible then
-		player.enableControls = true
+		Player.enableControls = true
 		GameState.camera:letterbox(false)
 		GameState.advanceTriggerDistance = true
 	end
