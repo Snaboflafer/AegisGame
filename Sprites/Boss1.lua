@@ -34,6 +34,7 @@ function Boss1:setAnimations()
 end
 
 function Boss1:respawn(SpawnX, SpawnY)
+	SoundManager:playBgm("sounds/music/Zenon.ogg")
 	if SpawnY == nil then
 		Enemy.respawn(self, SpawnX, General.screenH/2)
 	else
@@ -76,20 +77,21 @@ function Boss1:doConfig()
 	self:addWeapon(gunMG, 1)
 
 	local gunRPG = Emitter:new(0,0)
-	for j=1, 20 do
+	for j=1, 50 do
 		--Create rockets
-		local curRocket = HomingRocket:new(0,0)
-		curRocket:doConfig()
-		curRocket:lockTarget(GameState.playerMech, GameState.player.width, GameState.player.height)
-		--local curRocket = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
+		--local curRocket = HomingRocket:new(0,0)
+		--curRocket:doConfig()
+		--curRocket:lockTarget(GameState.playerMech, GameState.player.width, GameState.player.height)
+		local curRocket = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
+		curRocket.attackPower = 1
 		gunRPG:addParticle(curRocket)
 		GameState.enemyBullets:add(curRocket)
 	end
 	gunRPG:setSound(LevelManager:getSound("fire_2"))
-	gunRPG:setSpeed(.100, .160)
-	gunRPG:setRadial(true)
+	gunRPG:setSpeed(100, 160)
+	--gunRPG:setRadial(true)
 	gunRPG:lockParent(self, false, 99, 13)
-	gunRPG:start(false, 10, .4, -1)
+	gunRPG:start(false, 10, .1, -1)
 	gunRPG:stop()
 	GameState.emitters:add(gunRPG)
 	self:addWeapon(gunRPG, 2)
@@ -182,15 +184,16 @@ function Boss1:update()
 			self.targetX = General.screenW * .6
 			self.targetY = General.screenH * .2
 			Timer:new(4, self, Boss1.updateStage)
+			self.lifetime = 0
 			self:updateStage()
 		elseif self.aiStage == 2 then
-			self.weapons[1]:setAngle(200 + math.sin(self.lifetime*.5)*30, 0)
+			self.weapons[1]:setAngle(200 + math.cos(self.lifetime)*30, 5)
 		elseif self.aiStage == 3 then
 			self:nextRoute()
 		end
 	elseif self.route == 3 then
 		if self.aiStage == 1 then
-			self.targetX = General.screenW * .4
+			self.targetX = General.screenW * .8
 			self.targetY = General.screenH * .4
 			Timer:new(2, self, Boss1.updateStage)
 			self:updateStage()
@@ -198,7 +201,7 @@ function Boss1:update()
 		elseif self.aiStage == 2 then
 			--Travel
 		elseif self.aiStage == 3 then
-			self.weapons[2]:setAngle(90, 0)
+			--self.weapons[2]:setAngle(90, 0)
 			self.weapons[2]:restart()
 			Timer:new(2, self, Boss1.updateStage)
 			self:updateStage()
@@ -212,8 +215,8 @@ function Boss1:update()
 		self:nextRoute()
 	end
 
-	self.velocityX = General:getCamera().x + self.targetX - self.x + 15*math.cos(self.lifetime)
-	self.velocityY = General:getCamera().y + self.targetY - self.y + 10*math.sin(self.lifetime)
+	self.velocityX = 1.5*(General:getCamera().x + self.targetX - self.x) + 15*math.cos(self.lifetime)
+	self.velocityY = 1.5*(General:getCamera().y + self.targetY - self.y) + 10*math.sin(self.lifetime)
 
 	self:playAnimation("default")
 	

@@ -46,68 +46,127 @@
 			"music":"sounds/music_Mines_Synth2.ogg",
 			"ground":"images/stages/floor_snow_1.png",
 			"levelTheme":"snow",
-			"layers":[  
+			"layers":[
 				{
 					"image":"images/stages/sky_blue.png",
 					"scrollFactor":0,
 					"offset":0,
 					"y":-50
 				},
-				{  
+				{
 					"image":"images/stages/mountains_snow.png",
 					"scrollFactor":0.6,
 					"offset":0,
 					"y":-50
 				},
-				{  
-				   "image":"images/stages/forest_trees.png",
-				   "scrollFactor":0.8,
-				   "offset":0,
-				   "y":240
+				{
+					"image":"images/stages/forest_trees.png",
+					"scrollFactor":0.8,
+					"offset":0,
+					"y":240
 				}
 			],
 			"triggers":[
 				{
+					"distance":0,
+					"triggerType":"script",
+					"value":"",
+					"type":"Scripts/stage1_shieldTutorial.lua"
+				},
+				{
+					"distance":0,
+					"triggerType":"script",
+					"value":"",
+					"type":"Scripts/healthWarning.lua"
+				},
+				{
 					"distance":40,
-					"type":"script",
-					"value":"Scripts/cutscene_1.lua",
-					"enemyType":0
+					"triggerType":"script",
+					"value":1,
+					"type":"Scripts/showCutscene.lua"
+				},				
+				{
+					"distance":40,
+					"triggerType":"script",
+					"value":"",
+					"type":"Scripts/stage1_inputHint.lua"
+				},
+				{
+					"distance":250,
+					"triggerType":"script",
+					"value":"Make sure you figure out how to pilot that thing before you try
+						fighting any enemies! The Aegis mech can jump with 'K', and your weapons are
+						activated by holding 'SPACE'.",
+					"type":"Scripts/showLockedMessage.lua"
+				},
+				{
+					"distance":700,
+					"triggerType":"script",
+					"value":"You can aim your weapons using 'W' or 'S'. Test that they're
+						calibrated by firing at the drones up ahead.",
+					"type":"Scripts/showLockedMessage.lua"
+				},
+				{
+					"distance":700,
+					"triggerType":"enemy",
+					"value":3,
+					"type":1
 				},
 				{
 					"distance":2000,
-					"type":"enemy",
-					"value":1,
-					"enemyType":-1
+					"triggerType":"script",
+					"value":"Good work with those. Be careful, the main enemy force is
+						ahead. If you're in danger or need additional mobility,
+						press 'LSHIFT' to transform your Aegis unit into flight mode.",
+					"type":"Scripts/showLockedMessage.lua"
 				},
 				{
 					"distance":2500,
-					"type":"enemy",
+					"triggerType":"enemy",
+					"value":10,
+					"type":1
+				},
+				{
+					"distance":3500,
+					"triggerType":"enemy",
+					"value":1,
+					"type":2
+				},
+				{
+					"distance":4000,
+					"triggerType":"enemy",
 					"value":5,
-					"enemyType":1 
+					"type":1
 				},
 				{
-					"distance":2400,
-					"type":"enemy",
+					"distance":5000,
+					"triggerType":"script",
+					"value":"You're almost through! Keep going.",
+					"type":"Scripts/showLockedMessage.lua"
+				},
+				{
+					"distance":5000,
+					"triggerType":"enemy",
 					"value":10,
-					"enemyType":1
+					"type":1
 				},
 				{
-					"distance":2500,
-					"type":"enemy",
+					"distance":6000,
+					"triggerType":"enemy",
 					"value":1,
-					"enemyType":2
+					"type":2
 				},
 				{
-					"distance":3000,
-					"type":"enemy",
-					"value":10,
-					"enemyType":1
+					"distance":8000,
+					"triggerType":"enemy",
+					"value":15,
+					"type":1
 				},
 				{
-					"distance":3050,
-					"type":"waveClear",
+					"distance":10000,
+					"triggerType":"waveClear",
 					"value":0,
-					"enemyType":0
+					"type":0
 				}
 			]
 		},
@@ -123,55 +182,73 @@
 					"offset":0,
 					"y":-50
 				},
-				{  
+				{
 					"image":"images/stages/mountains_snow.png",
 					"scrollFactor":0.6,
 					"offset":0,
 					"y":50
 				}
 			],
-			"triggers":[  
+			"triggers":[
+				{
+					"distance":0,
+					"triggerType":"script",
+					"value":"",
+					"type":"Scripts/healthWarning.lua"
+				},
 				{
 					"distance":40,
-					"type":"script",
-					"value":"Scripts/cutscene_2.lua",
-					"enemyType":0
+					"triggerType":"script",
+					"value":2,
+					"type":"Scripts/showCutscene.lua"
 				},
 				{
 					"distance":500,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":3,
-					"enemyType":1
+					"type":1
 				},
 				{
 					"distance":1500,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":5,
-					"enemyType":1
-				},
-				{
-					"distance":1750,
-					"type":"enemy",
-					"value":2,
-					"enemyType":2
+					"type":1
 				},
 				{
 					"distance":2000,
-					"type":"enemy",
-					"value":7,
-					"enemyType":1
-				},
-				{
-					"distance":3000,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":1,
-					"enemyType":-1
+					"type":2
 				},
 				{
-					"distance":3050,
-					"type":"waveClear",
+					"distance":2500,
+					"triggerType":"enemy",
+					"value":10,
+					"type":1
+				},
+				{
+					"distance":4000,
+					"triggerType":"enemy",
+					"value":5,
+					"type":1
+				},
+				{
+					"distance":5500,
+					"triggerType":"script",
+					"value":"Watch out! Heavy gunship!",
+					"type":"Scripts/showAccentMessage.lua"
+				},
+				{
+					"distance":5700,
+					"triggerType":"enemy",
+					"value":1,
+					"type":-1
+				},
+				{
+					"distance":5700,
+					"triggerType":"waveClear",
 					"value":0,
-					"enemyType":0
+					"type":0
 				}
 			]
 		},
@@ -180,56 +257,62 @@
 			"music":"sounds/music_Mines_Synth2.ogg",
 			"ground":"images/stages/floor_stone_1.png",
 			"levelTheme":"dirt",
-			"layers":[  
+			"layers":[
 				{
 					"image":"images/stages/sky_blue.png",
 					"scrollFactor":0,
 					"offset":0,
 					"y":-50
 				},
-				{  
+				{
 					"image":"images/stages/mountains_desert.png",
 					"scrollFactor":0.5,
 					"offset":0,
 					"y":0
 				}
 			],
-			"triggers":[
+				"triggers":[
+				{
+					"distance":0,
+					"triggerType":"script",
+					"value":"",
+					"type":"Scripts/healthWarning.lua"
+				},
 				{
 					"distance":40,
-					"type":"script",
-					"value":"Scripts/cutscene_3.lua",
-					"enemyType":0
+					"triggerType":"script",
+					"value":3,
+					"type":"Scripts/showCutscene.lua"
 				},
 				{
 					"distance":500,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":3,
-					"enemyType":3
+					"type":3
 				},
 				{
 					"distance":1500,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":5,
-					"enemyType":2
+					"type":2
 				},
 				{
 					"distance":2000,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":10,
-					"enemyType":3
+					"type":3
 				},
 				{
 					"distance":3000,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":15,
-					"enemyType":3
+					"type":3
 				},
 				{
 					"distance":3050,
-					"type":"waveClear",
+					"triggerType":"waveClear",
 					"value":0,
-					"enemyType":0
+					"type":0
 				}
 			]
 		},
@@ -238,7 +321,7 @@
 			"music":"sounds/music_Mines_Synth2.ogg",
 			"ground":"images/stages/floor_tech_dirt.png",
 			"levelTheme":"snow",
-			"layers":[  
+			"layers":[
 				{
 					"image":"images/stages/sky_blue.png",
 					"scrollFactor":0,
@@ -266,40 +349,59 @@
 			],
 			"triggers":[
 				{
+					"distance":0,
+					"triggerType":"script",
+					"value":"",
+					"type":"Scripts/healthWarning.lua"
+				},
+				{
 					"distance":40,
-					"type":"script",
-					"value":"Scripts/cutscene_4.lua",
-					"enemyType":0
-				},  
+					"triggerType":"script",
+					"value":4,
+					"type":"Scripts/showCutscene.lua"
+				},
 				{
 					"distance":500,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":3,
-					"enemyType":1
+					"type":1
 				},
 				{
 					"distance":1500,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":5,
-					"enemyType":4
+					"type":4
 				},
 				{
 					"distance":2000,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":10,
-					"enemyType":3
+					"type":3
 				},
 				{
 					"distance":3000,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":4,
-					"enemyType":3
+					"type":3
 				},
 				{
 					"distance":4000,
-					"type":"enemy",
+					"triggerType":"enemy",
 					"value":15,
-					"enemyType":1
+					"type":1
+				},
+				{
+					"distance":6000,
+					"triggerType":"script",
+					"value":"Congratulations! You've completed the final demo level. The last level will be
+						included in the final release. Have a couple gunships as a prize.",
+					"type":"Scripts/showLockedMessage.lua"
+				},
+				{
+					"distance":6100,
+					"triggerType":"enemy",
+					"value":3,
+					"type":-1
 				}
 			]
 		}
@@ -349,6 +451,15 @@
 		},
 		"jet_loop":{
 			"src":"sounds/player_sounds/jet_loop.wav"
+		},
+		"fire_1":{
+			"src":"sounds/sfx/fire_1.wav"
+		},
+		"fire_2":{
+			"src":"sounds/sfx/fire_2.wav"
+		},
+		"charge":{
+			"src":"sounds/sfx/chargeup.wav"
 		}
 	},
 	"particles":{
@@ -390,6 +501,9 @@
 		}
 	},
 	"images":{
+		"inputHint":{
+			"src":"images/ui/controls.png"
+		},
 		"explosion":{
 			"src":"images/fx/explosion.png"
 		},
@@ -398,453 +512,40 @@
 		},
 		"message_close":{
 			"src":"images/ui/message_close.png"
+		},
+		"muzzleFlash":{
+			"src":"images/fx/muzzleFlash.png"
 		}
 	},
-   "player":{
-      "ship":{
-         "image":"images/sprites/player_ship.png",
-         "height":160,
-         "width":80
-      },
-      "mech":{
-         "image":"images/sprites/player_mech.png",
-         "height":144,
-         "width":144
-      }
-   },
-   "enemies":[
-      {
-         "image":"images/sprites/enemy_1.png",
-         "height":64,
-         "width":64
-      },
-      {
-         "image":"images/sprites/enemy_2.png",
-         "height":192,
-         "width":120
-      },
-      {
-         "image":"images/sprites/enemy_3.png",
-         "height":128,
-         "width":64
-      },
-      {
-         "image":"images/sprites/enemy_4.png",
-         "height":96,
-         "width":48
-      }
-   ],
-   "bosses":[
-      {
-         "image":"images/sprites/boss_3.png",
-         "height":320,
-         "width":160
-      }
-   ],
-   "levels":[
-      {
-         "value":1,
-         "music":"sounds/music_Mines_Synth2.ogg",
-         "ground":"images/stages/floor_snow_1.png",
-         "levelTheme":"snow",
-         "layers":[
-            {
-               "image":"images/stages/sky_blue.png",
-               "scrollFactor":0,
-               "offset":0,
-               "y":-50
-            },
-            {
-               "image":"images/stages/mountains_snow.png",
-               "scrollFactor":0.6,
-               "offset":0,
-               "y":-50
-            },
-            {
-               "image":"images/stages/forest_trees.png",
-               "scrollFactor":0.8,
-               "offset":0,
-               "y":240
-            }
-         ],
-         "triggers":[
-            {
-               "distance":40,
-               "triggerType":"script",
-               "value":1,
-               "type":"Scripts/cutscene_1.lua"
-            },
-            {
-               "distance":200,
-               "triggerType":"enemy",
-               "value":1,
-               "type":-1
-            },
-            {
-               "distance":2500,
-               "triggerType":"enemy",
-               "value":5,
-               "type":1
-            },
-            {
-               "distance":2000,
-               "triggerType":"enemy",
-               "value":10,
-               "type":1
-            },
-            {
-               "distance":2500,
-               "triggerType":"enemy",
-               "value":1,
-               "type":2
-            },
-            {
-               "distance":3000,
-               "triggerType":"enemy",
-               "value":10,
-               "type":1
-            },
-            {
-               "distance":3050,
-               "triggerType":"waveClear",
-               "value":0,
-               "type":0
-            }
-         ]
-      },
-      {
-         "value":2,
-         "music":"sounds/music_Mines_Synth2.ogg",
-         "ground":"images/stages/floor_grass_1.png",
-         "levelTheme":"dirt",
-         "layers":[
-            {
-               "image":"images/stages/sky_blue.png",
-               "scrollFactor":0,
-               "offset":0,
-               "y":-50
-            },
-            {
-               "image":"images/stages/mountains_snow.png",
-               "scrollFactor":0.6,
-               "offset":0,
-               "y":50
-            }
-         ],
-         "triggers":[
-            {
-               "distance":40,
-               "triggerType":"script",
-               "value":2,
-               "type":"Scripts/cutscene_1.lua"
-            },
-            {
-               "distance":500,
-               "triggerType":"enemy",
-               "value":3,
-               "type":1
-            },
-            {
-               "distance":1500,
-               "triggerType":"enemy",
-               "value":5,
-               "type":1
-            },
-            {
-               "distance":1750,
-               "triggerType":"enemy",
-               "value":2,
-               "type":2
-            },
-            {
-               "distance":2000,
-               "triggerType":"enemy",
-               "value":7,
-               "type":1
-            },
-            {
-               "distance":3000,
-               "triggerType":"enemy",
-               "value":1,
-               "type":-1
-            },
-            {
-               "distance":3050,
-               "triggerType":"waveClear",
-               "value":0,
-               "type":0
-            }
-         ]
-      },
-      {
-         "value":3,
-         "music":"sounds/music_Mines_Synth2.ogg",
-         "ground":"images/stages/floor_stone_1.png",
-         "levelTheme":"dirt",
-         "layers":[
-            {
-               "image":"images/stages/sky_blue.png",
-               "scrollFactor":0,
-               "offset":0,
-               "y":-50
-            },
-            {
-               "image":"images/stages/mountains_desert.png",
-               "scrollFactor":0.5,
-               "offset":0,
-               "y":0
-            }
-         ],
-         "triggers":[
-            {
-               "distance":40,
-               "triggerType":"script",
-               "value":3,
-               "type":"Scripts/cutscene_1.lua"
-            },
-            {
-               "distance":500,
-               "triggerType":"enemy",
-               "value":3,
-               "type":3
-            },
-            {
-               "distance":1500,
-               "triggerType":"enemy",
-               "value":5,
-               "type":2
-            },
-            {
-               "distance":2000,
-               "triggerType":"enemy",
-               "value":10,
-               "type":3
-            },
-            {
-               "distance":3000,
-               "triggerType":"enemy",
-               "value":15,
-               "type":3
-            },
-            {
-               "distance":3050,
-               "triggerType":"waveClear",
-               "value":0,
-               "type":0
-            }
-         ]
-      },
-      {
-         "value":4,
-         "music":"sounds/music_Mines_Synth2.ogg",
-         "ground":"images/stages/floor_tech_dirt.png",
-         "levelTheme":"snow",
-         "layers":[
-            {
-               "image":"images/stages/sky_blue.png",
-               "scrollFactor":0,
-               "offset":0,
-               "y":0
-            },
-            {
-               "image":"images/stages/mountains_desert.png",
-               "scrollFactor":0.2,
-               "offset":0,
-               "y":0
-            },
-            {
-               "image":"images/stages/base_tower.png",
-               "scrollFactor":0.8,
-               "offset":800,
-               "y":50
-            },
-            {
-               "image":"images/stages/base_wall.png",
-               "scrollFactor":0.95,
-               "offset":0,
-               "y":310
-            }
-         ],
-         "triggers":[
-            {
-               "distance":40,
-               "triggerType":"script",
- 			   "value":4,
-               "type":"Scripts/cutscene_1.lua"
-            },
-            {
-               "distance":500,
-               "triggerType":"enemy",
-               "value":3,
-               "type":1
-            },
-            {
-               "distance":1500,
-               "triggerType":"enemy",
-               "value":5,
-               "type":4
-            },
-            {
-               "distance":2000,
-               "triggerType":"enemy",
-               "value":10,
-               "type":3
-            },
-            {
-               "distance":3000,
-               "triggerType":"enemy",
-               "value":4,
-               "type":3
-            },
-            {
-               "distance":4000,
-               "triggerType":"enemy",
-               "value":15,
-               "type":1
-            }
-         ]
-      }
-   ],
-   "sounds":{
-      "explosion":{
-         "src":"sounds/explosion.wav"
-      },
-      "cannon":{
-         "src":"sounds/player_sounds/cannon.wav"
-      },
-      "player_hurt_health_a":{
-         "src":"sounds/player_sounds/hurt.wav"
-      },
-      "player_hurt_health_b":{
-         "src":"sounds/player_sounds/hurt.wav"
-      },
-      "ship_to_mech":{
-         "src":"sounds/player_sounds/transform.wav"
-      },
-      "mech_to_ship":{
-         "src":"sounds/player_sounds/transform.wav"
-      },
-      "hit_ground":{
-         "src":"sounds/player_sounds/ground_hit.wav"
-      },
-      "laser":{
-         "src":"sounds/player_sounds/laser.wav"
-      },
-      "hurt_2":{
-         "src":"sounds/hurt_2.wav"
-      },
-      "player_death":{
-         "src":"sounds/player_sounds/game_over.wav"
-      },
-      "player_hurt_shield":{
-         "src":"sounds/player_sounds/hurt_shield.wav"
-      },
-      "player_step":{
-         "src":"sounds/player_sounds/step_heavy.wav"
-      },
-      "player_jump":{
-         "src":"sounds/player_sounds/jump.wav"
-      },
-      "jet_start":{
-         "src":"sounds/player_sounds/jet_start.wav"
-      },
-      "jet_loop":{
-         "src":"sounds/player_sounds/jet_loop.wav"
-      },
-	  "fire_1":{
-		"src":"sounds/sfx/fire_mg.wav"
-	  },
-	  "fire_2":{
-		"src":"sounds/sfx/fire_2.wav"
-	  },
-	  "charge":{
-		"src":"sounds/sfx/chargeup.wav"
-	  }
-   },
-   "particles":{
-      "bullet-red":{
-         "src":"images/particles/bullet_red_16.png"
-      },
-      "bullet-orange":{
-         "src":"images/particles/bullet_orange_16.png"
-      },
-      "bullet_small":{
-         "src":"images/particles/bullet_mg.png"
-      },
-      "bullet_rocket":{
-         "src":"images/particles/rocket.png"
-      },
-      "bullet_casing":{
-         "src":"images/particles/bullet_casing.png"
-      },
-      "thruster":{
-         "src":"images/particles/thruster_small.png"
-      },
-      "trail":{
-         "src":"images/particles/player_trail.png"
-      },
-      "laser":{
-         "src":"images/particles/laser.png"
-      },
-      "smoke":{
-         "src":"images/particles/smoke.png"
-      },
-      "fireball":{
-         "src":"images/particles/fireball.png"
-      },
-      "snowGround":{
-         "src":"images/particles/snowGround.png"
-      },
-      "dirtGround":{
-         "src":"images/particles/dirtGround.png"
-      }
-   },
-   "images":{
-      "explosion":{
-         "src":"images/fx/explosion.png"
-      },
-      "message_next":{
-         "src":"images/ui/message_next.png"
-      },
-      "message_close":{
-         "src":"images/ui/message_close.png"
-      },
-      "muzzleFlash":{
-         "src":"images/fx/muzzleFlash.png"
-      }
-   },
-   "scenes":[
-      {
-         "title":"",
-         "text":
-			"Well done stealing the Aegis prototype. This is how we'll win the war. 
-			Our satellites are showing heavy enemy resistance blocking your escape.
-			Imperial forces want their weapon back.
-			Let's not give it to them.
-			(WASD to move, space to shoot)"
-      },
-      {
-      	"title":"",
-      	"text":
-      		"Great work Taylor. Our airstrikes destroyed what was left of the weapons lab.
-			Every assault we make on the capital is thwarted. The Empire's moon based defense
-			system is too strong. We need you to destroy it.
-			Unfortunately, Aegis is incapable of space flight. You'll have to fight your
-			way into the Empire's launch facility and commandeer a shuttle.
-			Be careful you're entering enemy controlled territory."
-      },
-      {
-      	"title":"",
-      	"text":
-			"Well done. You're at the outskirts of the base now.
-			Our intel suggests a few patrols, but nothing that you can't handle."
-      },
-      {
-      	"title":"",
-      	"text":
-			"You're in the base. Our satellites are showing proximity mines.
-			Best to not get too close ..."
-      }
-   ],
-   "font": "fonts/forgotten_futurist_bd.ttf"
+	"scenes":[
+		{
+			"title":"",
+			"text":
+				"Good job finding that Aegis prototype. The Emprire won't be happy about
+				losing their prize weapon, so get back to Resistance territory as soon
+				as possible. Our satellites show heavy enemy resistance blocking your escape.
+				Prevent the Imperial forces from retaking that Aegis unit at all costs!"
+		},
+		{
+			"title":"",
+			"text":
+				"Great work. We were able to destroy what was left of the weapons lab while
+				you escaped. This Aegis unit may be just what we need. The Empire's moonbase superweapon has
+				made it impossible to fight them directly. If you can take that out, we may have
+				a chance. Unfortunately, Aegis is incapable of space flight. Head to the Empire's
+				launch facility in the desert and commandeer a shuttle. Be careful, you're entering enemy territory."
+		},
+		{
+			"title":"",
+			"text":
+				"Well done. You're at the outskirts of the base now.
+				Our intel suggests a few patrols, but nothing that you can't handle."
+		},
+		{
+			"title":"",
+			"text":
+				"You've made it inside the Imperial base. Force your way through, and find a shuttle!"
+		}
+	],
+	"font": "fonts/forgotten_futurist_bd.ttf"
 }

@@ -732,6 +732,14 @@ function Sprite:getPosition()
 	return self.x, self.y
 end
 
+function Sprite:hide()
+	self.visible = false
+end
+
+function Sprite:show()
+	self.visible = true
+end
+
 function Sprite:getType()
 	return "Sprite"
 end

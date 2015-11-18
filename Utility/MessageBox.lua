@@ -2,13 +2,14 @@ MessageBox = {
 	BOXEXPANDTIME = .1,
 	BOXMINW = .05,
 	BOXMINH = .1,
+	messageFontSize = 44,
+	titleFontSize = 32,
 	alive = false,
 	members = {},
 	lineGroups = {},
 	autoAdvance = false,
 	autoAdvanceTime = 2,
 	autoAdvanced = false,
-	text = {},
 	currentText = nil,
 	currentTextPosition = 1,
 	displayedCharacters = 0,
@@ -19,7 +20,7 @@ MessageBox = {
 	x = 0,
 	y = 0,
 	typeFace,
-	font = nil,
+	messageFont = nil,
 	text = "",
 	title = nil,
 	titlebox = nil
@@ -37,10 +38,12 @@ function MessageBox:init()
 	s.x = General.screenW/(80*2)
 	s.y = General.screenW/160
 	s.typeFace = LevelManager:getFont()
-	s.font = love.graphics.newFont(s.typeFace, 44)
+	s.messageFont = love.graphics.newFont(s.typeFace, s.messageFontSize)
 	s.visible = false
 	s.lineGroups = {}
 	s.currentTextPosition = 1
+	s.autoAdvanced = false
+	s.displayedCharacters = 0
 	
 	return s
 end
@@ -50,15 +53,24 @@ function MessageBox:show(Label, Title, Auto)
 	self.visible = true
 	self.alive = true
 	self.currentText:setVisible(true)
+	self.currentText:setLabel("")
 	self.currentTextPosition = 1
+	self.displayedCharacters = 0
 	self.autoAdvance = Auto or false
 	self.lineGroups = {}
+	self.autoAdvanced = false
 
+	--Set title, if applicable
+	if Title ~= nil then
+		self.titleText:setLabel(Title)
+		self.titleBox.width = 16 + love.graphics.newFont(self.typeFace, self.titleFontSize):getWidth(Title)
+	end
+	
 	local lines = {}
 	local line = ""
 	--make lines that fit in the text box
 	for word in string.gmatch(self.text, "[^%s]+") do
-		if self.font:getWidth(line .. word .. " ") > self.width * .95 then
+		if self.messageFont:getWidth(line .. word .. " ") > self.width * .95 then
 			--Can't fit another word on this line, so register and reset line buffer
 			table.insert(lines,line)
 			line = word .. " "
@@ -70,16 +82,6 @@ function MessageBox:show(Label, Title, Auto)
 	--Register the last line
 	table.insert(lines, line)
 	
-	if Title ~= nil then
-		self.titlebox = Sprite:new()
-		self.titlebox:createGraphic(16 * string.len(Title) + 15, 30, {30,30,30}, 130)
-		self.titlebox.x = self.x + self.width/40
-		self.titlebox.y = self.y + self.height
-		table.insert(self.members, self.titlebox)
-		self.title = Text:new(self.x + self.width/40 + 8 , self.y + self.height - 10, Title, self.typeFace, 30)
-		self.currentText:setAlign(Text.LEFT)
-		table.insert(self.members, self.title)
-	end
 
 	--Group text into chunks of three lines
 	for index = 1, table.getn(lines), 3 do
@@ -98,6 +100,7 @@ function MessageBox:show(Label, Title, Auto)
 end
 
 function MessageBox:genComponents()
+	--Background graphic
 	self.box = Sprite:new()
 	self.box:createGraphic(self.width, self.height, {30,30,30}, 130)
 	self.box.scrollFactorX = 0
@@ -110,6 +113,7 @@ function MessageBox:genComponents()
 	self.box.scaleY = MessageBox.BOXMINH
     table.insert(self.members, self.box)
 
+	--Advance prompt
 	self.pointer = Sprite:new(self.x + self.width - .1 * self.width, self.y + self.height - .15 * self.height, LevelManager:getImage("message_next"))
 	table.insert(self.members,self.pointer)
 	self.pointer.scrollFactorY = 0
@@ -117,13 +121,29 @@ function MessageBox:genComponents()
 	self.pointer:flash({255,160,0}, 1, true)
 	self.pointer:setVisible(false)
 	
-	self.currentText = Text:new(self.x + self.width/20, self.y + self.height/10, "",self.typeFace, 44)
+	--Text object
+	self.currentText = Text:new(self.x + self.width/20, self.y + self.height/10, "", self.typeFace, self.messageFontSize)
 	self.currentText:setAlign(Text.LEFT)
 	table.insert(self.members, self.currentText)
 	self:nextText()
+
+	self.titleBox = Sprite:new()
+	self.titleBox:createGraphic(0, self.titleFontSize, {30,30,30}, 130)
+	self.titleBox.x = self.x + 8
+	self.titleBox.y = self.y + self.height
+	table.insert(self.members, self.titleBox)
+	
+	self.titleText = Text:new(self.x + 16 , self.y + self.height - 10,
+								"", self.typeFace, self.titleFontSize)
+	self.currentText:setAlign(Text.LEFT)
+	table.insert(self.members, self.titleText)
 end
 
 function MessageBox:keypressed()
+	if self.autoAdvance then
+		--Ignore input if box is auto-advancing
+		return
+	end
 	if self:allCharactersDisplayed() then
 		self:nextText()
 	else
@@ -175,10 +195,6 @@ function MessageBox:destroy()
 end
 
 function MessageBox:update()
-	if self:allCharactersDisplayed() and self.autoAdvance and not self.autoAdvanced then
-		self.autoAdvanced = true
-		Timer:new(self.autoAdvanceTime, self, self.nextText)
-	end 
 	if self.alive then
 		if self.box.scaleY < 1 then
 			self.box.scaleY = self.box.scaleY + General.elapsed / MessageBox.BOXEXPANDTIME
@@ -191,6 +207,11 @@ function MessageBox:update()
 				self.box.scaleX = 1
 			end
 		else
+			--Handle auto-advance
+			if self:allCharactersDisplayed() and self.autoAdvance and not self.autoAdvanced then
+				self.autoAdvanced = true
+				Timer:new(self.autoAdvanceTime, self, self.nextText)
+			end 
 			self:displayNextCharacter()
 		end
 		
@@ -200,6 +221,7 @@ function MessageBox:update()
 			end
 		end
 	else
+		--Scale box back down
 		if self.box.scaleY > MessageBox.BOXMINH then
 			self.box.scaleY = self.box.scaleY - General.elapsed / MessageBox.BOXEXPANDTIME
 			if self.box.scaleY < MessageBox.BOXMINH then
@@ -234,9 +256,9 @@ end
 
 function MessageBox:allCharactersDisplayed()
 	if self.lineGroups[self.currentTextPosition] == null or self.displayedCharacters < string.len(self.lineGroups[self.currentTextPosition]) then
-		return false;
+		return false
 	else
-		return true;
+		return true
 	end
 end
 --[[ Draw all members of the group

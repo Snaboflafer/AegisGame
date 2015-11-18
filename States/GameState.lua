@@ -508,9 +508,10 @@ end
 function GameState:checkTriggers()
 	elapsedPlayerX = self.player.x - self.storedPlayerX
 	self.storedPlayerX = self.player.x
-	if self.advanceTriggerDistance then
-		self.triggerDistance = self.triggerDistance + elapsedPlayerX
+	if not self.advanceTriggerDistance then
+		return
 	end
+	self.triggerDistance = self.triggerDistance + elapsedPlayerX
 	if self.lastTrigger == table.getn(self.stageTriggers) then
 		return
 	end
@@ -525,13 +526,7 @@ function GameState:executeTrigger(Trigger)
 	if triggerType == "enemy" then
 		GameState:spawnEnemyGroup(Trigger["value"], Trigger["type"])
 	elseif triggerType == "script" then
-
-		local value = Trigger["value"]
-		local scene = LevelManager:getScene(value)
-
-		self.scripts:add(Script:loadScript(Trigger["type"], scene["text"]))
-		self.advanceTriggerDistance = false
-
+		self.scripts:add(Script:loadScript(Trigger["type"], Trigger["value"]))
 	elseif triggerType == "waveClear" then
 		if GameState:isWaveClear() then
 			self:nextStage()
@@ -557,10 +552,8 @@ function GameState:draw()
 end
 
 function GameState:keypressed(Key)
-	if self.messageBox.visible and 
-		(Key == "return" or Key == " ") then
+	if self.messageBox.visible and (Key == "return" or Key == " ") then
 		self.messageBox:keypressed()
-		return
 	end
 	if Key == "lshift" then
 		self:togglePlayerMode()
@@ -570,7 +563,6 @@ function GameState:keypressed(Key)
 end
 
 function GameState:keyreleased(Key)
-
 	if Key == "escape" then
 		General:setState(PauseState,false)
 	elseif Key == "end" or Key == "n" then

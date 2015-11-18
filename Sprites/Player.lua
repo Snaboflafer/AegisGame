@@ -168,6 +168,9 @@ function Player:disableTransform()
 end
 
 function Player:keypressed(Key)
+	if not Player.enableControls then
+		return
+	end
 	if Key == " " then
 		--self.weapons[self.activeWeapon]:restart()
 		self:attackStart()

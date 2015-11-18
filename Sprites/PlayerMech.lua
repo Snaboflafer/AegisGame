@@ -157,7 +157,6 @@ function PlayerMech:update()
 		
 		if pressedJump then
 			self:jump()
-			self:duck(false)
 		end
 		
 		self:jetOff()
@@ -250,28 +249,20 @@ function PlayerMech:jump()
 	self.velocityY = -self.JUMPPOWER
 	self.sfxJump:play()
 	
-	if self.isDucking then
-		self.height = self.DEFAULTH
-		self.y = self.y - 16
-		self.isDucking = false
-	end
+	self:duck(false)
 end
 
 function PlayerMech:duck(Enable)
-	if Enable then
-		if not self.isDucking then
-			self.height = self.DEFAULTH - 20
-			self.offsetY = self.DEFAULTOFFY + 20
-			self.y = self.y + 20
-			self.isDucking = true
-		end
-	else
-		if self.isDucking then
-			self.height = self.DEFAULTH
-			self.offsetY = self.DEFAULTOFFY
-			self.y = self.y - 20
-			self.isDucking = false
-		end
+	if Enable and not self.isDucking then
+		self.height = self.DEFAULTH - 20
+		self.offsetY = self.DEFAULTOFFY + 20
+		self.y = self.y + 20
+		self.isDucking = true
+	elseif not Enable and self.isDucking then
+		self.height = self.DEFAULTH
+		self.offsetY = self.DEFAULTOFFY
+		self.y = self.y - 20
+		self.isDucking = false
 	end
 end
 

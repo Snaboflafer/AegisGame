@@ -4,10 +4,10 @@ Script = {
 	timer = 0,
 	exists = true,
 	active = true,
-	text = ""
+	value = nil
 }
 
-function Script:loadScript(File, Text)
+function Script:loadScript(ScriptFile, Value)
 	s = {}
 	setmetatable(s, self)
 	self.__index = self
@@ -15,12 +15,12 @@ function Script:loadScript(File, Text)
 	s.finished = false
 	s.stage = 1
 	s.timer = 0
-	s.text = Text
+	s.value = Value
 
 	s.exists = true
 	s.active = true
 
-	Script.load(s, File)
+	Script.load(s, ScriptFile)
 	
 	return s
 end
@@ -31,12 +31,13 @@ function Script:load(File)
 end
 
 function Script:update()
-	text = self.text
+	value = self.value
 	timer = self.timer + General.elapsed
 	stage = self.stage
 	self.stage = self.scene()
 	if self.stage == -1 then
 		self.active = false
+		GameState.scripts:delete(self)
 	end
 	
 	--Get updated timer value
