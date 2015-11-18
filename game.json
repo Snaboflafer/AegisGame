@@ -493,6 +493,9 @@
 		"fireball":{
 			"src":"images/particles/fireball.png"
 		},
+		"fireTrail":{
+			"src":"images/particles/fireTrail.png"
+		},
 		"snowGround":{
 			"src":"images/particles/snowGround.png"
 		},

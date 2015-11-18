@@ -14,6 +14,8 @@ function Enemy1:new(X,Y)
 	s.maxHealth = 1
 	s.score = 100
 	s.attackPower = 1
+	s.maxVelocityX = 150
+	s.maxVelocityY = 100
 	
 	s.sfxHurt = love.audio.newSource(LevelManager:getSound("hurt_2"))
 	
@@ -24,6 +26,7 @@ function Enemy1:setAnimations()
 	self:addAnimation("idle", {1,2}, .1, true)
 	self:addAnimation("up", {3,4}, .1, true)
 	self:addAnimation("down", {5,6}, .1, true)
+	self:playAnimation("idle")
 end
 
 function Enemy1:respawn(SpawnX, SpawnY)
@@ -34,6 +37,7 @@ function Enemy1:respawn(SpawnX, SpawnY)
 	end
 	self.accelerationX = 0
 	self.accelerationY = 0
+	self.aiStage = 0
 end
 
 function Enemy1:doConfig()
@@ -76,17 +80,27 @@ function Enemy1:doConfig()
 end
 
 function Enemy1:update()
-	if self.route == 1 and self:onScreen() == true then
-		self.accelerationY = 400*math.cos(5*self.lifetime)
+	if self.aiStage == 0 then
+		if not self:onScreen() then
+			Enemy.update(self)
+			return
+		else
+			self.aiStage = 1
+		end
+	end
+	
+	if self.route == 1 then
+		self.velocityY = 100*math.cos(2*self.lifetime)
+		self.velocityX = -50
 	elseif self.route == 2 then
-		if self.lifetime < 2 and self:onScreen() == true then
+		if self.lifetime < 2 then
 			self.accelerationY = -50
 		else
 			self.accelerationY = 15
 			self.accelerationX = -60
 		end
 	elseif self.route == 3 then
-		if self.lifetime < 2 and self:onScreen() == true then
+		if self.lifetime < 2 then
 			self.accelerationY = 50
 		else
 			self.accelerationY = -15
@@ -102,10 +116,6 @@ function Enemy1:update()
 		self:playAnimation("idle")
 	end
 	
-	if self:getScreenX() + self.width < 0 then
-		self:setExists(false)
-	end
-
 	Enemy.update(self)
 end
 

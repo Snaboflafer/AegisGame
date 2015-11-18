@@ -1,13 +1,14 @@
 
 HomingRocket = {
-	THRUST = 50,
-	TURNSPEED = 90,
+	THRUST = 500,
+	TURNSPEED = 600,
 	maxSpeed = 200,
 	target = nil,
 	targetX = 0,
 	targetY = 0,
 	targetOffsetX = 0,
 	targetOffsetY = 0,
+	fireTrail = nil
 }
 
 function HomingRocket:new(X, Y)
@@ -43,8 +44,28 @@ function HomingRocket:doConfig()
 	Enemy.doConfig(self)
 	self:loadImage("images/particles/rocket.png")
 	self:setCollisionBox(12, 0, 12, 12)
-	self.offsetX = self.width/2
-	self.offsetY = self.height/2
+	self.originX = self.width/2
+	self.originY = self.height/2
+	
+	self.maxVelocityX = self.maxSpeed * 2^(1/2)
+	self.maxVelocityY = self.maxSpeed * 2^(1/2)
+	
+	self.fireTrail = Emitter:new()
+	for i=1, 20 do
+		--Create the actual trail sprites
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("fireTrail"), 16, 16)
+		curParticle:addAnimation("default", {1,2,3,4,5,6,7,7,8,8,9,9,9,10}, .01, false)
+		curParticle:playAnimation("default")
+		self.fireTrail:addParticle(curParticle)
+	end
+	--Set fire trail parameters
+	self.fireTrail:setSpeed(10)
+	self.fireTrail:lockParent(self, true, self.width/2-8, self.height/2-8)
+	--self.fireTrail:setRadial(true)
+	self.fireTrail:setOffset(16)
+	self.fireTrail:start(false, .2, .01, -1)
+	GameState.emitters:add(self.fireTrail)
 end
 
 function HomingRocket:lockTarget(Target, OffsetX, OffsetY)
@@ -60,32 +81,25 @@ end
 
 
 function HomingRocket:update()
+
 	if self.target ~= nil then
 		self.targetX = self.target.x + self.targetOffsetX
 		self.targetY = self.target.y + self.targetOffsetY
 	end
 	
-	--self.angle = math.atan(self.velocityY/self.velocityX)
-	local targetAngle = math.atan2(self.y - self.targetY,self.targetX - self.x)
+	local targetAngle = math.atan2(self.targetY-self.y,self.targetX - self.x)
+	
+	if (targetAngle-self.angle+math.pi) % (2*math.pi) - math.pi > 0 then
+		self.angle = self.angle + (self.TURNSPEED * General.elapsed) * math.pi/180
+	else
+		self.angle = self.angle - (self.TURNSPEED * General.elapsed) * math.pi/180
+	end
+	
+	self.accelerationX = self.THRUST * math.cos(self.angle)
+	self.accelerationY = self.THRUST * math.sin(self.angle)
 
-	--if self.angle < targetAngle then
-	--	self.angle = self.angle + (self.TURNSPEED * General.elapsed)
-	--elseif self.angle > targetAngle then
-	--	self.angle = self.angle - (self.TURNSPEED * General.elapsed)
-	--end
-	self.angle = self.angle + General.elapsed * self.TURNSPEED * math.pi/180
-	--if self.targetX < self.x then
-	--	self.accelerationX = -self.THRUST * math.cos(self.angle)
-	--elseif self.targetX > self.x then
-	--	self.accelerationX = self.THRUST * math.cos(self.angle)
-	--end
-	--if self.targetY < self.y then
-	--	self.accelerationY = -self.THRUST * math.sin(self.angle)
-	--elseif self.targetY > self.y then
-	--	self.accelerationY = self.THRUST * math.sin(self.angle)
-	--end
-	
-	
+	self.fireTrail:setAngle((math.pi-self.angle) * 180/math.pi, 5)
+
 	Enemy.update(self)
 end
 

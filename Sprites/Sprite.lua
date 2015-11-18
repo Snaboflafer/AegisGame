@@ -118,6 +118,8 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	s.scrollFactorY = 1
 	s.offsetX = 0
 	s.offsetY = 0
+	s.originX = 0
+	s.originY = 0
 	s.angle = 0
 	
 	s.color = {255,255,255}
@@ -425,20 +427,20 @@ function Sprite:draw()
 	elseif self.animated then
 		love.graphics.draw(
 			self.image, self.imageQuads[self.curAnim.frames[self.curAnimFrame]],
-			self.x - (camera.x * self.scrollFactorX),
-			self.y - (camera.y * self.scrollFactorY),
+			self.x - (camera.x * self.scrollFactorX) + (self.originX),
+			self.y - (camera.y * self.scrollFactorY) + (self.originY),
 			self.angle,
 			self.scaleX, self.scaleY,
-			self.offsetX, self.offsetY
+			self.offsetX + self.originX, self.offsetY + self.originY
 		)
 	else
 		love.graphics.draw(
 			self.image,
-			self.x - (camera.x * self.scrollFactorX),
-			self.y - (camera.y * self.scrollFactorY),
+			self.x - (camera.x * self.scrollFactorX) + (self.originX),
+			self.y - (camera.y * self.scrollFactorY) + (self.originY),
 			self.angle,
 			self.scaleX, self.scaleY,
-			self.offsetX, self.offsetY
+			self.offsetX + self.originX, self.offsetY  + self.originY
 		)
 	end
 	if General.showBounds then
@@ -455,8 +457,8 @@ function Sprite:draw()
 		love.graphics.setColor(r,g,b,255)
 		love.graphics.rectangle(
 			"line",
-			self.x - (self.scaleX * self.originX) - (camera.x * self.scrollFactorX),
-			self.y - (self.scaleY * self.originY) - (camera.y * self.scrollFactorY),
+			self.x - (camera.x * self.scrollFactorX),
+			self.y - (camera.y * self.scrollFactorY),
 			self.width,
 			self.height
 		)
@@ -489,6 +491,9 @@ function Sprite:loadSpriteSheet(ImageFile, Width, Height)
 	self.imageFile = ImageFile
 	self.image = love.graphics.newImage(self.imageFile)
 	self.animated = true
+	
+	self.width = Width
+	self.height = Height
 
 	--Calculate frames per row/column, and set total
 	local hIndices = self.image:getWidth()/Width

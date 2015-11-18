@@ -77,21 +77,22 @@ function Boss1:doConfig()
 	self:addWeapon(gunMG, 1)
 
 	local gunRPG = Emitter:new(0,0)
-	for j=1, 50 do
+	for j=1, 4 do
 		--Create rockets
-		--local curRocket = HomingRocket:new(0,0)
-		--curRocket:doConfig()
-		--curRocket:lockTarget(GameState.playerMech, GameState.player.width, GameState.player.height)
-		local curRocket = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
+		local curRocket = HomingRocket:new(0,0)
+		curRocket:doConfig()
+		curRocket:lockTarget(GameState.playerShip)
+		--local curRocket = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
 		curRocket.attackPower = 1
 		gunRPG:addParticle(curRocket)
 		GameState.enemyBullets:add(curRocket)
 	end
 	gunRPG:setSound(LevelManager:getSound("fire_2"))
-	gunRPG:setSpeed(100, 160)
-	--gunRPG:setRadial(true)
+	gunRPG:setSpeed(0, 10)
+	gunRPG:setAngle(180, 5)
+	gunRPG:setRadial(true)
 	gunRPG:lockParent(self, false, 99, 13)
-	gunRPG:start(false, 10, .1, -1)
+	gunRPG:start(false, 10, .5, -1)
 	gunRPG:stop()
 	GameState.emitters:add(gunRPG)
 	self:addWeapon(gunRPG, 2)
@@ -126,7 +127,6 @@ function Boss1:kill()
 end
 
 function Boss1:update()
-	--self.route = 3
 	self:updateHealth()
 	if self.route == 1 then
 		if self.aiStage == 1 then
