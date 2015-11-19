@@ -26,14 +26,18 @@ function Player:new(X,Y)
 	s.shield = 3
 	s.maxShield = 3
 	
-	s.enableControls = true
-	s.lockTransform = false
+	self.enableControls = true
+	self.lockTransform = false
 	
 	s.sfxHurtHealthA = love.audio.newSource(LevelManager:getSound("player_hurt_health_a"))
 	s.sfxHurtHealthB = love.audio.newSource(LevelManager:getSound("player_hurt_health_b"))
 	s.sfxHurtShield = love.audio.newSource(LevelManager:getSound("player_hurt_shield"))
 	s.sfxDeath = love.audio.newSource(LevelManager:getSound("player_death"))
 	return s
+end
+
+function Player:doConfig()
+	--Nothing
 end
 
 function Player:addWeapon(GunEmitter, Slot, CasingEmitter, FlashEmitter)
@@ -97,7 +101,7 @@ function Player:hurt(Damage)
 	if self.activeMode == "mech" and self.shield > 0 then
 		--Reroute damage to shields if in mech mode
 		Sprite.hurt(self, Damage, "shield")
-		self:flash({0,174,239}, 1)
+		self:flash({0,174,239}, 1.5)
 		self.sfxHurtShield:play()
 		GameState.shieldMask:flicker(.2)
 		GameState.shieldMask:flash({255,0,0}, .2)
@@ -108,8 +112,7 @@ function Player:hurt(Damage)
 		end
 	else
 		Sprite.hurt(self, Damage)
-		self:flicker(1)
-		self:flash({243,17,17}, .5)
+		self:flash({243,17,17}, 1)
 		if self.health >= 2 then
 			self.sfxHurtHealthB:play()
 		else
@@ -126,6 +129,8 @@ function Player:hurt(Damage)
 	
 	--Shake camera
 	General:getCamera():screenShake(.01, .5)
+	--Flicker player (required for stopping enemy collisions during hit)
+	self:flicker(1.5)
 end
 
 --[[ Update the health bar in the Hud

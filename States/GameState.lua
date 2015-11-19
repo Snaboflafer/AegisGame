@@ -94,141 +94,14 @@ function GameState:load()
 	self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
 
-	--Create player (flying)
-	local image, height, width = LevelManager:getPlayerShip()
+	--Create Player
 	self.playerShip = PlayerShip:new(100, General.screenH-200)
-	self.playerShip:loadSpriteSheet(image, height, width)
-	self.playerShip:setAnimations()
-	self.playerShip:setCollisionBox(46, 34, 91, 20)
-	self.playerShip:lockToScreen(Sprite.ALL)
-	self.playerShip.showDebug = true
+	self.playerShip:doConfig()
 	GameState:add(self.playerShip)
 	
-	local playerGun = Emitter:new(0,0)
-	self.playerBullets = Group:new()
-	for i=1, 10 do
-		local curParticle = Sprite:new(0,0,LevelManager:getParticle("laser"))
-		curParticle.attackPower = .5
-		playerGun:addParticle(curParticle)
-		self.playerBullets:add(curParticle)
-	end
-	playerGun:setSpeed(1000)
-	playerGun:setAngle(0,0)
-	playerGun:lockParent(self.playerShip, false)
-	playerGun:setSound(LevelManager:getSound("laser"))
-	playerGun:start(false, 1, .12, -1)
-	playerGun:stop()
-	self.emitters:add(playerGun)
-	self.playerShip:addWeapon(playerGun, 1)
-
-	
-	local jetLocations = {{-22, -16},{-26, 25}}
-	for i=1, table.getn(jetLocations) do
-		local jetTrail = Emitter:new(0, 0)
-		for j=1, 20 do
-			local curParticle = Sprite:new(0, 0)
-			curParticle:loadSpriteSheet(LevelManager:getParticle("trail"), 8,3)
-			curParticle:addAnimation("idle", {1,2,3,4}, .08, false)
-			curParticle:playAnimation("idle")
-			jetTrail:addParticle(curParticle)
-		end
-		jetTrail:setSpeed(70, 150)
-		jetTrail:setAngle(180)
-		jetTrail:lockParent(self.playerShip, true, jetLocations[i][1], jetLocations[i][2])
-		jetTrail:start(false, .3, 0)
-		self.emitters:add(jetTrail)
-	end
-	
-	
-	--Create player Mech
-	image, height, width = LevelManager:getPlayerMech()
-
-	self.playerMech = PlayerMech:new(100,General.screenH-100)
-	self.playerMech:loadSpriteSheet(image, height, width)
-	self.playerMech:setAnimations()
-	self.playerMech:setCollisionBox(22,16,PlayerMech.DEFAULTW, PlayerMech.DEFAULTH)
-	self.playerMech:lockToScreen(Sprite.ALL)
-	self.playerMech.showDebug = true
-	--self.camera:setTarget(self.player)
-	--self.camera:setDeadzone(128,32)
+	self.playerMech = PlayerMech:new(100, General.screenH-200)
+	self.playerMech:doConfig()
 	GameState:add(self.playerMech)
-	
-	--Attach gun to mech
-	playerGun = Emitter:new(0,0)
-	for i=1, 7 do
-		local curParticle = Sprite:new(0,0, LevelManager:getParticle("bullet-orange"))
-		curParticle.attackPower = 1.5
-		playerGun:addParticle(curParticle)
-		self.playerBullets:add(curParticle)
-	end
-	playerGun:setSpeed(500,525)
-	playerGun:setAngle(0,1)
-	playerGun:lockParent(self.playerMech, false, 107, 16)
-	playerGun:setSound(LevelManager:getSound("cannon"))
-	playerGun:setCallback(self.playerMech, PlayerMech.fireGun)
-	playerGun:start(false, 2, .3, -1)
-	playerGun:stop()
-	self.emitters:add(playerGun)
-	
-	local playerCasings = Emitter:new(0,0)
-	for i=1,14 do
-		local curParticle = Sprite:new(0,0)
-		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet_casing"), 12, 12)
-		curParticle:setCollisionBox(2,2,8,8)
-		curParticle:addAnimation("default", {1,2,3,4}, .03, true)
-		curParticle:playAnimation("default")
-		playerCasings:addParticle(curParticle)
-		self.worldParticles:add(curParticle)
-	end
-	playerCasings:setSpeed(400)
-	playerCasings:setAngle(115, 10)
-	playerCasings:setGravity(1000)
-	playerCasings:setDrag(50)
-	playerCasings:lockParent(self.playerMech, false, 30, 20)
-	playerCasings:start(false, 1, .3, 1)
-	playerCasings:stop()
-	self.emitters:add(playerCasings)
-
-	local playerFlash = Emitter:new(0,0)
-	for i=1,2 do
-		local curParticle = Sprite:new(0,0)
-		curParticle:loadSpriteSheet(LevelManager:getImage("muzzleFlash"), 32, 32)
-		curParticle:addAnimation("default", {1, 2}, .01, false)
-		curParticle:playAnimation("default")
-		curParticle:setCollisionBox(4,4,24,24)
-		playerFlash:addParticle(curParticle)
-	end
-	playerFlash:setSpeed(0)
-	playerFlash:lockParent(self.playerMech, false, 90, 14)
-	playerFlash:start(false, .02, 1, 1)
-	playerFlash:stop()
-	self.emitters:add(playerFlash)
-
-	self.playerMech:addWeapon(playerGun, 1, playerCasings, playerFlash)
-
-	
-	--Create mech thruster
-	local mechThrust_Jet = Emitter:new()
-	--Empty
-	
-	local mechThrust_Smoke = Emitter:new()
-	for i=1, 15 do
-		local curParticle = Sprite:new(0,0)
-		curParticle:loadSpriteSheet(LevelManager:getParticle("smoke"), 32,32)
-		curParticle:addAnimation("default", {1,1,1,2,3,4,3,2,1}, .01, false)
-		curParticle:playAnimation("default")
-		mechThrust_Smoke:addParticle(curParticle)
-	end
-	mechThrust_Smoke:setSpeed(500,800)
-	mechThrust_Smoke:setAngle(245, 20)
-	mechThrust_Smoke:setGravity(-4000)
-	mechThrust_Smoke:setDrag(10)
-	mechThrust_Smoke:lockParent(self.playerMech, false, -26, 24)
-	mechThrust_Smoke:start(false, .15, .01, -1)
-	mechThrust_Smoke:stop()
-	self.emitters:add(mechThrust_Smoke)
-
-	self.playerMech:assignThruster(mechThrust_Jet, mechThrust_Smoke)
 	
 	
 	--Create enemies
@@ -494,9 +367,11 @@ function GameState:update()
 	General:collide(self.worldParticles,self.groundCollide)
 	
 	--Collisions with custom callback actions
-	General:collide(self.player, self.enemyBullets, nil, Sprite.hardCollide)
+	if not self.player:isFlickering() then
+		General:collide(self.player, self.enemyBullets, nil, Sprite.hardCollide)
+		General:collide(self.player, self.enemies, nil, Sprite.hardCollide)
+	end
 	General:collide(self.playerBullets, self.enemies, nil, Sprite.hardCollide)
-	General:collide(self.player, self.enemies, nil, Sprite.hardCollide)
 	--General:collide(self.player, self.ground, self.player, self.player.collideGround, true)
 	General:collide(self.player, self.groundCollide, self.player, self.player.collideGround, true)
 	

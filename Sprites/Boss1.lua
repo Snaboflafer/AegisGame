@@ -53,7 +53,7 @@ end
 
 function Boss1:doConfig()
 	Enemy.doConfig(self)
-	self:setCollisionBox(32, 44, 244, 48)
+	self:setCollisionBox(32, 34, 244, 70)
 	
 	--self:setScale(5,5)
 

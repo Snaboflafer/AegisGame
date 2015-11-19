@@ -67,6 +67,94 @@ function PlayerMech:setAnimations()
 	self:playAnimation("idle_f")
 end
 
+function PlayerMech:doConfig()
+	Player.doConfig(self)
+	
+	image, height, width = LevelManager:getPlayerMech()
+	self:loadSpriteSheet(image, height, width)
+	self:setAnimations()
+	self:setCollisionBox(22,16,PlayerMech.DEFAULTW, PlayerMech.DEFAULTH)
+	self:lockToScreen(Sprite.ALL)
+	self.showDebug = true
+	
+	--Attach gun to mech
+	playerGun = Emitter:new(0,0)
+	for i=1, 7 do
+		local curParticle = Sprite:new(0,0, LevelManager:getParticle("bullet-orange"))
+		curParticle.attackPower = 1.2
+		playerGun:addParticle(curParticle)
+		GameState.playerBullets:add(curParticle)
+	end
+	playerGun:setSpeed(600,625)
+	playerGun:setAngle(0,1)
+	playerGun:lockParent(self, false, 107, 16)
+	playerGun:setSound(LevelManager:getSound("cannon"))
+	playerGun:setCallback(self, PlayerMech.fireGun)
+	playerGun:start(false, 2, .26, -1)
+	playerGun:stop()
+	GameState.emitters:add(playerGun)
+	
+	local playerCasings = Emitter:new(0,0)
+	for i=1,14 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet_casing"), 12, 12)
+		curParticle:setCollisionBox(2,2,8,8)
+		curParticle:addAnimation("default", {1,2,3,4}, .03, true)
+		curParticle:playAnimation("default")
+		playerCasings:addParticle(curParticle)
+		GameState.worldParticles:add(curParticle)
+	end
+	playerCasings:setSpeed(400)
+	playerCasings:setAngle(115, 10)
+	playerCasings:setGravity(1000)
+	playerCasings:setDrag(50)
+	playerCasings:lockParent(self, false, 30, 20)
+	playerCasings:start(false, 1, .3, 1)
+	playerCasings:stop()
+	GameState.emitters:add(playerCasings)
+
+	local playerFlash = Emitter:new(0,0)
+	for i=1,2 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getImage("muzzleFlash"), 32, 32)
+		curParticle:addAnimation("default", {1, 2}, .01, false)
+		curParticle:playAnimation("default")
+		curParticle:setCollisionBox(4,4,24,24)
+		playerFlash:addParticle(curParticle)
+	end
+	playerFlash:setSpeed(0)
+	playerFlash:lockParent(self, false, 90, 14)
+	playerFlash:start(false, .02, 1, 1)
+	playerFlash:stop()
+	GameState.emitters:add(playerFlash)
+
+	self:addWeapon(playerGun, 1, playerCasings, playerFlash)
+
+	
+	--Create mech thruster
+	local mechThrust_Jet = Emitter:new()
+	--Empty
+	
+	local mechThrust_Smoke = Emitter:new()
+	for i=1, 15 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("smoke"), 32,32)
+		curParticle:addAnimation("default", {1,1,1,2,3,4,3,2,1}, .01, false)
+		curParticle:playAnimation("default")
+		mechThrust_Smoke:addParticle(curParticle)
+	end
+	mechThrust_Smoke:setSpeed(500,800)
+	mechThrust_Smoke:setAngle(245, 20)
+	mechThrust_Smoke:setGravity(-4000)
+	mechThrust_Smoke:setDrag(10)
+	mechThrust_Smoke:lockParent(self, false, -26, 24)
+	mechThrust_Smoke:start(false, .15, .01, -1)
+	mechThrust_Smoke:stop()
+	GameState.emitters:add(mechThrust_Smoke)
+
+	self:assignThruster(mechThrust_Jet, mechThrust_Smoke)
+end
+
 function PlayerMech:setCollisionBox(X, Y, W, H)
 	Sprite.setCollisionBox(self,X,Y,self.DEFAULTW,self.DEFAULTH)
 end

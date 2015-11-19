@@ -693,6 +693,10 @@ function Sprite:lockToScreen(value)
 	self.lockSides = value or Sprite.ALL
 end
 
+function Sprite:isFlickering()
+	return (self.flickerDuration > 0)
+end
+
 function Sprite:getLeft()
 	--return self.x - self.offsetX
 	return self.x

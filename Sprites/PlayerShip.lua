@@ -8,9 +8,11 @@ function PlayerShip:new(X,Y,ImageFile)
 	setmetatable(s, self)
 	setmetatable(self, Player)
 	self.__index = self
+	
 	s.magnitude = 400
 	s.momentArm = math.sqrt(s.magnitude^2/2)
     s.change = love.audio.newSource(LevelManager:getSound("ship_to_mech"))
+	
 	return s
 end
 
@@ -21,6 +23,52 @@ function PlayerShip:setAnimations()
 	self:addAnimation("up_in", {12, 13, 14, 15}, .07, false)
 	self:addAnimation("up_out", {16, 17, 18, 19}, .07, false)
 	self:playAnimation("idle")
+end
+
+function PlayerShip:doConfig()
+	Player.doConfig(self)
+	
+	local image, height, width = LevelManager:getPlayerShip()
+	self:loadSpriteSheet(image, height, width)
+	self:setAnimations()
+	self:setCollisionBox(46, 34, 91, 20)
+	self:lockToScreen(Sprite.ALL)
+	self.showDebug = true
+	
+	local playerGun = Emitter:new(0,0)
+	GameState.playerBullets = Group:new()
+	for i=1, 10 do
+		local curParticle = Sprite:new(0,0,LevelManager:getParticle("laser"))
+		curParticle.attackPower = .5
+		playerGun:addParticle(curParticle)
+		GameState.playerBullets:add(curParticle)
+	end
+	playerGun:setSpeed(1000)
+	playerGun:setAngle(0,0)
+	playerGun:lockParent(self, false)
+	playerGun:setSound(LevelManager:getSound("laser"))
+	playerGun:start(false, 1, .12, -1)
+	playerGun:stop()
+	GameState.emitters:add(playerGun)
+	self:addWeapon(playerGun, 1)
+	
+	local jetLocations = {{-22, -16},{-26, 25}}
+	for i=1, table.getn(jetLocations) do
+		local jetTrail = Emitter:new(0, 0)
+		for j=1, 20 do
+			local curParticle = Sprite:new(0, 0)
+			curParticle:loadSpriteSheet(LevelManager:getParticle("trail"), 8,3)
+			curParticle:addAnimation("idle", {1,2,3,4}, .08, false)
+			curParticle:playAnimation("idle")
+			jetTrail:addParticle(curParticle)
+		end
+		jetTrail:setSpeed(70, 150)
+		jetTrail:setAngle(180)
+		jetTrail:lockParent(self, true, jetLocations[i][1], jetLocations[i][2])
+		jetTrail:start(false, .3, 0)
+		GameState.emitters:add(jetTrail)
+	end
+
 end
 
 -- as of now you must use this method to change the magnitude
