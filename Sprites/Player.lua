@@ -45,7 +45,11 @@ function Player:addWeapon(GunEmitter, Slot, CasingEmitter, FlashEmitter)
 	--	self.weapons = Group:new()
 	--end
 	--self.weapons:add(GunEmitter)
-	self.weapons[Slot] = GunEmitter
+	if self.weapons[Slot] == nil then
+		self.weapons[Slot] = Group:new()
+	end
+	
+	self.weapons[Slot]:add(GunEmitter)
 	if CasingEmitter ~= nil then
 		self.weaponCasings[Slot] = CasingEmitter
 	end
@@ -54,16 +58,45 @@ function Player:addWeapon(GunEmitter, Slot, CasingEmitter, FlashEmitter)
 	end
 end
 
+function Player:attachWeapon(OffsetX, OffsetY)
+	for i=1, self.weapons[self.activeWeapon].length do
+		self.weapons[self.activeWeapon].members[i]:lockParent(self, false, OffsetX, OffsetY)
+	end
+end
+
+function Player:setWeaponAngle(Angle, Range)
+	for i=1, self.weapons[self.activeWeapon].length do
+		self.weapons[self.activeWeapon].members[i]:setAngle(Angle, Range)
+	end
+end
+
+function Player:stopWeapon()
+	for i=1, self.weapons[self.activeWeapon].length do
+		self.weapons[self.activeWeapon].members[i]:stop()
+	end
+end
+function Player:restartWeapon()
+	for i=1, self.weapons[self.activeWeapon].length do
+		self.weapons[self.activeWeapon].members[i]:restart()
+	end
+end
+
 --Kill the player
 function Player:kill()
+	if not self.alive then
+		return
+	end
+
 	Player.alive = false
 	Player.enableControls = false
 	Player.lockTransform = true
-	Player.accelerationX = self.accelerationY + 200
+	Player.accelerationY = self.accelerationY + 200
 	--Timer:new(1, Player, Player.playDeathSfx)
 	SoundManager:playBgm("sounds/handel.ogg")
-
+	GameState.explosion:play(self.x + self.width / 2, self.y + self.height / 2)
+	
 	self:playDeathSfx()
+	General:getCamera():fade({0,0,0}, 2)
 	Timer:new(2, GameState, GameState.gameOver)
 end
 

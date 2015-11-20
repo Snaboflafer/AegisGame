@@ -75,13 +75,13 @@ function PlayerMech:doConfig()
 	self:setAnimations()
 	self:setCollisionBox(22,16,PlayerMech.DEFAULTW, PlayerMech.DEFAULTH)
 	self:lockToScreen(Sprite.ALL)
-	self.showDebug = true
+	--self.showDebug = true
 	
 	--Attach gun to mech
 	playerGun = Emitter:new(0,0)
 	for i=1, 7 do
 		local curParticle = Sprite:new(0,0, LevelManager:getParticle("bullet-orange"))
-		curParticle.attackPower = 1.2
+		curParticle.attackPower = 1.1
 		playerGun:addParticle(curParticle)
 		GameState.playerBullets:add(curParticle)
 	end
@@ -89,8 +89,8 @@ function PlayerMech:doConfig()
 	playerGun:setAngle(0,1)
 	playerGun:lockParent(self, false, 107, 16)
 	playerGun:setSound(LevelManager:getSound("cannon"))
-	playerGun:setCallback(self, PlayerMech.fireGun)
-	playerGun:start(false, 2, .26, -1)
+	playerGun:setCallback(self, PlayerMech.fireWeapon)
+	playerGun:start(false, 2, .28, -1)
 	playerGun:stop()
 	GameState.emitters:add(playerGun)
 	
@@ -147,7 +147,8 @@ function PlayerMech:doConfig()
 	mechThrust_Smoke:setAngle(245, 20)
 	mechThrust_Smoke:setGravity(-4000)
 	mechThrust_Smoke:setDrag(10)
-	mechThrust_Smoke:lockParent(self, false, -26, 24)
+	mechThrust_Smoke:lockParent(self, false, -20, 24)
+	mechThrust_Smoke:setSize(12, 12)
 	mechThrust_Smoke:start(false, .15, .01, -1)
 	mechThrust_Smoke:stop()
 	GameState.emitters:add(mechThrust_Smoke)
@@ -195,7 +196,6 @@ function PlayerMech:update()
 	local animStr = "idle"
 	local animRestart = false
 	local animForced = false
-	local lastAnim = string.sub(self.curAnim.name, 1, 4)
 	if self.touching == Sprite.DOWN then
 		self.onFloor = true
 	else
@@ -223,12 +223,21 @@ function PlayerMech:update()
 		end
 		
 		--Footstep effects
-		if lastAnim == "walk" and self.curAnimFrame == 1 and self.lastAnimFrame ~= 1 then
-			GameState.groundParticle:play(self.x + self.width*.65, self.y+self.height-6)
-			self.sfxStep:play()
-		elseif lastAnim == "walk" and self.curAnimFrame == 5 and self.lastAnimFrame ~= 5 then
-			GameState.groundParticle:play(self.x + self.width*.25, self.y+self.height-6)
-			self.sfxStep:play()
+		local lastAnim = string.sub(self.curAnim.name, 1, 6)
+		if lastAnim == "walk_f" then
+			if (self.curAnimFrame == 8 and self.lastAnimFrame == 7) or 
+				(self.curAnimFrame == 4 and self.lastAnimFrame == 3) then
+				GameState.groundParticle:play(self.x + self.width, self.y+self.height-6)
+				self.sfxStep:rewind()
+				self.sfxStep:play()
+			end
+		elseif lastAnim == "walk_b" then
+			if (self.curAnimFrame == 8 and self.lastAnimFrame == 7) or 
+				(self.curAnimFrame == 4 and self.lastAnimFrame == 3) then
+				GameState.groundParticle:play(self.x, self.y+self.height-6)
+				self.sfxStep:rewind()
+				self.sfxStep:play()
+			end
 		end
 		
 		--Handle ducking
@@ -305,27 +314,27 @@ function PlayerMech:update()
 	--Handle aiming
 	if pressedUp then
 		self.gunAngle = PlayerMech.ANGLEU
-		self.weapons[self.activeWeapon]:lockParent(self, false, 87, -20)
-			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 87, -20)
+		self:attachWeapon(87, -20)
+		self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 87, -20)
 		animStr = animStr .. "_u"
 	elseif pressedDown and not self.isDucking then
 		self.gunAngle = PlayerMech.ANGLED
-		self.weapons[self.activeWeapon]:lockParent(self, false, 97, 46)
+		self:attachWeapon(97, 46)
 		self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 100, 36)
 		animStr = animStr .. "_d"
 	else
 		self.gunAngle = PlayerMech.ANGLEF
 		if self.isDucking then
-			self.weapons[self.activeWeapon]:lockParent(self, false, 100, 28)
+			self:attachWeapon(100, 28)
 			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 90, 28)
 			animStr = animStr .. "_d"
 		else
-			self.weapons[self.activeWeapon]:lockParent(self, false, 100, 14)
+			self:attachWeapon(100, 14)
 			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 90, 14)
 			animStr = animStr .. "_f"
 		end
 	end
-	self.weapons[self.activeWeapon]:setAngle(self.gunAngle, 1)
+	self:setWeaponAngle(self.gunAngle, 1)
 	
 
 	self:playAnimation(animStr, animRestart, animForced)
@@ -411,7 +420,7 @@ end
 --[[ Exit mech mode. Returns required arguments for enterMode()
 ]]
 function PlayerMech:exitMode()
-	self.weapons[self.activeWeapon]:stop()
+	self:stopWeapon()
 	self.thrust_smoke:stop()
 	self:jetOff()
 	self.exists = false
@@ -419,17 +428,17 @@ function PlayerMech:exitMode()
 end
 
 function PlayerMech:attackStart()
-	self.weapons[self.activeWeapon]:restart()
+	self:restartWeapon()
 	self.isAttacking = true
 	Timer:new(self.weapons[self.activeWeapon].emitDelay, self, PlayerMech.attackStop)
 end
 function PlayerMech:attackStop()
 	if love.keyboard.isDown(" ") then
-		Timer:new(self.weapons[self.activeWeapon].emitDelay, self, PlayerMech.attackStop)
+		Timer:new(self.weapons[self.activeWeapon].members[1].emitDelay, self, PlayerMech.attackStop)
 		return
 	end
 
-	self.weapons[self.activeWeapon]:stop()
+	self:stopWeapon()
 	self.isAttacking = false
 	if self.weaponCasings[self.activeWeapon] ~= nil then
 		self.weaponCasings[self.activeWeapon]:stop()
@@ -441,20 +450,20 @@ function PlayerMech:attackStop()
 	--self:playAnimation("idle")
 end
 
-function PlayerMech:fireGun()
+function PlayerMech:fireWeapon()
 	if self.onFloor and self.velocityX == 0 then
 		local animStr = "fire"
 		if self.gunAngle == PlayerMech.ANGLEU then
-			self.weapons[self.activeWeapon]:setAngle(20, 1)
-			self.weapons[self.activeWeapon]:lockParent(self, false, 87, -24)
+			self:setWeaponAngle(20, 1)
+			self:attachWeapon(87, -24)
 			animStr = animStr .. "_u"
 		elseif self.gunAngle == PlayerMech.ANGLED and not self.isDucking then
-			self.weapons[self.activeWeapon]:setAngle(-15, 1)
-			self.weapons[self.activeWeapon]:lockParent(self, false, 87, 46)
+			self:setWeaponAngle(-15, 1)
+			self:attachWeapon(87, 46)
 			animStr = animStr .. "_d"
 		else
-			self.weapons[self.activeWeapon]:setAngle(0,1)
-			self.weapons[self.activeWeapon]:lockParent(self, false, 100, 14)
+			self:setWeaponAngle(0, 1)
+			self:attachWeapon(100, 14)
 			if self.isDucking then
 				animStr = animStr .. "_d"
 			else
@@ -480,7 +489,7 @@ function PlayerMech:collideGround()
 		General.activeState.camera:screenShake(.01,.05)
 		self.hitGround:rewind()
 		self.hitGround:play()
-		GameState.groundParticle:play(self.x + self.width*.25, self.y+self.height-6)
+		GameState.groundParticle:play(self.x + self.width*.3, self.y+self.height-10)
 	end
 end
 

@@ -131,6 +131,8 @@ function MessageBox:genComponents()
 	self.titleBox:createGraphic(0, self.titleFontSize, {30,30,30}, 130)
 	self.titleBox.x = self.x + 8
 	self.titleBox.y = self.y + self.height
+	self.titleBox.scrollFactorX = 0
+	self.titleBox.scrollFactorY = 0
 	table.insert(self.members, self.titleBox)
 	
 	self.titleText = Text:new(self.x + 16 , self.y + self.height - 10,

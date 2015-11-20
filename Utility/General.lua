@@ -115,15 +115,17 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 	elseif not Object1.solid or not Object2.solid or not Object1.exists or not Object2.exists then
 		--Can't collide against one object
 		return false
-	elseif Object1:getType() == "Group" then
+	elseif Object1.members ~= nil then
 		--First object is a group
 		
 		local didCollide = false
+		local result
 		if Object1 == Object2 or Object2 == nil then
 			--Collide within group
 			for k1,v1 in pairs(Object1.members) do
 				for k2,v2 in pairs(Object1.members) do
-					didCollide = didCollide or General:collide(Object1.members[k1], Object1.members[k2], CallbackTarget, CallbackFunction, PreCollide)
+					result = General:collide(Object1.members[k1], Object1.members[k2], CallbackTarget, CallbackFunction, PreCollide)
+					didCollide = didCollide or result
 				end
 			end
 		else
@@ -132,15 +134,21 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 				--Cancel if Object2 cannot be collided against
 				return
 			end
-			for k,v in pairs(Object1.members) do
-				didCollide = didCollide or General:collide(v, Object2, CallbackTarget, CallbackFunction, PreCollide)
+			for i=1, Object1.length do
+				result = General:collide(Object1.members[i], Object2, CallbackTarget, CallbackFunction, PreCollide)
+				didCollide = didCollide or result
 			end
+			--for k,v in pairs(Object1.members) do
+			--	didCollide = didCollide or General:collide(v, Object2, CallbackTarget, CallbackFunction, PreCollide)
+			--end
 		end
 		return didCollide
-	elseif Object2:getType() == "Group" then
+	elseif Object2.members ~= nil then
 		local didCollide = false
-		for k,v in pairs(Object2.members) do
-			didCollide = didCollide or General:collide(Object1, Object2.members[k], CallbackTarget, CallbackFunction, PreCollide)
+		local result
+		for i=1, Object2.length do
+			result = General:collide(Object1, Object2.members[i], CallbackTarget, CallbackFunction, PreCollide)
+			didCollide = didCollide or result
 		end
 		return didCollide
 	end

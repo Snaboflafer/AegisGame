@@ -419,8 +419,8 @@ function Sprite:draw()
 	if self.image == nil then
 		love.graphics.rectangle(
 			"fill",
-			self.x - (self.scaleX * self.originX),
-			self.y - (self.scaleY * self.originY),
+			self.x - (camera.x * self.scrollFactorX)- (self.scaleX * self.originX),
+			self.y - (camera.y * self.scrollFactorY)- (self.scaleY * self.originY),
 			self.width * self.scaleX,
 			self.height * self.scaleY
 		)
@@ -616,7 +616,6 @@ end
 --[[ Restart the currently running animation
 ]]
 function Sprite:restartAnimation()
-	self.lastAnimFrame = self.curAnimFrame
 	self.curAnimFrame = 1
 	self.animTimer = self.curAnim.frameTime
 	self.animFinished = false
@@ -629,6 +628,8 @@ function Sprite:updateAnimation()
 		--Cancel if not animating
 		return
 	end
+	self.lastAnimFrame = self.curAnimFrame
+
 	
 	--Update if looping or animation has not yet finished
 	if (self.curAnim.loop or not self.animFinished) then
@@ -644,14 +645,12 @@ function Sprite:updateAnimation()
 				
 				if self.curAnim.loop then
 					--Restart if looping
-					self.lastAnimFrame = self.curAnimFrame
 					self.curAnimFrame = 1
 				end
 				--Animation has completed once, mark as finished
 				self.animFinished = true
 			else
 				--Not yet finished, go to next frame
-				self.lastAnimFrame = self.curAnimFrame
 				self.curAnimFrame = self.curAnimFrame + 1
 			end
 			

@@ -174,7 +174,7 @@
 			"value":2,
 			"music":"sounds/music_Mines_Synth2.ogg",
 			"ground":"images/stages/floor_grass_1.png",
-			"levelTheme":"dirt",
+			"levelTheme":"grass",
 			"layers":[
 				{
 					"image":"images/stages/sky_blue.png",
@@ -501,6 +501,9 @@
 		},
 		"dirtGround":{
 			"src":"images/particles/dirtGround.png"
+		},
+		"grassGround":{
+			"src":"images/particles/grassGround.png"
 		}
 	},
 	"images":{

@@ -33,24 +33,28 @@ function PlayerShip:doConfig()
 	self:setAnimations()
 	self:setCollisionBox(46, 34, 91, 20)
 	self:lockToScreen(Sprite.ALL)
-	self.showDebug = true
+	--self.showDebug = true
 	
-	local playerGun = Emitter:new(0,0)
-	GameState.playerBullets = Group:new()
-	for i=1, 10 do
-		local curParticle = Sprite:new(0,0,LevelManager:getParticle("laser"))
-		curParticle.attackPower = .5
-		playerGun:addParticle(curParticle)
-		GameState.playerBullets:add(curParticle)
+	local gunLocations = {{self.width/2,0},{self.width/2, 16}}
+	for i=1, table.getn(gunLocations)do
+		local playerGun = Emitter:new(0,0)
+
+		for i=1, 10 do
+			local curParticle = Sprite:new(0,0,LevelManager:getParticle("laser"))
+			curParticle.attackPower = .3
+			playerGun:addParticle(curParticle)
+			GameState.playerBullets:add(curParticle)
+		end
+		playerGun:setSpeed(1000)
+		playerGun:setAngle(0,0)
+		playerGun:lockParent(self, false, gunLocations[i][1], gunLocations[i][2])
+		playerGun:setSound(LevelManager:getSound("laser"))
+		playerGun:start(false, 1, .12, -1)
+		playerGun:stop()
+		GameState.emitters:add(playerGun)
+		self:addWeapon(playerGun, 1)
+		--WEAPON 1 DPS: 2.5
 	end
-	playerGun:setSpeed(1000)
-	playerGun:setAngle(0,0)
-	playerGun:lockParent(self, false)
-	playerGun:setSound(LevelManager:getSound("laser"))
-	playerGun:start(false, 1, .12, -1)
-	playerGun:stop()
-	GameState.emitters:add(playerGun)
-	self:addWeapon(playerGun, 1)
 	
 	local jetLocations = {{-22, -16},{-26, 25}}
 	for i=1, table.getn(jetLocations) do
@@ -184,7 +188,7 @@ end
 --[[ Exit ship mode. Returns required arguments for enterMode()
 ]]
 function PlayerShip:exitMode()
-	self.weapons[self.activeWeapon]:stop()
+	self:stopWeapon()
 	self.exists = false
 	return self.x, self.y, self.velocityX, self.velocityY, self.health, self.shield
 end
@@ -193,12 +197,11 @@ function PlayerShip:destroy()
 	Sprite.destroy(self)
 end
 function PlayerShip:attackStart()
-	self.weapons[self.activeWeapon]:restart()
+	self:restartWeapon()
 end
 
 function PlayerShip:attackStop()
-
-	self.weapons[self.activeWeapon]:stop()
+	self:stopWeapon()
 end
 
 function PlayerShip:collideGround()

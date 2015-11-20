@@ -47,6 +47,7 @@ function Emitter:new(X, Y)
 	s.y = Y or 0
 	s.velocityX = 0
 	s.velocityY = 0
+	s.gravity = 0
 	
 	s.emitRadial = false
 	s.emitDelay = 0
@@ -84,6 +85,12 @@ end
 function Emitter:restart()
 	self.enabled = true
 	self.emitTimer = 0
+end
+--[[ Start the emitter using previously set launch parameters, without
+	restarting timer.
+]]
+function Emitter:continue()
+	self.enabled = true
 end
 
 --[[ Stop the emitter from launching more particles

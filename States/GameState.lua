@@ -21,7 +21,7 @@ function GameState:load()
 	self.storedPlayerX = 0
 
 	self.scripts = Group:new()
-	self.scripts.showDebug = true
+	--self.scripts.showDebug = true
 	GameState:add(self.scripts)
 
 	self.objects = Group:new()
@@ -94,7 +94,10 @@ function GameState:load()
 	self.collisionSprite:setExists(false)
 	GameState:add(self.collisionSprite)
 
+	
 	--Create Player
+	self.playerBullets = Group:new()
+
 	self.playerShip = PlayerShip:new(100, General.screenH-200)
 	self.playerShip:doConfig()
 	GameState:add(self.playerShip)
@@ -102,7 +105,6 @@ function GameState:load()
 	self.playerMech = PlayerMech:new(100, General.screenH-200)
 	self.playerMech:doConfig()
 	GameState:add(self.playerMech)
-	
 	
 	--Create enemies
 	self.enemies = Group:new()
@@ -114,6 +116,27 @@ function GameState:load()
 	end
 	self.enemyBullets = Group:new()	--Don't add to state, particle emitters handle bullets
 	GameState:add(self.enemies)
+
+	--Test particles
+	local testEmitter = Emitter:new(300, 200)
+	for i=1, 10 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("thruster"), 16, 8)
+		curParticle:addAnimation("default", {1,2,3,4}, .1, true)
+		curParticle:playAnimation("default")
+		testEmitter:addParticle(curParticle)
+		GameState.worldParticles:add(curParticle)
+	end
+	testEmitter:setSpeed(-100, -350)
+	testEmitter:setOffset(50)
+	testEmitter:setSize(128,0)
+	testEmitter:setRadial(true)
+	testEmitter:start(false, .1, .01, -1)
+	testEmitter:lockParent(self.playerShip, true)
+	testEmitter:stop()
+	GameState.emitters:add(testEmitter)
+	GameState.emitters.showDebug = true
+
 	
 	--Mark stage triggers
 	self.lastTrigger = 0
@@ -332,22 +355,14 @@ function GameState:update()
 
 	--Loop scenery groups
 	for i=1, self.wrapBg.length do
+		--Loop back the first sprite in each group, and move it to the end
 		curSprite = self.wrapBg.members[i].members[1]
 		if curSprite:getScreenX() + curSprite.width < 0 then
 			curSprite.x = curSprite.x + self.wrapBg.members[i].length * curSprite.width
 			table.remove(self.wrapBg.members[i].members, 1)
 			table.insert(self.wrapBg.members[i].members, self.wrapBg.members[i].length, curSprite)
-			--curSprite.x = curSprite.x + (math.ceil(General.screenW/curSprite.width)+1) * curSprite.width
 		end
 	end
-	--	for k,v in pairs(self.wrappingSprites.members) do
-	--		-- if right side of wrapping sprite goes off left side of screen
-	--		local screenX = v:getScreenX()
-	--		--if (v.x + v.width) < General.camera.x then
-	--		if screenX + v.width < 0 then
-	--			v.x = v.x + Group.getSize(self.wrappingSprites) * v.width
-	--		end
-	--	end
 	for k,v in pairs(self.ground.members) do
 		-- if right side of wrapping sprite goes off left side of screen
 		
@@ -361,18 +376,17 @@ function GameState:update()
 
 	State.update(self)
 	
-	General:collide(self.enemies)				--Collide Group with itself
+	General:collide(self.enemies)
 	General:collide(self.player, self.collisionSprite)
 	General:collide(self.enemies, self.groundCollide)
-	General:collide(self.worldParticles,self.groundCollide)
-	
+	General:collide(self.worldParticles, self.groundCollide)
+	 
 	--Collisions with custom callback actions
 	if not self.player:isFlickering() then
 		General:collide(self.player, self.enemyBullets, nil, Sprite.hardCollide)
 		General:collide(self.player, self.enemies, nil, Sprite.hardCollide)
 	end
 	General:collide(self.playerBullets, self.enemies, nil, Sprite.hardCollide)
-	--General:collide(self.player, self.ground, self.player, self.player.collideGround, true)
 	General:collide(self.player, self.groundCollide, self.player, self.player.collideGround, true)
 	
 	self.cameraFocus.y = self.player.y
@@ -472,9 +486,9 @@ function GameState:togglePlayerMode(Force)
 end
 
 function GameState:nextStage()
-	General:getCamera():fade({255,255,255}, .5)
+	General:getCamera():fade({255,255,255}, 1)
 	SoundManager:stopBgm()
-	Timer:new(.5, self, self.startNextStage)
+	Timer:new(1, self, self.startNextStage)
 end
 
 function GameState:startNextStage()

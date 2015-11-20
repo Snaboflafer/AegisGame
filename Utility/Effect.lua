@@ -97,16 +97,19 @@ function Effect:initGroundParticle(Theme)
 	for i=1, 50 do
 		local curParticle = Sprite:new(0,0)
 		curParticle:loadSpriteSheet(particleImg, image:getWidth()/4, image:getHeight())
-		curParticle:addAnimation("default", {1,2,3,4}, .25, false)
+		curParticle:addAnimation("default", {1,2,3,4}, .25 + .1*(math.random()-.5), false)
 		curParticle:playAnimation("default")
+		curParticle:setCollisionBox(image:getWidth()/16, image:getHeight(), image:getWidth()/8, image:getHeight()/8)
 		GameState.worldParticles:add(curParticle)
 		burst:addParticle(curParticle)
 	end
-	burst:setSpeed(0,50)
-	burst:setAngle(110, 70)
-	burst:setGravity(100)
+	burst:setSpeed(10,70)
+	burst:setSize(64,0)
+	burst:setAngle(120, 60)
+	burst:setRadial(true)
+	burst:setGravity(200)
 	burst:setDrag(0,100)
-	burst:start(true, 1, .5, 25)
+	burst:start(true, 1, .02, 25)
 	burst:stop()
 	table.insert(self.emitters, burst)
 end
@@ -159,7 +162,7 @@ function Effect:play(X, Y)
 	end
 	for k,v in pairs(self.emitters) do
 		v:setPosition(X,Y)
-		v:restart()
+		v:continue()
 	end
 	if self.sfx ~= nil then
 		self.sfx:rewind()
