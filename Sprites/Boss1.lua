@@ -62,11 +62,17 @@ function Boss1:doConfig()
 	local gunMG = Emitter:new(0,0)
 	for j=1, 20 do
 		--Create bullets
-		local curBullet = Sprite:new(0,0, LevelManager:getParticle("bullet_small"))
+		local curBullet = Projectile:new(0,0)
+		curBullet:loadSpriteSheet(LevelManager:getParticle("bullet_small"),10,10)
+		curBullet:setCollisionBox(3,3,6,6)
+		curBullet:addAnimation("default", {1}, 0, false)
+		curBullet:addAnimation("kill", {2,3,4}, .015, false)
+		curBullet:playAnimation("default")
 		curBullet.attackPower = .2
 		curBullet.massless = true
 		gunMG:addParticle(curBullet)
 		GameState.enemyBullets:add(curBullet)
+		GameState.worldParticles:add(curBullet)
 	end
 	gunMG:setSound(LevelManager:getSound("fire_1"))
 	gunMG:setSpeed(300, 350)
@@ -109,7 +115,7 @@ function Boss1:doConfig()
 	end
 	enemyThruster:setSpeed(100, 200)
 	enemyThruster:setAngle(0, 30)
-	enemyThruster:lockParent(self, true, 155, 28)
+	enemyThruster:lockParent(self, true, 235, 48)
 	enemyThruster:start(false, .1, 0)
 
 	--Register emitter, so that it will be updated

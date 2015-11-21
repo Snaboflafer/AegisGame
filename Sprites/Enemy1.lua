@@ -72,7 +72,7 @@ function Enemy1:doConfig()
 	end
 	enemyThruster:setSpeed(50, 60)
 	enemyThruster:setAngle(0, 30)
-	enemyThruster:lockParent(self, true, self.width-4, self.height/2 - 3)
+	enemyThruster:lockParent(self, true, self.width+8, self.height/2)
 	enemyThruster:start(false, .1, 0)
 
 	GameState.emitters:add(enemyGun)

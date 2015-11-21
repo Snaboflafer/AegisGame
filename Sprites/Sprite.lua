@@ -55,6 +55,7 @@ Sprite = {
 	immovable = false,	--Object cannot be pushed by objects during collision
 	massless = false,	--Object won't push objects during collision
 	bounceFactor = 0,	--Percentage of speed retained after collision
+	friction = 0,		--Percentage of lateral speed retained after collision
 	exists = true,		--Whether the sprite has any calls done on it
 	active = true,		--Whether the sprite should update
 	visible = true,		--Whether the sprite should draw
@@ -128,6 +129,9 @@ function Sprite:new(X,Y, ImageFile, Width, Height)
 	s.touching = Sprite.NONE
 	s.touchingPrev = Sprite.NONE
 
+	s.bounceFactor = 0
+	s.friction = 0
+	
 	s.animations = {}
 	s.imageQuads = {}
 	
@@ -260,6 +264,13 @@ function Sprite:hurt(Damage, OverrideValue)
 			self:kill()
 		end
 	end
+end
+
+--[[ Called after collision with another object, and all other collision resolution
+	has been completed.
+]]
+function Sprite:collide(Object)
+	return
 end
 
 --[[ Damage two objects, based on each's attack power. Does NOT do collision resolution.

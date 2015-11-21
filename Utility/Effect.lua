@@ -36,6 +36,7 @@ function Effect:initExplosion()
 		--Create invisible fireball objects to be used for explosions
 		--(Enough for 3 concurrent explosions)
 		local fireball = Sprite:new(0,0)
+		fireball:setCollisionBox(0,0,8,8)
 		fireball.visible = false
 		explosion:addParticle(fireball)
 		
@@ -56,7 +57,7 @@ function Effect:initExplosion()
 		fireTrail:start(false, 1, .05, -1)
 		fireTrail:stop()
 		GameState.emitters:add(fireTrail)
-		
+		GameState.worldParticles:add(fireTrail)
 	end
 	--Set explosion burst parameters
 	explosion:setSpeed(100)
@@ -109,7 +110,7 @@ function Effect:initGroundParticle(Theme)
 	burst:setRadial(true)
 	burst:setGravity(200)
 	burst:setDrag(0,100)
-	burst:start(true, 1, .02, 25)
+	burst:start(true, 1 + math.random()*.5, .02, 25)
 	burst:stop()
 	table.insert(self.emitters, burst)
 end
@@ -157,7 +158,7 @@ function Effect:play(X, Y)
 	self.exists = true
 	if self.sprite ~= nil then
 		self.sprite.exists = true
-		self.sprite:setPosition(X, Y)
+		self.sprite:setPosition(X-self.sprite.width/2, Y-self.sprite.height/2)
 		self.sprite:playAnimation("default", true)
 	end
 	for k,v in pairs(self.emitters) do

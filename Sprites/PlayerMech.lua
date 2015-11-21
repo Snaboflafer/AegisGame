@@ -80,14 +80,20 @@ function PlayerMech:doConfig()
 	--Attach gun to mech
 	playerGun = Emitter:new(0,0)
 	for i=1, 7 do
-		local curParticle = Sprite:new(0,0, LevelManager:getParticle("bullet-orange"))
+		local curParticle = Projectile:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet-orange"), 20, 20)
+		curParticle:setCollisionBox(4,4,14,14)
+		curParticle:addAnimation("default", {1}, 0, false)
+		curParticle:addAnimation("kill", {2,3,4,5}, .02, false)
+		curParticle:playAnimation("default")
 		curParticle.attackPower = 1.1
 		playerGun:addParticle(curParticle)
 		GameState.playerBullets:add(curParticle)
+		GameState.worldParticles:add(curParticle)
 	end
 	playerGun:setSpeed(600,625)
 	playerGun:setAngle(0,1)
-	playerGun:lockParent(self, false, 107, 16)
+	playerGun:lockParent(self, false, 112, 26)
 	playerGun:setSound(LevelManager:getSound("cannon"))
 	playerGun:setCallback(self, PlayerMech.fireWeapon)
 	playerGun:start(false, 2, .28, -1)
@@ -123,7 +129,7 @@ function PlayerMech:doConfig()
 		playerFlash:addParticle(curParticle)
 	end
 	playerFlash:setSpeed(0)
-	playerFlash:lockParent(self, false, 90, 14)
+	playerFlash:lockParent(self, false, 95, 24)
 	playerFlash:start(false, .02, 1, 1)
 	playerFlash:stop()
 	GameState.emitters:add(playerFlash)
@@ -147,7 +153,7 @@ function PlayerMech:doConfig()
 	mechThrust_Smoke:setAngle(245, 20)
 	mechThrust_Smoke:setGravity(-4000)
 	mechThrust_Smoke:setDrag(10)
-	mechThrust_Smoke:lockParent(self, false, -20, 24)
+	mechThrust_Smoke:lockParent(self, false, -10, 34)
 	mechThrust_Smoke:setSize(12, 12)
 	mechThrust_Smoke:start(false, .15, .01, -1)
 	mechThrust_Smoke:stop()
@@ -314,23 +320,23 @@ function PlayerMech:update()
 	--Handle aiming
 	if pressedUp then
 		self.gunAngle = PlayerMech.ANGLEU
-		self:attachWeapon(87, -20)
-		self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 87, -20)
+		self:attachWeapon(92, -10)
+		self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 92, -10)
 		animStr = animStr .. "_u"
 	elseif pressedDown and not self.isDucking then
 		self.gunAngle = PlayerMech.ANGLED
-		self:attachWeapon(97, 46)
-		self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 100, 36)
+		self:attachWeapon(102, 56)
+		self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 105, 46)
 		animStr = animStr .. "_d"
 	else
 		self.gunAngle = PlayerMech.ANGLEF
 		if self.isDucking then
-			self:attachWeapon(100, 28)
-			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 90, 28)
+			self:attachWeapon(105, 38)
+			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 95, 38)
 			animStr = animStr .. "_d"
 		else
-			self:attachWeapon(100, 14)
-			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 90, 14)
+			self:attachWeapon(105, 24)
+			self.weaponFlashes[self.activeWeapon]:lockParent(self, false, 95, 24)
 			animStr = animStr .. "_f"
 		end
 	end

@@ -97,7 +97,7 @@ end
 				 resolution occurs, instead of after
 ]]
 function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, PreCollide)
-	if not Object1.solid or not Object1.exists then
+	if Object1 == nil or not Object1.solid or not Object1.exists then
 		return
 	end
 	
@@ -194,6 +194,12 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 	local overlapX = math.abs(dx) - .5*(obj2W + obj1W)
 	local overlapY = math.abs(dy) - .5*(obj1H + obj2H)
 	
+	
+	local obj1VX = Object1.velocityX
+	local obj1VY = Object1.velocityY
+	local obj2VX = Object2.velocityX
+	local obj2VY = Object2.velocityY
+	
 	--Collide in direction of least penetration
 	if math.abs(overlapX) < math.abs(overlapY) then
 		--Collide horizontal
@@ -208,8 +214,14 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 			Object1.touching = Sprite.LEFT
 			Object2.touching = Sprite.RIGHT
 		end
-		Object1.velocityX = -Object1.velocityX * Object1.bounceFactor
-		Object2.velocityX = -Object2.velocityX * Object2.bounceFactor
+		obj1VX = -obj1VX * Object1.bounceFactor
+		obj2VX = -obj2VX * Object2.bounceFactor
+		if not obj1IM then
+			obj1VY = obj1VY*(1-Object1.friction) + obj2VY*Object1.friction
+		end
+		if not obj2IM then
+			obj2VY = obj2VY*(1-Object2.friction) + obj1VY*Object2.friction
+		end
 	else
 		--Collide vertical
 		if dy > 0 then
@@ -223,13 +235,27 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 			Object1.touching = Sprite.UP
 			Object2.touching = Sprite.DOWN
 		end
-		Object1.velocityY = -Object1.velocityY * Object1.bounceFactor
-		Object2.velocityY = -Object2.velocityY * Object2.bounceFactor
+		obj1VY = -obj1VY * Object1.bounceFactor
+		obj2VY = -obj2VY * Object2.bounceFactor
+		if not obj1IM then
+			obj1VX = obj1VX*(1-Object1.friction) + obj2VX*Object1.friction
+		end
+		if not obj2IM then
+			obj2VX = obj2VX*(1-Object2.friction) + obj1VX*Object2.friction
+		end
 	end
+	
+	Object1.velocityX = obj1VX
+	Object2.velocityX = obj2VX
+	Object1.velocityY = obj1VY
+	Object2.velocityY = obj2VY
 	
 	if not PreCollide and callbackFunction ~= nil then
 		callbackFunction(callbackTarget, Object1, Object2)
 	end
+	
+	Object1:collide(Object2)
+	Object2:collide(Object1)
 	
 	return true
 	

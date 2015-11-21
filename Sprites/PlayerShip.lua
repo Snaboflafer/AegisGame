@@ -35,7 +35,7 @@ function PlayerShip:doConfig()
 	self:lockToScreen(Sprite.ALL)
 	--self.showDebug = true
 	
-	local gunLocations = {{self.width/2,0},{self.width/2, 16}}
+	local gunLocations = {{self.width/2+32,10},{self.width/2, 20}}
 	for i=1, table.getn(gunLocations)do
 		local playerGun = Emitter:new(0,0)
 
