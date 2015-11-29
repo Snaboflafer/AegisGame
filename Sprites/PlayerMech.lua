@@ -10,10 +10,11 @@ PlayerMech = {
 	ANGLEU = 20,
 	ANGLEF = 0,
 	ANGLED = -15,
-	fuel = 3,
-	maxFuel = 3,
+	fuel = 4,
+	maxFuel = 4,
 	gunAngle = 0,
-	jetThrust = -100,
+	jetThrust = -200,
+	jetMaxFactor = .4,
 	isDucking = false,
 	isAttacking = false,
 	isHovering = false,
@@ -139,23 +140,48 @@ function PlayerMech:doConfig()
 	
 	--Create mech thruster
 	local mechThrust_Jet = Emitter:new()
+	for i=1, 10 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("fireball"), 32, 32)
+		curParticle:addAnimation("default", {1,2,3,4,5,6,7,7,8,8,9,9,9,10}, .08, false)
+		curParticle:playAnimation("default")
+		mechThrust_Jet:addParticle(curParticle)
+	end
+	mechThrust_Jet:setSpeed(500,800)
+	mechThrust_Jet:setAngle(245, 20)
+	mechThrust_Jet:setGravity(-1000)
+	mechThrust_Jet:setDrag(10)
+	mechThrust_Jet:lockParent(self, false, -10, 34)
+	mechThrust_Jet:setSize(12, 12)
+	mechThrust_Jet:start(false, .2, .01, -1)
+	mechThrust_Jet:stop()
+	GameState.emitters:add(mechThrust_Jet)
 	--Empty
 	
 	local mechThrust_Smoke = Emitter:new()
-	for i=1, 15 do
+	for i=1, 10 do
 		local curParticle = Sprite:new(0,0)
 		curParticle:loadSpriteSheet(LevelManager:getParticle("smoke"), 32,32)
-		curParticle:addAnimation("default", {1,1,1,2,3,4,3,2,1}, .01, false)
+		curParticle:addAnimation("default", {1,1,1,2,3,4,3,2,1}, .015, false)
 		curParticle:playAnimation("default")
+		curParticle.bounceFactor = 1
 		mechThrust_Smoke:addParticle(curParticle)
+		GameState.worldParticles:add(curParticle)
+		
+		local curJet = Sprite:new(0,0)
+		curJet:loadSpriteSheet(LevelManager:getParticle("fireball"), 32, 32)
+		curJet:addAnimation("default", {1,2,3,5,9,9,10}, .017, false)
+		curJet:playAnimation("default")
+		curJet.bounceFactor = 1
+		mechThrust_Smoke:addParticle(curJet)
 	end
 	mechThrust_Smoke:setSpeed(500,800)
-	mechThrust_Smoke:setAngle(245, 20)
-	mechThrust_Smoke:setGravity(-4000)
-	mechThrust_Smoke:setDrag(10)
-	mechThrust_Smoke:lockParent(self, false, -10, 34)
-	mechThrust_Smoke:setSize(12, 12)
-	mechThrust_Smoke:start(false, .15, .01, -1)
+	mechThrust_Smoke:setAngle(245, 10)
+	mechThrust_Smoke:setGravity(-2000)
+	mechThrust_Smoke:setDrag(200, 0)
+	mechThrust_Smoke:lockParent(self, false, -12, 40)
+	mechThrust_Smoke:setSize(16, 16)
+	mechThrust_Smoke:start(false, .2, .01, -1)
 	mechThrust_Smoke:stop()
 	GameState.emitters:add(mechThrust_Smoke)
 
@@ -275,10 +301,10 @@ function PlayerMech:update()
 		
 		--Handle horizontal movement
 		if pressedRight then
-			self.accelerationX = 400
+			self.accelerationX = 300
 			self.maxVelocityX = 200
 		elseif pressedLeft then
-			self.accelerationX = -350
+			self.accelerationX = -250
 			self.maxVelocityX = 120
 		else
 			self.accelerationX = 0
@@ -293,7 +319,7 @@ function PlayerMech:update()
 	
 			local maxThrust = self.jetThrust
 			if accY	> maxThrust then
-				accY = accY - General.elapsed*12*(accY - maxThrust)
+				accY = accY - General.elapsed*14*(accY - maxThrust)
 			end
 			self.accelerationY = accY
 			self.fuel = self.fuel - General.elapsed
@@ -370,7 +396,7 @@ function PlayerMech:duck(Enable)
 end
 
 function PlayerMech:jetOn()
-	if self.fuel <= 0 or self.velocityY < -50 then
+	if self.fuel <= 0 or self.velocityY < self.jetThrust*self.jetMaxFactor then
 		self:jetOff()
 		return false
 	end
@@ -383,7 +409,7 @@ function PlayerMech:jetOn()
 
 	
 	self.thrust_smoke:restart()
-	self.maxVelocityY = 45
+	self.maxVelocityY = -self.jetThrust*self.jetMaxFactor - 5
 
 	self.isHovering = true
 	

@@ -131,6 +131,14 @@ function Player:hurt(Damage)
 	if self.invuln then
 		return
 	end
+	local INVULNTIME = 1.0	--Time player is invulnerable after hit
+	local FLICKERMULT = 1.3 --Multiplier of invuln for flickering
+	
+	--Shake camera
+	General:getCamera():screenShake(.01, .5)
+	--Flicker player (required for stopping enemy collisions during hit)
+	self:flicker(Damage * INVULNTIME * FLICKERMULT)
+
 	if self.activeMode == "mech" and self.shield > 0 then
 		--Reroute damage to shields if in mech mode
 		Sprite.hurt(self, Damage, "shield")
@@ -141,12 +149,13 @@ function Player:hurt(Damage)
 		if self.shield <= 0 then
 			self.shield = 0
 			GameState.shieldBreak:play(self.x + .5*self.width, self.y + .5*self.height)
+			self:flicker(INVULNTIME * FLICKERMULT)	--Force full flicker duration
 		end
 		
 		self:updateShield()
 		if Damage >= 1 or self.shield == math.ceil(self.shield) then
 			self:invulnOn()
-			Timer:new(1, self, Player.invulnOff)
+			Timer:new(INVULNTIME, self, Player.invulnOff)
 		end
 	else
 		Sprite.hurt(self, Damage)
@@ -161,14 +170,10 @@ function Player:hurt(Damage)
 		self:updateHealth()
 		if Damage >= 1 or self.health == math.ceil(self.health) then
 			self:invulnOn()
-			Timer:new(1, self, Player.invulnOff)
+			Timer:new(INVULNTIME, self, Player.invulnOff)
 		end
 	end
 	
-	--Shake camera
-	General:getCamera():screenShake(.01, .5)
-	--Flicker player (required for stopping enemy collisions during hit)
-	self:flicker(1.5)
 end
 
 --[[ Update the health bar in the Hud
@@ -196,18 +201,18 @@ function Player:updateShield()
 end
 
 function Player:invulnOn()
-	self.invuln = true
+	Player.invuln = true
 end
 
 function Player:invulnOff()
-	self.invuln = false
+	Player.invuln = false
 end
 
 function Player:enableTransform()
-	self.lockTransform = false
+	Player.lockTransform = false
 end
 function Player:disableTransform()
-	self.lockTransform = true
+	Player.lockTransform = true
 end
 
 function Player:keypressed(Key)

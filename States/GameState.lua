@@ -386,7 +386,8 @@ function GameState:update()
 	General:collide(self.worldParticles, self.groundCollide)
 	 
 	--Collisions with custom callback actions
-	if not self.player:isFlickering() then
+	if not self.player:isFlickering() and not Player.invuln then
+		--Collide with damaging objects only if neither invuln nor flickering
 		General:collide(self.player, self.enemyBullets, nil, Sprite.hardCollide)
 		General:collide(self.player, self.enemies, nil, Sprite.hardCollide)
 	end

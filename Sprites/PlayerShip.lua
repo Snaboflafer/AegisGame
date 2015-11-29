@@ -153,6 +153,7 @@ function PlayerShip:update()
 		shield = shield + General.elapsed * self.SHIELDCHARGERATE
 		if shield > self.maxShield then
 			shield = self.maxShield
+			self:flash({0,174,239}, .2)
 		end
 		self.shield = shield
 		self:updateShield()
