@@ -152,6 +152,9 @@ function GameState:load()
 	self.groundParticle = Effect:new()
 	self.groundParticle:initGroundParticle(LevelManager:getLevelTheme(currentLevel))
 	GameState:add(self.groundParticle)
+	self.shieldBreak = Effect:new()
+	self.shieldBreak:initShieldBreak()
+	GameState:add(self.shieldBreak)
 
 	--Put particles on top of everything else
 	GameState:add(self.emitters)

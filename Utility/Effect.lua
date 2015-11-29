@@ -95,7 +95,7 @@ function Effect:initGroundParticle(Theme)
 	local burst = Emitter:new()
 	
 	local image = love.graphics.newImage(particleImg)
-	for i=1, 50 do
+	for i=1, 60 do
 		local curParticle = Sprite:new(0,0)
 		curParticle:loadSpriteSheet(particleImg, image:getWidth()/4, image:getHeight())
 		curParticle:addAnimation("default", {1,2,3,4}, .25 + .1*(math.random()-.5), false)
@@ -110,8 +110,32 @@ function Effect:initGroundParticle(Theme)
 	burst:setRadial(true)
 	burst:setGravity(200)
 	burst:setDrag(0,100)
-	burst:start(true, 1 + math.random()*.5, .02, 25)
+	burst:start(true, 1 + math.random()*.5, .02, 20)
 	burst:stop()
+	table.insert(self.emitters, burst)
+end
+
+function Effect:initShieldBreak()
+	self.effectType = "shieldBreak"
+
+	local burst = Emitter:new()
+	for i=1, 30 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("shieldBreak"), 16, 16)
+		curParticle:setCollisionBox(4,4,8,8)
+		curParticle:addAnimation("default", {1,2,3,4,5,6,7,8}, .15 + .2*(math.random()-.5), true)
+		curParticle:playAnimation("default")
+		GameState.worldParticles:add(curParticle)
+		burst:addParticle(curParticle)
+	end
+	burst:setSpeed(150)
+	burst:setSize(PlayerMech.DEFAULTW, PlayerMech.DEFAULTH)
+	burst:setRadial(true)
+	burst:setGravity(300)
+	burst:setDrag(10,100)
+	burst:start(true, .5+math.random()*.2)
+	burst:stop()
+	
 	table.insert(self.emitters, burst)
 end
 

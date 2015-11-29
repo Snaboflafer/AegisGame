@@ -138,6 +138,11 @@ function Player:hurt(Damage)
 		self.sfxHurtShield:play()
 		GameState.shieldMask:flicker(.2)
 		GameState.shieldMask:flash({255,0,0}, .2)
+		if self.shield <= 0 then
+			self.shield = 0
+			GameState.shieldBreak:play(self.x + .5*self.width, self.y + .5*self.height)
+		end
+		
 		self:updateShield()
 		if Damage >= 1 or self.shield == math.ceil(self.shield) then
 			self:invulnOn()

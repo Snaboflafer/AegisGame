@@ -487,6 +487,9 @@
 		"laser":{
 			"src":"images/particles/laser.png"
 		},
+		"shieldBreak":{
+			"src":"images/particles/shieldBreak.png"
+		},
 		"smoke":{
 			"src":"images/particles/smoke.png"
 		},
