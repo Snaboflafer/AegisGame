@@ -34,7 +34,6 @@ function GameState:load()
 	self.cameraFocus = Sprite:new(General.screenW/2, General.screenH/2)
 	self.cameraFocus.velocityX = self.CAMERASCROLLSPEED
 	self.cameraFocus:setVisible(false)
-	self.cameraFocus.showDebug = true
 	GameState:add(self.cameraFocus)
 
 	--Set up particles
@@ -106,6 +105,9 @@ function GameState:load()
 	self.playerMech:doConfig()
 	GameState:add(self.playerMech)
 	
+	self.playerShip.showDebug = true
+	self.playerMech.showDebug = true
+	
 	--Create enemies
 	self.enemies = Group:new()
 	for i=1, self.ENEMYTYPES do
@@ -136,7 +138,6 @@ function GameState:load()
 	testEmitter:lockParent(self.playerShip, false)
 	testEmitter:stop()
 	GameState.emitters:add(testEmitter)
-	GameState.emitters.showDebug = true
 
 	
 	--Mark stage triggers

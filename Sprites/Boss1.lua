@@ -115,7 +115,7 @@ function Boss1:doConfig()
 	end
 	enemyThruster:setSpeed(100, 200)
 	enemyThruster:setAngle(0, 30)
-	enemyThruster:lockParent(self, true, 235, 48)
+	enemyThruster:lockParent(self, true, 190, 52)
 	enemyThruster:start(false, .1, 0)
 
 	--Register emitter, so that it will be updated

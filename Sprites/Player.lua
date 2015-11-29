@@ -148,6 +148,7 @@ function Player:hurt(Damage)
 		GameState.shieldMask:flash({255,0,0}, .2)
 		if self.shield <= 0 then
 			self.shield = 0
+			self:flash({0,174,239}, .5)
 			GameState.shieldBreak:play(self.x + .5*self.width, self.y + .5*self.height)
 			self:flicker(INVULNTIME * FLICKERMULT)	--Force full flicker duration
 		end
