@@ -39,6 +39,7 @@ require("Sprites/Enemy2")
 require("Sprites/Enemy3")
 require("Sprites/Enemy4")
 require("Sprites/Boss1")
+require("Sprites/Pickup")
 require("Sprites/Projectiles/Projectile")
 require("Sprites/Projectiles/HomingRocket")
 

@@ -22,6 +22,7 @@ end
 function Enemy:kill()
 	GameState.explosion:play(self.x + self.width / 2, self.y + self.height / 2)
 	Enemy:addToScore(self.score)
+	self:spawnPickup()
 	Sprite.kill(self)
 end
 
@@ -62,6 +63,10 @@ end
 
 function Enemy:updateStage()
 	self.aiStage = self.aiStage + 1
+end
+
+function Enemy:spawnPickup()
+	GameState.pickups:add(Pickup:new(self.x + self.width/2,self.y + self.height/2,math.random(1,Pickup.NUM_PICKUPS)))
 end
 
 function Enemy:getType()

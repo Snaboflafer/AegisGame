@@ -139,7 +139,9 @@ function GameState:load()
 	testEmitter:stop()
 	GameState.emitters:add(testEmitter)
 
-	
+	self.pickups = Group:new()
+	GameState:add(self.pickups)
+	self.pickups:add(Pickup:new(512,256,1))
 	--Mark stage triggers
 	self.lastTrigger = 0
 	--Read triggers
@@ -385,7 +387,8 @@ function GameState:update()
 	General:collide(self.player, self.collisionSprite)
 	General:collide(self.enemies, self.groundCollide)
 	General:collide(self.worldParticles, self.groundCollide)
-	 
+	General:collide(self.pickups, self.groundCollide)
+
 	--Collisions with custom callback actions
 	if not self.player:isFlickering() and not Player.invuln then
 		--Collide with damaging objects only if neither invuln nor flickering
@@ -394,7 +397,7 @@ function GameState:update()
 	end
 	General:collide(self.playerBullets, self.enemies, nil, Sprite.hardCollide)
 	General:collide(self.player, self.groundCollide, self.player, self.player.collideGround, true)
-	
+	General:collide(self.player,self.pickups,nil, Pickup.apply)
 	self.cameraFocus.y = self.player.y
 	
 	highScoreText:setLabel("Score: " .. self.score)
