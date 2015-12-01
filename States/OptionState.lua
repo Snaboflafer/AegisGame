@@ -12,7 +12,7 @@ function OptionState:load()
 	
 	local txtTitle = "OPTIONS"
 	local volume = "Volume " .. General:getVolume()
-	local contrast = "Contrast"
+	local brightness = "Brightness"
 	local typeFace = LevelManager:getFont()
 	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
 						txtTitle, typeFace, 64)
@@ -30,9 +30,9 @@ function OptionState:load()
 						volume, typeFace, 48)
 	self.options:add(volumeText)
 
-	local contrastText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (2-1),
-						contrast, typeFace, 48)
-	self.options:add(contrastText)
+	local brightnessText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (2-1),
+						brightness, typeFace, 48)
+	self.options:add(brightnessText)
 
 	OptionState:add(self.options)
 	
