@@ -5,7 +5,8 @@ Enemy = {
 	NUMROUTES = 0,
 	attackPower = 1,
 	score = 0,
-	aiStage = 1
+	aiStage = 1,
+	dropRate = .2
 }
 
 function Enemy:new(X,Y)
@@ -66,7 +67,13 @@ function Enemy:updateStage()
 end
 
 function Enemy:spawnPickup()
-	GameState.pickups:add(Pickup:new(self.x + self.width/2,self.y + self.height/2,math.random(1,Pickup.NUM_PICKUPS)))
+	if math.random() > self.dropRate then
+		return
+	end
+	
+	local newPickup = Pickup:new(self.x + self.width/2,self.y + self.height/2,math.random(1,Pickup.NUM_PICKUPS))
+	newPickup:doConfig()
+	GameState.pickups:add(newPickup)
 end
 
 function Enemy:getType()

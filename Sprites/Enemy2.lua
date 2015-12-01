@@ -49,6 +49,7 @@ function Enemy2:doConfig()
 	Enemy.doConfig(self)
 	self:setCollisionBox(40, 48, 122, 65)
 
+	self.dropRate = .7
 	--Create gun
 	self.weapon = Emitter:new(0, 0)
 	for j=1, 2 do

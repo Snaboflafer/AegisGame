@@ -81,6 +81,9 @@ function Player:restartWeapon()
 	end
 end
 
+function Player:resetWeapon()
+	self.activeWeapon = 1
+end
 --Kill the player
 function Player:kill()
 	if not self.alive then

@@ -141,7 +141,6 @@ function GameState:load()
 
 	self.pickups = Group:new()
 	GameState:add(self.pickups)
-	self.pickups:add(Pickup:new(512,256,1))
 	--Mark stage triggers
 	self.lastTrigger = 0
 	--Read triggers
