@@ -10,7 +10,7 @@ function PauseState:load()
 	State.load(self)
 	
 	local txtTitle = "Game Paused"
-	local txtOptions = {"Resume", "Options", "Main Menu"}
+	local txtOptions = {"Resume", "Main Menu"}
 	
 	local typeFace = LevelManager:getFont()
 
@@ -81,10 +81,6 @@ function PauseState:keypressed(key)
 			self.selectSound:play()
 			General:setState(GameState)
 		elseif self.selected == 2 then
-			self.failSound:rewind()
-			self.failSound:play()
-			--General:setState(OptionsState, false)
-		elseif self.selected == 3 then
 	--DONT CLOSE GAMESTATE until state state closure is properly worked out
 			self.exitSound:rewind()
 			self.exitSound:play()

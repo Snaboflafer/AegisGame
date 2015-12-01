@@ -16,7 +16,7 @@ General = {
 	colDivisionsY = 16,
 	camera = nil,
 	score = 0,
-	curLevel = 1
+	curLevel = 1,
 }
 
 function General:setCurrentLevel(Level)
@@ -63,6 +63,22 @@ function General:draw()
 			self.camera = self.loadedStates.members[i].camera
 		end
 		State.draw(self.loadedStates.members[i])
+	end
+end
+
+function General:getVolume()
+	return self.volume
+end
+
+function General:incrementVolume() 
+	if self.volume < 9 then
+		self.volume = self.volume + 1
+	end
+end
+
+function General:decrementVolume()
+	if self.volume > 0 then
+		self.volume = self.volume - 1
 	end
 end
 
