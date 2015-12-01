@@ -7,8 +7,6 @@ SoundManager.changingBgm = false
 SoundManager.newBgmName = ""
 SoundManager.elapsedTime = 0
 
---love.audio.setVolume(.1)
-
 --play a sound
 function SoundManager:play(sndData)
    --make a source out of the sound data
