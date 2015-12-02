@@ -16,7 +16,6 @@ PlayerMech = {
 	jetThrust = -200,
 	jetMaxFactor = .4,
 	isDucking = false,
-	isAttacking = false,
 	isHovering = false,
 	onFloor = false
 }

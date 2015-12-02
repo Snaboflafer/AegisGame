@@ -1,14 +1,16 @@
 
 HomingRocket = {
-	THRUST = 500,
-	TURNSPEED = 600,
+	THRUST = 600,		--Acceleration
+	TURNSPEED = 200,	--Degrees turned per second
+	lifeSpan = 10,
 	maxSpeed = 200,
 	target = nil,
 	targetX = 0,
 	targetY = 0,
 	targetOffsetX = 0,
 	targetOffsetY = 0,
-	fireTrail = nil
+	fireTrail = nil,
+	dropRate = .1
 }
 
 function HomingRocket:new(X, Y)
@@ -51,7 +53,7 @@ function HomingRocket:doConfig()
 	self.maxVelocityY = self.maxSpeed * 2^(1/2)
 	
 	self.fireTrail = Emitter:new()
-	for i=1, 20 do
+	for i=1, 10 do
 		--Create the actual trail sprites
 		local curParticle = Sprite:new(0,0)
 		curParticle:loadSpriteSheet(LevelManager:getParticle("fireTrail"), 16, 16)
@@ -61,11 +63,13 @@ function HomingRocket:doConfig()
 	end
 	--Set fire trail parameters
 	self.fireTrail:setSpeed(10)
-	self.fireTrail:lockParent(self, true, self.width/2-8, self.height/2-8)
+	self.fireTrail:lockParent(self, true)
 	--self.fireTrail:setRadial(true)
 	self.fireTrail:setOffset(16)
-	self.fireTrail:start(false, .2, .01, -1)
+	self.fireTrail:start(false, .2, .02, -1)
 	GameState.emitters:add(self.fireTrail)
+	
+	GameState.destructables:add(self)
 end
 
 function HomingRocket:lockTarget(Target, OffsetX, OffsetY)
@@ -81,18 +85,26 @@ end
 
 
 function HomingRocket:update()
-
-	if self.target ~= nil then
-		self.targetX = self.target.x + self.targetOffsetX
-		self.targetY = self.target.y + self.targetOffsetY
+	if self.target ~= nil and self.target.exists then
+		self.targetX = self.target.x + self.targetOffsetX + self.target.velocityX*.25
+		self.targetY = self.target.y + self.targetOffsetY + self.target.velocityY*.25
 	end
 	
+	local maxTurn = (self.TURNSPEED * General.elapsed) * math.pi/180
 	local targetAngle = math.atan2(self.targetY-self.y,self.targetX - self.x)
 	
-	if (targetAngle-self.angle+math.pi) % (2*math.pi) - math.pi > 0 then
-		self.angle = self.angle + (self.TURNSPEED * General.elapsed) * math.pi/180
+	if (targetAngle-self.angle+math.pi) % (2*math.pi) > math.pi then
+		if math.abs(targetAngle-self.angle) > maxTurn then
+			self.angle = self.angle + maxTurn
+		else
+			self.angle = .5*(self.angle+targetAngle)
+		end
 	else
-		self.angle = self.angle - (self.TURNSPEED * General.elapsed) * math.pi/180
+		if math.abs(targetAngle-self.angle) > maxTurn then
+			self.angle = self.angle - maxTurn
+		else
+			self.angle = .5*(self.angle+targetAngle)
+		end
 	end
 	
 	self.accelerationX = self.THRUST * math.cos(self.angle)
@@ -100,7 +112,21 @@ function HomingRocket:update()
 
 	self.fireTrail:setAngle((math.pi-self.angle) * 180/math.pi, 5)
 
-	Enemy.update(self)
+	Sprite.update(self)
+	
+	if self.lifetime > self.lifeSpan * .5 then
+		if self.flashAlpha > 0 then
+			self.flashDuration = (self.lifeSpan-self.lifetime)/5
+		else
+			self:flash({255,0,0}, 2, true)
+		end
+		--	if self.lifetime > self.lifeSpan * .9 then
+		--		self:flicker(.5)
+		--	end
+		if self.lifetime > self.lifeSpan then
+			self:kill()
+		end
+	end
 end
 
 function HomingRocket:getType()

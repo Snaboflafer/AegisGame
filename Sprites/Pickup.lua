@@ -1,8 +1,9 @@
 --Class for sprites. Should extend Object
 Pickup = {
-	massless = true,
 	NUM_PICKUPS = 4,
-	id = 1
+	id = 1,
+	massless = true,
+	score = 200
 }
 
 function Pickup:new(X,Y, Id)
@@ -10,27 +11,47 @@ function Pickup:new(X,Y, Id)
 	setmetatable(s, self)
 	setmetatable(self, Sprite)
 	self.__index = self
-	s.maxVelocityY = 150
-	s.accelerationY = 50
+	
+	s.maxVelocityY = 100
+	s.accelerationY = 20
+	
 	s.id = Id or 1
+	while (s.id == 1 and GameState.player.health == GameState.player.maxHealth) or
+			(s.id == 2 and GameState.player.shield == GameState.player.maxShield) do
+		s.id = math.random(1, Pickup.NUM_PICKUPS)
+	end
+	
 	return s
 end
 
 function Pickup:doConfig()
+	self:loadSpriteSheet(LevelManager:getImage("powerup"), 32,32)
+	self:addAnimation("health",	{1}, 0, false)
+	self:addAnimation("shield",	{2}, 0, false)
+	self:addAnimation("power",	{3}, 0, false)
+	self:addAnimation("spread",	{4}, 0, false)
+	self:addAnimation("OTHER",	{5}, 0, false)
+
 	self.massless = true
 	self:flash({127,127,127}, .5, true)
 	if self.id == 1 then
 		--self:createGraphic(32,32,{243,17,17},255)
-		self:loadImage(LevelManager:getParticle("bullet-red"))
+		--self:loadImage(LevelManager:getParticle("bullet-red"))
+		self:playAnimation("health")
 	elseif self.id == 2 then
 		--self:createGraphic(32,32,{0,174,239},255)
-		self:loadImage(LevelManager:getParticle("bullet-red"))
+		--self:loadImage(LevelManager:getParticle("bullet-red"))
+		self:playAnimation("shield")
 	elseif self.id == 3 then
 		--self:createGraphic(32,32,{0,255,0},255)
-		self:loadImage(LevelManager:getParticle("bullet-red"))
+		--self:loadImage(LevelManager:getParticle("bullet-red"))
+		self:playAnimation("power")
 	elseif self.id == 4 then
 		--self:createGraphic(32,32,{127,127,0},255)
-		self:loadImage(LevelManager:getParticle("bullet-red"))
+		--self:loadImage(LevelManager:getParticle("bullet-red"))
+		self:playAnimation("spread")
+	else
+		self:playAnimation("OTHER")
 	end
 end
 
@@ -59,13 +80,17 @@ function Pickup:apply(PlayerObject, PickupObject)
 		PlayerObject:updateShield()
 	elseif PickupObject.id == 3 then
 		-- uses second weapon
-		PlayerObject.activeWeapon = 2
-		Timer:new(10, PlayerObject, Player.resetWeapon)
+		PlayerObject:setActiveWeapon(2)
+		Player.powerupTime = 10
+		Player.powerupMaxTime = 10
 	elseif PickupObject.id == 4 then
 		-- uses third weapon
-		PlayerObject.activeWeapon = 3
-		Timer:new(10, PlayerObject, Player.resetWeapon)
+		PlayerObject:setActiveWeapon(3)
+		Player.powerupTime = 10
+		Player.powerupMaxTime = 10
 	end
+	
+	GameState.score = GameState.score + PickupObject.score
 	PickupObject:kill()
 end
 

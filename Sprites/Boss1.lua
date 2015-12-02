@@ -83,6 +83,7 @@ function Boss1:doConfig()
 	self:addWeapon(gunMG, 1)
 
 	local gunRPG = Emitter:new(0,0)
+	local ROCKETLIFESPAN = 10
 	for j=1, 4 do
 		--Create rockets
 		local curRocket = HomingRocket:new(0,0)
@@ -90,7 +91,9 @@ function Boss1:doConfig()
 		curRocket:lockTarget(GameState.playerShip)
 		--local curRocket = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
 		curRocket.attackPower = 1
+		curRocket.lifeSpan = ROCKETLIFESPAN
 		gunRPG:addParticle(curRocket)
+		curRocket.killOffScreen = false
 		GameState.enemyBullets:add(curRocket)
 	end
 	gunRPG:setSound(LevelManager:getSound("fire_2"))
@@ -98,7 +101,7 @@ function Boss1:doConfig()
 	gunRPG:setAngle(180, 5)
 	gunRPG:setRadial(true)
 	gunRPG:lockParent(self, false, 99, 13)
-	gunRPG:start(false, 10, .5, -1)
+	gunRPG:start(false, ROCKETLIFESPAN, 1, -1)
 	gunRPG:stop()
 	GameState.emitters:add(gunRPG)
 	self:addWeapon(gunRPG, 2)
@@ -209,7 +212,7 @@ function Boss1:update()
 		elseif self.aiStage == 3 then
 			--self.weapons[2]:setAngle(90, 0)
 			self.weapons[2]:restart()
-			Timer:new(2, self, Boss1.updateStage)
+			Timer:new(4, self, Boss1.updateStage)
 			self:updateStage()
 		elseif self.aiStage == 4 then
 			--Firing

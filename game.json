@@ -516,6 +516,12 @@
 		"explosion":{
 			"src":"images/fx/explosion.png"
 		},
+		"hudPowerup":{
+			"src":"images/ui/hud_powerup.png"
+		},
+		"hudPowerupOverlay":{
+			"src":"images/ui/hud_powerupOverlay.png"
+		},
 		"message_next":{
 			"src":"images/ui/message_next.png"
 		},
@@ -524,6 +530,9 @@
 		},
 		"muzzleFlash":{
 			"src":"images/fx/muzzleFlash.png"
+		},
+		"powerup":{
+			"src":"images/sprites/powerup.png"
 		}
 	},
 	"scenes":[

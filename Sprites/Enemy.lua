@@ -47,6 +47,7 @@ function Enemy:respawn(SpawnX, SpawnY)
 	self.velocityY = 0
 	self.exists = true
 	self.aiStage = 1
+	self:clearFx()
 end
 
 function Enemy:doConfig()

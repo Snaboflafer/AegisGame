@@ -249,9 +249,14 @@ function Emitter:emitParticle()
 	end
 
 	--Reset particle values
-	particle.lifetime = 0
-	particle.x = self.x-.5*particle.width + self.width*(math.random()-.5)  + self.emitOffset * math.cos(angle)
-	particle.y = self.y-.5*particle.height + self.height*(math.random()-.5) - self.emitOffset * math.sin(angle)
+	if particle.respawn ~= nil then
+		particle:respawn(self.x-.5*particle.width + self.width*(math.random()-.5)  + self.emitOffset * math.cos(angle),
+						 self.y-.5*particle.height + self.height*(math.random()-.5) - self.emitOffset * math.sin(angle))
+	else
+		particle.lifetime = 0
+		particle.x = self.x-.5*particle.width + self.width*(math.random()-.5)  + self.emitOffset * math.cos(angle)
+		particle.y = self.y-.5*particle.height + self.height*(math.random()-.5) - self.emitOffset * math.sin(angle)
+	end
 	particle.accelerationY = self.gravity
 	particle.accelerationX = 0
 	particle.dragX = self.dragX

@@ -9,7 +9,10 @@ Player = {
 	transformDelay = 1,
 	invuln = false,
 	shield = 0,
-	maxShield = 0
+	maxShield = 0,
+	isAttacking = false,
+	powerupTime = 0,
+	powerupMaxTime = 1
 }
 
 function Player:new(X,Y)
@@ -28,6 +31,11 @@ function Player:new(X,Y)
 	
 	self.enableControls = true
 	self.lockTransform = false
+	
+	self.velocityX = 0
+	self.velocityY = 0
+	self.accelerationX = 0
+	self.accelerationY = 0
 	
 	s.sfxHurtHealthA = love.audio.newSource(LevelManager:getSound("player_hurt_health_a"))
 	s.sfxHurtHealthB = love.audio.newSource(LevelManager:getSound("player_hurt_health_b"))
@@ -64,6 +72,14 @@ function Player:attachWeapon(OffsetX, OffsetY)
 	end
 end
 
+function Player:setActiveWeapon(Slot)
+	self:stopWeapon()
+	Player.activeWeapon = Slot
+	if self.isAttacking then
+		self:restartWeapon()
+	end
+end
+
 function Player:setWeaponAngle(Angle, Range)
 	for i=1, self.weapons[self.activeWeapon].length do
 		self.weapons[self.activeWeapon].members[i]:setAngle(Angle, Range)
@@ -81,9 +97,6 @@ function Player:restartWeapon()
 	end
 end
 
-function Player:resetWeapon()
-	self.activeWeapon = 1
-end
 --Kill the player
 function Player:kill()
 	if not self.alive then
@@ -117,14 +130,22 @@ end
 function Player:update()
 	Sprite.update(self)
 	
-	local modeMaskWidth = GameState.modeMask.scaleX
-	if self.lockTransform then
-		modeMaskWidth = modeMaskWidth - (General.elapsed/self.transformDelay)
-		if modeMaskWidth < 0 then
-			modeMaskWidth = 0
+	if Player.powerupTime > 0 then
+		Player.powerupTime = Player.powerupTime - General.elapsed
+		if Player.powerupTime < 0 then
+			self:setActiveWeapon(1)
 		end
-		GameState.modeMask.scaleX = modeMaskWidth
+		
+		GameState.powerupMask.scaleX = (Player.powerupMaxTime-Player.powerupTime)/Player.powerupMaxTime
 	end
+	--	local modeMaskWidth = GameState.modeMask.scaleX
+	--	if self.lockTransform then
+	--		modeMaskWidth = modeMaskWidth - (General.elapsed/self.transformDelay)
+	--		if modeMaskWidth < 0 then
+	--			modeMaskWidth = 0
+	--		end
+	--		GameState.modeMask.scaleX = modeMaskWidth
+	--	end
 end
 
 --[[ Hurt the player by the specified amount

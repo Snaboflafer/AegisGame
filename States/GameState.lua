@@ -24,8 +24,6 @@ function GameState:load()
 	--self.scripts.showDebug = true
 	GameState:add(self.scripts)
 
-	self.objects = Group:new()
-
 	--Create camera
 	self.camera = General:newCamera(0,0)
 	self.camera:setBounds(0, -32, General.screenW + 32, General.screenH)
@@ -139,8 +137,6 @@ function GameState:load()
 	testEmitter:stop()
 	GameState.emitters:add(testEmitter)
 
-	self.pickups = Group:new()
-	GameState:add(self.pickups)
 	--Mark stage triggers
 	self.lastTrigger = 0
 	--Read triggers
@@ -161,6 +157,10 @@ function GameState:load()
 	--Put particles on top of everything else
 	GameState:add(self.emitters)
 
+	self.pickups = Group:new()
+	GameState:add(self.pickups)
+
+	
 	--Hud
 	self.hud = Group:new()
 
@@ -249,19 +249,19 @@ function GameState:load()
 	self.shieldOverlay = Sprite:new(hudX, shieldY, "images/ui/hud_shield.png")
 	self.hud:add(self.shieldOverlay)
 	
-	--Create transform delay bar
-	local modeY = shieldY + shieldH*2
-	local modeW = 119
-	local modeH = 6
-	local modeBack = Sprite:new(hpX+2, modeY + 1, "images/ui/hud_transformDelay_bg.png")
-	modeBack.scaleY = 6
-	self.hud:add(modeBack)
-	self.modeMask = Sprite:new(hpX + modeW +2, modeY + 1)
-	self.modeMask:createGraphic(modeW, modeH, {100,100,100}, 255)
-	self.modeMask.originX = 119
-	self.hud:add(self.modeMask)
-	local modeOverlay = Sprite:new(hpX, modeY, "images/ui/hud_transformDelay.png")
-	self.hud:add(modeOverlay)
+	--Create power up timer bar
+	local powerupW = 119
+	local powerupH = 16-2
+	local powerupY = General.screenH - powerupH - 16
+	local powerupBack = Sprite:new(hpX+2, powerupY + 1, LevelManager:getImage("hudPowerup"))
+	powerupBack.scaleY = powerupH
+	self.hud:add(powerupBack)
+	self.powerupMask = Sprite:new(hpX + powerupW +2, powerupY + 1)
+	self.powerupMask:createGraphic(powerupW, powerupH, {100,100,100}, 255)
+	self.powerupMask.originX = powerupW
+	self.hud:add(self.powerupMask)
+	local powerupOverlay = Sprite:new(hpX, powerupY, LevelManager:getImage("hudPowerupOverlay"))
+	self.hud:add(powerupOverlay)
 	
 	--Create high score text
 	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
@@ -284,10 +284,14 @@ function GameState:load()
 	GameState:togglePlayerMode("mech")
 	
 	--Organize groups
-	self.objects:add(self.ground)
+	self.objects = Group:new()
+	self.objects:add(self.groundCollide)
 	self.objects:add(self.player)
 	self.objects:add(self.worldParticles)
-	self.objects:add(enemies)
+	self.objects:add(self.enemies)
+	
+	self.destructables = Group:new()
+	self.destructables:add(self.enemies)
 	
 	--Do music
 	SoundManager:playBgm(LevelManager:getLevelMusic(currentLevel))
@@ -394,7 +398,7 @@ function GameState:update()
 		General:collide(self.player, self.enemyBullets, nil, Sprite.hardCollide)
 		General:collide(self.player, self.enemies, nil, Sprite.hardCollide)
 	end
-	General:collide(self.playerBullets, self.enemies, nil, Sprite.hardCollide)
+	General:collide(self.playerBullets, self.destructables, nil, Sprite.hardCollide)
 	General:collide(self.player, self.groundCollide, self.player, self.player.collideGround, true)
 	General:collide(self.player,self.pickups,nil, Pickup.apply)
 	self.cameraFocus.y = self.player.y
@@ -490,7 +494,7 @@ function GameState:togglePlayerMode(Force)
 	end
 	self.player:disableTransform()
 	Timer:new(self.player.transformDelay, self.player, Player.enableTransform)
-	self.modeMask.scaleX = 1
+	--self.modeMask.scaleX = 1
 end
 
 function GameState:nextStage()
