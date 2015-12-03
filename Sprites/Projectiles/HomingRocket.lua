@@ -10,7 +10,7 @@ HomingRocket = {
 	targetOffsetX = 0,
 	targetOffsetY = 0,
 	fireTrail = nil,
-	dropRate = .1
+	dropRate = .5
 }
 
 function HomingRocket:new(X, Y)

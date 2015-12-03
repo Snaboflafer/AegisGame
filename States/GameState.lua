@@ -77,7 +77,7 @@ function GameState:load()
 	--self.wrappingSprites:add(self.ground) (Nested groups not yet fully supported)
 	local GROUNDDEPTH = 100
 	self.groundCollide = Sprite:new(-32, General.screenH-GROUNDDEPTH)
-	self.groundCollide:createGraphic(3200000, GROUNDDEPTH, {255,255,255})
+	self.groundCollide:createGraphic(3200000, GROUNDDEPTH*2, {255,255,255})
 	self.groundCollide.immovable = true
 	self.groundCollide.visible = false
 	
@@ -117,25 +117,6 @@ function GameState:load()
 	self.enemyBullets = Group:new()	--Don't add to state, particle emitters handle bullets
 	GameState:add(self.enemies)
 
-	--Test particles
-	local testEmitter = Emitter:new(300, 200)
-	for i=1, 10 do
-		local curParticle = Sprite:new(0,0)
-		curParticle:loadSpriteSheet(LevelManager:getParticle("thruster"), 16, 8)
-		curParticle:addAnimation("default", {1,2,3,4}, .1, true)
-		curParticle:playAnimation("default")
-		testEmitter:addParticle(curParticle)
-		GameState.worldParticles:add(curParticle)
-	end
-	testEmitter:setSpeed(-100, -350)
-	testEmitter:setOffset(50)
-	testEmitter:setSize(128,0)
-	testEmitter:setRadial(true)
-	testEmitter:start(false, .1, .01, -1)
-	testEmitter:stop()
-	testEmitter:lockParent(self.playerShip, false)
-	testEmitter:stop()
-	GameState.emitters:add(testEmitter)
 
 	--Mark stage triggers
 	self.lastTrigger = 0
@@ -490,7 +471,7 @@ function GameState:togglePlayerMode(Force)
 		self.playerMech:enterMode(self.playerShip:exitMode())
 		self.player = self.playerMech
 		self.camera:setTarget(self.player)
-		self.camera:setDeadzone(General.screenW, 0, -256, 0)
+		self.camera:setDeadzone(General.screenW, 0, -192, 0)
 	end
 	self.player:disableTransform()
 	Timer:new(self.player.transformDelay, self.player, Player.enableTransform)

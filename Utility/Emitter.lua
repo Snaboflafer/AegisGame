@@ -264,6 +264,9 @@ function Emitter:emitParticle()
 	particle.exists = true
 	particle.alive = true
 	--particle.visible = true
+	if particle.maxHealth ~= nil then
+		particle.health = particle.maxHealth
+	end
 	
 	--Handle animation
 	if particle.animated then

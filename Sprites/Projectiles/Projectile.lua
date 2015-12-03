@@ -53,6 +53,7 @@ end
 
 function Projectile:setPersistance(Enable)
 	self.persists = Enable
+	self.immovable = true
 end
 
 function Projectile:getType()

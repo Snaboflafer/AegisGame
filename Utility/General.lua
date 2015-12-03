@@ -230,12 +230,12 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 			Object1.touching = Sprite.LEFT
 			Object2.touching = Sprite.RIGHT
 		end
-		obj1VX = -obj1VX * Object1.bounceFactor
-		obj2VX = -obj2VX * Object2.bounceFactor
 		if not obj1IM then
+			obj1VX = -obj1VX * Object1.bounceFactor
 			obj1VY = obj1VY*(1-Object1.friction) + obj2VY*Object1.friction
 		end
 		if not obj2IM then
+			obj2VX = -obj2VX * Object2.bounceFactor
 			obj2VY = obj2VY*(1-Object2.friction) + obj1VY*Object2.friction
 		end
 	else
@@ -251,12 +251,12 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 			Object1.touching = Sprite.UP
 			Object2.touching = Sprite.DOWN
 		end
-		obj1VY = -obj1VY * Object1.bounceFactor
-		obj2VY = -obj2VY * Object2.bounceFactor
 		if not obj1IM then
+			obj1VY = -obj1VY * Object1.bounceFactor
 			obj1VX = obj1VX*(1-Object1.friction) + obj2VX*Object1.friction
 		end
 		if not obj2IM then
+			obj2VY = -obj2VY * Object2.bounceFactor
 			obj2VX = obj2VX*(1-Object2.friction) + obj1VX*Object2.friction
 		end
 	end

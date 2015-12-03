@@ -77,9 +77,134 @@ function PlayerMech:doConfig()
 	self:lockToScreen(Sprite.ALL)
 	--self.showDebug = true
 	
+	local playerCasings = Emitter:new(0,0)
+	for i=1,14 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet_casing"), 12, 12)
+		curParticle:setCollisionBox(2,2,8,8)
+		curParticle:addAnimation("default", {1,2,3,4}, .03, true)
+		curParticle:playAnimation("default")
+		playerCasings:addParticle(curParticle)
+		GameState.worldParticles:add(curParticle)
+	end
+	playerCasings:setSpeed(400)
+	playerCasings:setAngle(115, 10)
+	playerCasings:setGravity(1000)
+	playerCasings:setDrag(50)
+	playerCasings:lockParent(self, false, 30, 20)
+	playerCasings:start(false, 1.5, .3, 1)
+	playerCasings:stop()
+	GameState.emitters:add(playerCasings)
+
+	local playerFlash = Emitter:new(0,0)
+	for i=1,2 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getImage("muzzleFlash"), 32, 32)
+		curParticle:addAnimation("default", {1, 2}, .01, false)
+		curParticle:playAnimation("default")
+		curParticle:setCollisionBox(4,4,24,24)
+		playerFlash:addParticle(curParticle)
+	end
+	playerFlash:setSpeed(0)
+	playerFlash:lockParent(self, false, 95, 24)
+	playerFlash:start(false, .02, 1, 1)
+	playerFlash:stop()
+	GameState.emitters:add(playerFlash)
+
 	self:addDefaultWeapon(1)
 	self:addDefaultWeapon(2)
 	self:addDefaultWeapon(3)
+	--Attach gun to mech
+	local playerGun = Emitter:new(0,0)
+	for i=1, 7 do
+		local curParticle = Projectile:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet-orange"), 20, 20)
+		curParticle:setCollisionBox(4,4,14,14)
+		curParticle:addAnimation("default", {1}, 0, false)
+		curParticle:addAnimation("kill", {2,3,4,5}, .02, false)
+		curParticle:playAnimation("default")
+		curParticle.attackPower = 1.1
+		playerGun:addParticle(curParticle)
+		GameState.playerBullets:add(curParticle)
+		GameState.worldParticles:add(curParticle)
+	end
+	playerGun:setSpeed(600,625)
+	playerGun:setAngle(0,1)
+	playerGun:lockParent(self, false, 112, 26)
+	playerGun:setSound(LevelManager:getSound("cannon"))
+	playerGun:setCallback(self, PlayerMech.fireWeapon)
+	playerGun:start(false, 2, .28, -1)
+	playerGun:stop()
+	GameState.emitters:add(playerGun)
+	self:addWeapon(playerGun, 1, playerCasings, playerFlash)
+	
+	--Weapon 2: Napalm		DPS:	7
+	local playerGun = Emitter:new(0,0)
+	for i=1, 10 do
+		local curParticle = Projectile:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet-orange"), 20, 20)
+		curParticle:setCollisionBox(4,4,14,14)
+		curParticle:addAnimation("default", {1}, 0, false)
+		curParticle:addAnimation("kill", {2,3,4,5}, .02, false)
+		curParticle:playAnimation("default")
+		curParticle:setPersistance(true)
+		curParticle.attackPower = .7
+		curParticle.friction = 0
+		curParticle.visible = false
+		
+		local fireTrail = Emitter:new()
+		for i=1, 20 do
+			--Create the trail sprites
+			local curFlame = Sprite:new(0,0)
+			curFlame:loadSpriteSheet(LevelManager:getParticle("fireball"), 32, 32)
+			curFlame:addAnimation("default", {1,2,3,4,5,6,7,7,8,8,9,9,9,10}, .05, false)
+			curFlame:playAnimation("default")
+			fireTrail:addParticle(curFlame)
+		end
+		--Set fire trail parameters
+		fireTrail:setSpeed(20)
+		fireTrail:setGravity(-40)
+		fireTrail:setSize(16,16)
+		fireTrail:lockParent(curParticle, true)
+		fireTrail:start(false, 1, .02, -1)
+		fireTrail:stop()
+		GameState.emitters:add(fireTrail)
+		GameState.worldParticles:add(fireTrail)
+
+		playerGun:addParticle(curParticle)
+		GameState.playerBullets:add(curParticle)
+		GameState.worldParticles:add(curParticle)
+	end
+	playerGun:setSpeed(600)
+	playerGun:setAngle(0,5)
+	playerGun:setDrag(100,100)
+	playerGun:setGravity(-200)
+	playerGun:lockParent(self, false, 112, 26)
+	playerGun:setSound(LevelManager:getSound("fire_1"))
+	playerGun:setCallback(self, PlayerMech.fireWeapon)
+	playerGun:start(false, .6, .1, -1)
+	playerGun:stop()
+	GameState.emitters:add(playerGun)
+	self:addWeapon(playerGun, 2, playerCasings, playerFlash)
+
+	--Weapon 3: Railgun		DPS:	6 (penetrating)
+	local playerGun = Emitter:new(0,0)
+	for i=1, 4 do
+		local curRail = Railbeam:new(0,0)
+		curRail:doConfig()
+		playerGun:addParticle(curRail)
+	end
+	playerGun:setSpeed(1500)
+	playerGun:setAngle(0,1)
+	playerGun:setRadial(true)
+	playerGun:lockParent(self, false, 112, 26)
+	playerGun:setSound(LevelManager:getSound("cannon"))
+	playerGun:setCallback(self, PlayerMech.fireWeapon)
+	playerGun:start(false, 2, .5, -1)
+	playerGun:stop()
+	GameState.emitters:add(playerGun)
+	self:addWeapon(playerGun, 3, playerCasings, playerFlash)
+
 	
 	--Create mech thruster
 	local mechThrust_Jet = Emitter:new()
@@ -132,64 +257,6 @@ function PlayerMech:doConfig()
 end
 
 function PlayerMech:addDefaultWeapon(slot)
-	--Attach gun to mech
-	local playerGun = Emitter:new(0,0)
-	for i=1, 7 do
-		local curParticle = Projectile:new(0,0)
-		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet-orange"), 20, 20)
-		curParticle:setCollisionBox(4,4,14,14)
-		curParticle:addAnimation("default", {1}, 0, false)
-		curParticle:addAnimation("kill", {2,3,4,5}, .02, false)
-		curParticle:playAnimation("default")
-		curParticle.attackPower = 1.1
-		playerGun:addParticle(curParticle)
-		GameState.playerBullets:add(curParticle)
-		GameState.worldParticles:add(curParticle)
-	end
-	playerGun:setSpeed(600,625)
-	playerGun:setAngle(0,1)
-	playerGun:lockParent(self, false, 112, 26)
-	playerGun:setSound(LevelManager:getSound("cannon"))
-	playerGun:setCallback(self, PlayerMech.fireWeapon)
-	playerGun:start(false, 2, .28, -1)
-	playerGun:stop()
-	GameState.emitters:add(playerGun)
-	
-	local playerCasings = Emitter:new(0,0)
-	for i=1,14 do
-		local curParticle = Sprite:new(0,0)
-		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet_casing"), 12, 12)
-		curParticle:setCollisionBox(2,2,8,8)
-		curParticle:addAnimation("default", {1,2,3,4}, .03, true)
-		curParticle:playAnimation("default")
-		playerCasings:addParticle(curParticle)
-		GameState.worldParticles:add(curParticle)
-	end
-	playerCasings:setSpeed(400)
-	playerCasings:setAngle(115, 10)
-	playerCasings:setGravity(1000)
-	playerCasings:setDrag(50)
-	playerCasings:lockParent(self, false, 30, 20)
-	playerCasings:start(false, 1, .3, 1)
-	playerCasings:stop()
-	GameState.emitters:add(playerCasings)
-
-	local playerFlash = Emitter:new(0,0)
-	for i=1,2 do
-		local curParticle = Sprite:new(0,0)
-		curParticle:loadSpriteSheet(LevelManager:getImage("muzzleFlash"), 32, 32)
-		curParticle:addAnimation("default", {1, 2}, .01, false)
-		curParticle:playAnimation("default")
-		curParticle:setCollisionBox(4,4,24,24)
-		playerFlash:addParticle(curParticle)
-	end
-	playerFlash:setSpeed(0)
-	playerFlash:lockParent(self, false, 95, 24)
-	playerFlash:start(false, .02, 1, 1)
-	playerFlash:stop()
-	GameState.emitters:add(playerFlash)
-
-	self:addWeapon(playerGun, slot, playerCasings, playerFlash)
 end
 
 function PlayerMech:setCollisionBox(X, Y, W, H)
@@ -510,7 +577,7 @@ function PlayerMech:fireWeapon()
 	end
 	if not self.onFloor then
 		self.x = self.x - 5
-		self.velocityX = self.velocityX - 25
+		self.velocityX = self.velocityX - (10*self.weapons[self.activeWeapon].members[1].emitDelay)^3
 	end
 	if self.weaponCasings[self.activeWeapon] ~= nil then
 		self.weaponCasings[self.activeWeapon]:restart()

@@ -487,6 +487,9 @@
 		"laser":{
 			"src":"images/particles/laser.png"
 		},
+		"railLaser":{
+			"src":"images/particles/railgun.png"
+		},
 		"shieldBreak":{
 			"src":"images/particles/shieldBreak.png"
 		},

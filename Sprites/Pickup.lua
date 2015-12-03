@@ -2,8 +2,9 @@
 Pickup = {
 	NUM_PICKUPS = 4,
 	id = 1,
-	massless = true,
-	score = 200
+	score = 200,
+	sfx = nil,
+	focusEmitter = nil
 }
 
 function Pickup:new(X,Y, Id)
@@ -32,27 +33,46 @@ function Pickup:doConfig()
 	self:addAnimation("spread",	{4}, 0, false)
 	self:addAnimation("OTHER",	{5}, 0, false)
 
+	self:setCollisionBox(-8,-8, 48, 48)
+	
 	self.massless = true
 	self:flash({127,127,127}, .5, true)
+	
+	local color =  {255, 255, 255}
 	if self.id == 1 then
-		--self:createGraphic(32,32,{243,17,17},255)
-		--self:loadImage(LevelManager:getParticle("bullet-red"))
 		self:playAnimation("health")
+		color =  {243, 17, 17}
 	elseif self.id == 2 then
-		--self:createGraphic(32,32,{0,174,239},255)
-		--self:loadImage(LevelManager:getParticle("bullet-red"))
 		self:playAnimation("shield")
+		color =  {0, 174, 239}
 	elseif self.id == 3 then
-		--self:createGraphic(32,32,{0,255,0},255)
-		--self:loadImage(LevelManager:getParticle("bullet-red"))
 		self:playAnimation("power")
+		color =  {255, 151, 35}
 	elseif self.id == 4 then
-		--self:createGraphic(32,32,{127,127,0},255)
-		--self:loadImage(LevelManager:getParticle("bullet-red"))
 		self:playAnimation("spread")
+		color =  {9, 251, 9}
 	else
 		self:playAnimation("OTHER")
 	end
+	
+	self.focusEmitter = Emitter:new()
+	for i=1, 10 do
+		local curParticle = Sprite:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("thruster"), 16, 8)
+		curParticle:addAnimation("default", {1,2,3,4}, .1, true)
+		curParticle:playAnimation("default")
+		curParticle.originX = curParticle.width/2
+		curParticle.originY = curParticle.height/2
+		curParticle.color = color
+		self.focusEmitter:addParticle(curParticle)
+	end
+	self.focusEmitter:setSpeed(-100, -350)
+	self.focusEmitter:setOffset(32)
+	--self.focusEmitter:setSize(32,32)
+	self.focusEmitter:setRadial(true)
+	self.focusEmitter:start(false, .1, .02, -1)
+	self.focusEmitter:lockParent(self, false)
+	GameState.emitters:add(self.focusEmitter)
 end
 
 --[[ applies a powerup
@@ -70,7 +90,7 @@ function Pickup:apply(PlayerObject, PickupObject)
 		PlayerObject:updateHealth()
 	elseif PickupObject.id == 2 then 
 		-- adds shield
-		Sprite.hurt(PlayerObject,-1, "shield")
+		Sprite.hurt(PlayerObject,-3, "shield")
 		if (PlayerObject.shield > PlayerObject.maxShield) then
 			PlayerObject.shield = PlayerObject.maxShield
 		end
@@ -94,10 +114,17 @@ function Pickup:apply(PlayerObject, PickupObject)
 	PickupObject:kill()
 end
 
+function Pickup:kill()
+	self.focusEmitter.exists = false
+	self.focusEmitter:destroy()
+	Sprite.kill(self)
+	Sprite.destroy(self)
+end
+
 function Pickup:update()
 	Sprite.update(self)
 	if self:getScreenX() + self.width < 0 then
-		self:setExists(false)
+		self:kill()
 	end
 end
 

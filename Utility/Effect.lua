@@ -133,7 +133,7 @@ function Effect:initShieldBreak()
 	burst:setRadial(true)
 	burst:setGravity(300)
 	burst:setDrag(10,100)
-	burst:start(true, .5+math.random()*.2)
+	burst:start(true, 1)
 	burst:stop()
 	
 	table.insert(self.emitters, burst)

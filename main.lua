@@ -43,6 +43,7 @@ require("Sprites/Boss1")
 require("Sprites/Pickup")
 require("Sprites/Projectiles/Projectile")
 require("Sprites/Projectiles/HomingRocket")
+require("Sprites/Projectiles/Railbeam")
 
 function love.load()
 	General:init()
