@@ -244,8 +244,10 @@ function GameState:load()
 	local powerupOverlay = Sprite:new(hpX, powerupY, LevelManager:getImage("hudPowerupOverlay"))
 	self.hud:add(powerupOverlay)
 	
+	local typeFace = LevelManager:getFont()
+
 	--Create high score text
-	highScoreText = Text:new(General.screenW, 10, "Score: " .. self.score,"fonts/04b09.ttf", 18)
+	highScoreText = Text:new(General.screenW - 20, 10, "Score: " .. self.score, typeFace, 24)
 	highScoreText:setAlign(Text.RIGHT)
 	self.hud:add(highScoreText)
 	
