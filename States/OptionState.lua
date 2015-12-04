@@ -1,7 +1,6 @@
 -- Option State
 OptionState = {
 	loaded = false,
-	selected = 1
 }
 
 OptionState.__index = OptionState
@@ -11,8 +10,7 @@ function OptionState:load()
 	State.load(self)
 	
 	local txtTitle = "OPTIONS"
-	local volume = "Volume " .. General:getVolume()
-	local brightness = "Brightness"
+	local volume = "Volume"
 	local typeFace = LevelManager:getFont()
 	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
 						txtTitle, typeFace, 64)
@@ -21,25 +19,28 @@ function OptionState:load()
 	headerText:setColor(240, 240, 240, 255)
 	headerText:setShadow(0, 150, 150, 255)
 	OptionState:add(headerText)
-	
-	self.selected = 1
 
-	self.options = Group:new()
-
-	local volumeText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (1-1),
+	self.volumeText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (1-1),
 						volume, typeFace, 48)
-	self.options:add(volumeText)
+	self.volumeText:setColor(255,255,0,255)
 
-	local brightnessText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (2-1),
-						brightness, typeFace, 48)
-	self.options:add(brightnessText)
+	OptionState:add(self.volumeText)
 
-	OptionState:add(self.options)
-	
-	self.optionSound = love.audio.newSource("sounds/menu_sounds/cw_sound27.wav")
-	self.selectSound = love.audio.newSource("sounds/menu_sounds/cw_sound44.wav")
-	self.failSound = love.audio.newSource("sounds/menu_sounds/cw_sound39.wav")
-	self.exitSound = love.audio.newSource("sounds/menu_sounds/cw_sound34.wav")
+	self.volumeBox= Sprite:new()
+	self.volumeBox:createGraphic(117, 30, {255,255,0}, 65)
+	self.volumeBox.x = self.volumeText.x + 200
+	self.volumeBox.y = self.volumeText.y + self.volumeText.height / 2
+
+	OptionState:add(self.volumeBox)
+
+	self.volumeBoxSlider = Sprite:new()
+	self.volumeBoxSlider:createGraphic(4, 45, {255,255,0}, 255)
+	self.volumeBoxSlider.x = self.volumeBox.x
+	self.volumeBoxSlider.y = self.volumeBox.y - (self.volumeBoxSlider.height - self.volumeBox.height) / 2
+
+	OptionState:add(self.volumeBoxSlider)
+
+	OptionState:setVolumeSlider()
 end
 
 function OptionState:start()
@@ -52,16 +53,6 @@ function OptionState:stop()
 end
 
 function OptionState:update()	
-	for k, v in pairs(self.options.members) do
-		if k == self.selected then
-			v.x = General.screenW * .3 - 64
-			v:setColor(255,255,0,255)
-		else
-			v.x = General.screenW * .3
-			v:setColor(255,255,255,255)
-		end
-	end
-	
 	State.update(self)
 end
 
@@ -72,30 +63,20 @@ end
 function OptionState:keypressed(key)
 	if key == "escape" then
 		General:setState(MenuState)
-	elseif key == "w" or key == "up" then 
-		self.optionSound:rewind() 
-		self.optionSound:play()
-		self.selected = (self.selected + self.options:getSize() - 2) % self.options:getSize() + 1
-    elseif key == "s" or key == "down" then
-		self.optionSound:rewind() 
-		self.optionSound:play()
-		self.selected = (self.selected + self.options:getSize()) % self.options:getSize() + 1
     elseif key == "d" or key == "right" then
-		if self.selected == 1 then
-			General:incrementVolume()
-			self.options.members[1]:setLabel("Volume " .. General:getVolume() )
-		elseif self.selected == 2 then
-						
-		end
+		General:incrementVolume()
 		OptionState:updateVolume()
+		OptionState:setVolumeSlider()
 	elseif key == "a" or key == "left" then
-		if self.selected == 1 then
-			General:decrementVolume()
-			self.options.members[1]:setLabel("Volume " .. General:getVolume() )
-		elseif self.selected == 2 then	
-		end
+		General:decrementVolume()
+		OptionState:setVolumeSlider()
 		OptionState:updateVolume()
 	end
+end
+
+function OptionState:setVolumeSlider()
+	local newSliderPos = General:getVolume() * 13
+	self.volumeBoxSlider.x = self.volumeBox.x + newSliderPos
 end
 
 function OptionState:loadGame()
