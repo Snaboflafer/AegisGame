@@ -95,10 +95,12 @@ function Boss1:doConfig()
 		gunRPG:addParticle(curRocket)
 		curRocket.killOffScreen = false
 		GameState.enemyBullets:add(curRocket)
+		GameState.destructables:add(curRocket)
+		GameState.worldParticles:add(curRocket)
 	end
 	gunRPG:setSound(LevelManager:getSound("fire_2"))
 	gunRPG:setSpeed(0, 10)
-	gunRPG:setAngle(180, 5)
+	gunRPG:setAngle(-150, 20)
 	gunRPG:setRadial(true)
 	gunRPG:lockParent(self, false, 99, 13)
 	gunRPG:start(false, ROCKETLIFESPAN, 1, -1)

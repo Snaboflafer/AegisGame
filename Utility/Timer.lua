@@ -1,17 +1,23 @@
 Timer = {
+	killOnFinish = true,
 	timeRemaining = 0,
 	finished = false,
 	callbackObject = nil,
 	callbackFunction = nil
 }
 
-function Timer:new(Time, CallbackObject, CallbackFunction)
+function Timer:new(Time, CallbackObject, CallbackFunction, Persistant)
 	s = {}
 	setmetatable(s, self)
 	self.__index = self
 	
 	General.activeState:add(s)
 	
+	if Persistant ~= nil then
+		s.killOnFinish = not Persistant
+	else
+		s.killOnFinish = true
+	end
 	s.timeRemaining = Time
 	s.finished = false
 	s.callbackObject = CallbackObject
@@ -28,7 +34,14 @@ function Timer:start(Time, CallbackObject, CallbackFunction)
 	self.exists = true
 end
 
+function Timer:restart(Time)
+	self.timeRemaining = Time
+	self.finished = false
+	self.exists = true
+end
+
 function Timer:stop()
+	self.exists = false
 	self.finished = true
 end
 
@@ -45,8 +58,10 @@ function Timer:update()
 				self.callbackFunction(self.callbackObject)
 			end
 			
-			--Purpose has been fulfilled, time for Seppuku
-			self = nil
+			if self.killOnFinish then
+				--Purpose has been fulfilled, time for Seppuku
+				self = nil
+			end
 		end
 	end
 end

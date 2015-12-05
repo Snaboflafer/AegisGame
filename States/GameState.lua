@@ -243,6 +243,9 @@ function GameState:load()
 	self.hud:add(self.powerupMask)
 	local powerupOverlay = Sprite:new(hpX, powerupY, LevelManager:getImage("hudPowerupOverlay"))
 	self.hud:add(powerupOverlay)
+	self.powerupLabel = Text:new(hpX+8, powerupY - 32, "", LevelManager:getFont(), 28)
+	self.powerupLabel:setShadow(0,0,0,255)
+	self.hud:add(self.powerupLabel)
 	
 	local typeFace = LevelManager:getFont()
 
@@ -473,7 +476,7 @@ function GameState:togglePlayerMode(Force)
 		self.playerMech:enterMode(self.playerShip:exitMode())
 		self.player = self.playerMech
 		self.camera:setTarget(self.player)
-		self.camera:setDeadzone(General.screenW, 0, -192, 0)
+		self.camera:setDeadzone(General.screenW, 0, -128, 0)
 	end
 	self.player:disableTransform()
 	Timer:new(self.player.transformDelay, self.player, Player.enableTransform)

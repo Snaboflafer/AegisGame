@@ -1,5 +1,6 @@
 PlayerMech = {
 	activeMode = "mech",
+	attackCooldownTimer = nil,
 	JUMPPOWER = 600,
 	GRAVITY = 1400,
 	DRAG = 200,
@@ -54,9 +55,9 @@ function PlayerMech:setAnimations()
 	self:addAnimation("walk_b_f", {16,15,14,13,12,11,10,9}, .14, true)
 	self:addAnimation("walk_f_d", {18,19,20,21,22,23,24,17}, .12, true)
 	self:addAnimation("walk_b_d", {24,23,22,21,20,19,18,17}, .14, true)
-	self:addAnimation("fire_u",   {26,27,28,29,30,31,32,25}, .05, true)
-	self:addAnimation("fire_f",   {34,35,36,37,38,39,40,33}, .05, true)
-	self:addAnimation("fire_d",   {42,43,44,45,46,47,48,41}, .05, true)
+	self:addAnimation("fire_u",   {26,27,28,29,30,31,32,25}, .06, false)
+	self:addAnimation("fire_f",   {34,35,36,37,38,39,40,33}, .06, false)
+	self:addAnimation("fire_d",   {42,43,44,45,46,47,48,41}, .06, false)
 	self:addAnimation("jump_u_u", {49}, 0, false)
 	self:addAnimation("jump_d_u", {50}, 0, false)
 	self:addAnimation("jump_u_f", {51}, 0, false)
@@ -69,6 +70,9 @@ end
 
 function PlayerMech:doConfig()
 	Player.doConfig(self)
+	
+	self.attackCooldownTimer = Timer:new(.1, self, PlayerMech.attackStop, false)
+	self.attackCooldownTimer:stop()
 	
 	image, height, width = LevelManager:getPlayerMech()
 	self:loadSpriteSheet(image, height, width)
@@ -92,7 +96,7 @@ function PlayerMech:doConfig()
 	playerCasings:setGravity(1000)
 	playerCasings:setDrag(50)
 	playerCasings:lockParent(self, false, 30, 20)
-	playerCasings:start(false, 1.5, .3, 1)
+	playerCasings:start(true, 1.5, .3, 1)
 	playerCasings:stop()
 	GameState.emitters:add(playerCasings)
 
@@ -111,10 +115,7 @@ function PlayerMech:doConfig()
 	playerFlash:stop()
 	GameState.emitters:add(playerFlash)
 
-	self:addDefaultWeapon(1)
-	self:addDefaultWeapon(2)
-	self:addDefaultWeapon(3)
-	--Attach gun to mech
+	--Weapon 1: Standard	DPS:	3.9
 	local playerGun = Emitter:new(0,0)
 	for i=1, 7 do
 		local curParticle = Projectile:new(0,0)
@@ -136,20 +137,20 @@ function PlayerMech:doConfig()
 	playerGun:start(false, 2, .28, -1)
 	playerGun:stop()
 	GameState.emitters:add(playerGun)
-	self:addWeapon(playerGun, 1, playerCasings, playerFlash)
+	self:addWeapon(playerGun, 1, playerCasings, playerFlash, 0)
 	
-	--Weapon 2: Napalm		DPS:	7
+	--Weapon 2: Napalm		DPS:	6.7
 	local playerGun = Emitter:new(0,0)
 	for i=1, 10 do
 		local curParticle = Projectile:new(0,0)
 		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet-orange"), 20, 20)
-		curParticle:setCollisionBox(4,4,14,14)
+		curParticle:setCollisionBox(-4,-4,30,30)
 		curParticle:addAnimation("default", {1}, 0, false)
 		curParticle:addAnimation("kill", {2,3,4,5}, .02, false)
 		curParticle:playAnimation("default")
 		curParticle:setPersistance(true)
-		curParticle.attackPower = .7
-		curParticle.friction = 0
+		curParticle.attackPower = .5
+		curParticle.friction = .5
 		curParticle.visible = false
 		
 		local fireTrail = Emitter:new()
@@ -157,16 +158,17 @@ function PlayerMech:doConfig()
 			--Create the trail sprites
 			local curFlame = Sprite:new(0,0)
 			curFlame:loadSpriteSheet(LevelManager:getParticle("fireball"), 32, 32)
-			curFlame:addAnimation("default", {1,2,3,4,5,6,7,7,8,8,9,9,9,10}, .05, false)
+			curFlame:addAnimation("default", {1,2,3,3,4,5,6,7,8,9,10}, .02, false)
 			curFlame:playAnimation("default")
 			fireTrail:addParticle(curFlame)
 		end
 		--Set fire trail parameters
+		fireTrail:setAngle(135)
 		fireTrail:setSpeed(20)
-		fireTrail:setGravity(-40)
+		fireTrail:setGravity(-400)
 		fireTrail:setSize(16,16)
 		fireTrail:lockParent(curParticle, true)
-		fireTrail:start(false, 1, .02, -1)
+		fireTrail:start(false, .25, .01, -1)
 		fireTrail:stop()
 		GameState.emitters:add(fireTrail)
 		GameState.worldParticles:add(fireTrail)
@@ -175,19 +177,18 @@ function PlayerMech:doConfig()
 		GameState.playerBullets:add(curParticle)
 		GameState.worldParticles:add(curParticle)
 	end
-	playerGun:setSpeed(600)
+	playerGun:setSpeed(800)
 	playerGun:setAngle(0,5)
-	playerGun:setDrag(100,100)
 	playerGun:setGravity(-200)
 	playerGun:lockParent(self, false, 112, 26)
 	playerGun:setSound(LevelManager:getSound("fire_1"))
 	playerGun:setCallback(self, PlayerMech.fireWeapon)
-	playerGun:start(false, .6, .1, -1)
+	playerGun:start(false, .4, .06, -1)
 	playerGun:stop()
 	GameState.emitters:add(playerGun)
-	self:addWeapon(playerGun, 2, playerCasings, playerFlash)
+	self:addWeapon(playerGun, 2, nil, playerFlash, .1)
 
-	--Weapon 3: Railgun		DPS:	6 (penetrating)
+	--Weapon 3: Railgun		DPS:	2.7 (x2 => 5.4 on penetration)
 	local playerGun = Emitter:new(0,0)
 	for i=1, 4 do
 		local curRail = Railbeam:new(0,0)
@@ -198,12 +199,12 @@ function PlayerMech:doConfig()
 	playerGun:setAngle(0,1)
 	playerGun:setRadial(true)
 	playerGun:lockParent(self, false, 112, 26)
-	playerGun:setSound(LevelManager:getSound("cannon"))
+	playerGun:setSound(LevelManager:getSound("railgun"))
 	playerGun:setCallback(self, PlayerMech.fireWeapon)
-	playerGun:start(false, 2, .5, -1)
+	playerGun:start(false, 2, .7, -1)
 	playerGun:stop()
 	GameState.emitters:add(playerGun)
-	self:addWeapon(playerGun, 3, playerCasings, playerFlash)
+	self:addWeapon(playerGun, 3, playerCasings, playerFlash, .5)
 
 	
 	--Create mech thruster
@@ -224,7 +225,6 @@ function PlayerMech:doConfig()
 	mechThrust_Jet:start(false, .2, .01, -1)
 	mechThrust_Jet:stop()
 	GameState.emitters:add(mechThrust_Jet)
-	--Empty
 	
 	local mechThrust_Smoke = Emitter:new()
 	for i=1, 10 do
@@ -533,11 +533,11 @@ end
 function PlayerMech:attackStart()
 	self:restartWeapon()
 	self.isAttacking = true
-	Timer:new(self.weapons[self.activeWeapon].emitDelay, self, PlayerMech.attackStop)
+	self.attackCooldownTimer:restart(self.weapons[self.activeWeapon].members[1].emitDelay)
 end
 function PlayerMech:attackStop()
 	if love.keyboard.isDown(" ") then
-		Timer:new(self.weapons[self.activeWeapon].members[1].emitDelay, self, PlayerMech.attackStop)
+		self.attackCooldownTimer:restart(self.weapons[self.activeWeapon].members[1].emitDelay)
 		return
 	end
 
@@ -585,6 +585,7 @@ function PlayerMech:fireWeapon()
 	if self.weaponFlashes[self.activeWeapon] ~= nil then
 		self.weaponFlashes[self.activeWeapon]:restart()
 	end
+	Player.fireWeapon(self)
 end
 
 function PlayerMech:collideGround()

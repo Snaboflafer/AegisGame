@@ -1,6 +1,6 @@
 
 Railbeam = {
-	MULTIHIT_SCORE = 500,
+	MULTIHIT_SCORE = 200,
 	beamTrail = nil,
 	impactSparks = nil,
 	health = 1,
@@ -30,11 +30,11 @@ function Railbeam:doConfig()
 	self.killOffScreen = false
 
 	self:loadSpriteSheet(LevelManager:getParticle("bullet-orange"), 20, 20)
-	self:setCollisionBox(-1,-1,24,24)
+	self:setCollisionBox(-5,-5,32,32)
 	self:addAnimation("default", {1}, 0, false)
 	self:addAnimation("kill", {2,3,4,5}, .02, false)
 	self:playAnimation("default")
-	self.attackPower = 3
+	self.attackPower = 1.9
 	self.visible = false
 	
 	GameState.playerBullets:add(self)

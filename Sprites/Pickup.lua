@@ -101,13 +101,15 @@ function Pickup:apply(PlayerObject, PickupObject)
 	elseif PickupObject.id == 3 then
 		-- uses second weapon
 		PlayerObject:setActiveWeapon(2)
-		Player.powerupTime = 10
-		Player.powerupMaxTime = 10
+		Player.specialAmmo = 10
+		Player.specialMaxAmmo = 10
+		Player:updateSpecial()
 	elseif PickupObject.id == 4 then
 		-- uses third weapon
 		PlayerObject:setActiveWeapon(3)
-		Player.powerupTime = 10
-		Player.powerupMaxTime = 10
+		Player.specialAmmo = 10
+		Player.specialMaxAmmo = 10
+		Player:updateSpecial()
 	end
 	
 	GameState.score = GameState.score + PickupObject.score

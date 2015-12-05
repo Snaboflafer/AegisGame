@@ -45,7 +45,7 @@ end
 function HomingRocket:doConfig()
 	Enemy.doConfig(self)
 	self:loadImage("images/particles/rocket.png")
-	self:setCollisionBox(12, 0, 12, 12)
+	self:setCollisionBox(6, -6, 24, 24)
 	self.originX = self.width/2
 	self.originY = self.height/2
 	
@@ -68,8 +68,6 @@ function HomingRocket:doConfig()
 	self.fireTrail:setOffset(16)
 	self.fireTrail:start(false, .2, .02, -1)
 	GameState.emitters:add(self.fireTrail)
-	
-	GameState.destructables:add(self)
 end
 
 function HomingRocket:lockTarget(Target, OffsetX, OffsetY)
@@ -88,24 +86,25 @@ function HomingRocket:update()
 	if self.target ~= nil and self.target.exists then
 		self.targetX = self.target.x + self.targetOffsetX + self.target.velocityX*.25
 		self.targetY = self.target.y + self.targetOffsetY + self.target.velocityY*.25
+
+		local maxTurn = (self.TURNSPEED * General.elapsed) * math.pi/180
+		local targetAngle = math.atan2(self.targetY-self.y,self.targetX - self.x)
+		
+		if (targetAngle-self.angle+math.pi) % (2*math.pi) > math.pi then
+			if math.abs(targetAngle-self.angle) > maxTurn then
+				self.angle = self.angle + maxTurn
+			else
+				self.angle = .5*(self.angle+targetAngle)
+			end
+		else
+			if math.abs(targetAngle-self.angle) > maxTurn then
+				self.angle = self.angle - maxTurn
+			else
+				self.angle = .5*(self.angle+targetAngle)
+			end
+		end
 	end
 	
-	local maxTurn = (self.TURNSPEED * General.elapsed) * math.pi/180
-	local targetAngle = math.atan2(self.targetY-self.y,self.targetX - self.x)
-	
-	if (targetAngle-self.angle+math.pi) % (2*math.pi) > math.pi then
-		if math.abs(targetAngle-self.angle) > maxTurn then
-			self.angle = self.angle + maxTurn
-		else
-			self.angle = .5*(self.angle+targetAngle)
-		end
-	else
-		if math.abs(targetAngle-self.angle) > maxTurn then
-			self.angle = self.angle - maxTurn
-		else
-			self.angle = .5*(self.angle+targetAngle)
-		end
-	end
 	
 	self.accelerationX = self.THRUST * math.cos(self.angle)
 	self.accelerationY = self.THRUST * math.sin(self.angle)
@@ -127,6 +126,17 @@ function HomingRocket:update()
 			self:kill()
 		end
 	end
+end
+
+function HomingRocket:collide()
+	self:kill()
+	Enemy.collide(self)
+end
+
+function HomingRocket:setThrust(Thrust, MaxSpeed)
+	self.THRUST = Thrust
+	self.maxVelocityX = MaxSpeed * 2^(1/2)
+	self.maxVelocityY = MaxSpeed * 2^(1/2)
 end
 
 function HomingRocket:getType()

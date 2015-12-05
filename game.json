@@ -413,6 +413,9 @@
 		"cannon":{
 			"src":"sounds/player_sounds/cannon.wav"
 		},
+		"railgun":{
+			"src":"sounds/player_sounds/laser_large.wav"
+		},
 		"player_hurt_health_a":{
 			"src":"sounds/player_sounds/hurt.wav"
 		},

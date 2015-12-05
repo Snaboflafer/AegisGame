@@ -2,6 +2,7 @@ Player = {
 	weapons = {},
 	weaponCasings = {},
 	weaponFlashes = {},
+	weaponCost = {},
 	activeWeapon = 1,
 	score = 0,
 	enableControls = true,
@@ -11,8 +12,8 @@ Player = {
 	shield = 0,
 	maxShield = 0,
 	isAttacking = false,
-	powerupTime = 0,
-	powerupMaxTime = 1
+	specialAmmo = 0,
+	specialMaxAmmo = 1
 }
 
 function Player:new(X,Y)
@@ -24,6 +25,7 @@ function Player:new(X,Y)
 	s.weapons = {}
 	s.weaponCasings = {}
 	s.weaponFlashes = {}
+	s.weaponCost = {}
 	s.health = 3
 	s.maxHealth = 3
 	s.shield = 3
@@ -48,7 +50,7 @@ function Player:doConfig()
 	--Nothing
 end
 
-function Player:addWeapon(GunEmitter, Slot, CasingEmitter, FlashEmitter)
+function Player:addWeapon(GunEmitter, Slot, CasingEmitter, FlashEmitter, AmmoCost)
 	--if self.weapons == nil then
 	--	self.weapons = Group:new()
 	--end
@@ -64,6 +66,7 @@ function Player:addWeapon(GunEmitter, Slot, CasingEmitter, FlashEmitter)
 	if FlashEmitter ~= nil then
 		self.weaponFlashes[Slot] = FlashEmitter
 	end
+	self.weaponCost[Slot] = AmmoCost
 end
 
 function Player:attachWeapon(OffsetX, OffsetY)
@@ -77,6 +80,9 @@ function Player:setActiveWeapon(Slot)
 	Player.activeWeapon = Slot
 	if self.isAttacking then
 		self:restartWeapon()
+		if self.attackCooldownTimer ~= nil then
+			self.attackCooldownTimer:restart(self.weapons[self.activeWeapon].members[1].emitDelay)
+		end
 	end
 end
 
@@ -130,14 +136,6 @@ end
 function Player:update()
 	Sprite.update(self)
 	
-	if Player.powerupTime > 0 then
-		Player.powerupTime = Player.powerupTime - General.elapsed
-		if Player.powerupTime < 0 then
-			self:setActiveWeapon(1)
-		end
-		
-		GameState.powerupMask.scaleX = (Player.powerupMaxTime-Player.powerupTime)/Player.powerupMaxTime
-	end
 	--	local modeMaskWidth = GameState.modeMask.scaleX
 	--	if self.lockTransform then
 	--		modeMaskWidth = modeMaskWidth - (General.elapsed/self.transformDelay)
@@ -223,6 +221,29 @@ function Player:updateShield()
 		shieldWidth = 0
 	end
 	GameState.shieldMask.scaleX = 1 - self.shield/self.maxShield
+end
+
+function Player:updateSpecial()
+	GameState.powerupMask.scaleX = (Player.specialMaxAmmo-Player.specialAmmo)/Player.specialMaxAmmo
+	GameState.powerupLabel:setLabel(math.ceil(100*Player.specialAmmo/Player.specialMaxAmmo) .. "%")
+	GameState.powerupLabel:flash({255,200,200}, .2)
+end
+
+function Player:fireWeapon()
+	if Player.specialAmmo > 0 then
+		--Player.specialAmmo = Player.specialAmmo - (self.weapons[self.activeWeapon].members[1].emitDelay/4+.2)^.5
+		Player.specialAmmo = Player.specialAmmo - self.weaponCost[self.activeWeapon]
+		if Player.specialAmmo <= 0 then
+			Player.specialAmmo = 0
+			self:updateSpecial()
+			GameState.powerupLabel:setLabel("-EMPTY-")
+			GameState.powerupLabel:setColor(127,127,127)
+			self:setActiveWeapon(1)
+		else
+			GameState.powerupLabel:setColor(255,255,255)
+			self:updateSpecial()
+		end
+	end
 end
 
 function Player:invulnOn()

@@ -35,7 +35,7 @@ function PlayerShip:doConfig()
 	self:lockToScreen(Sprite.ALL)
 	--self.showDebug = true
 	
-	--Weapon 1: Normal		DPS:	2.9x2
+	--Weapon 1: Normal		DPS:	2.3x2 = 4.6
 	local gunLocations = {{self.width/2+32,10},{self.width/2, 20}}
 	for i=1, table.getn(gunLocations)do
 		local playerGun = Emitter:new(0,0)
@@ -50,35 +50,45 @@ function PlayerShip:doConfig()
 		playerGun:setAngle(0,0)
 		playerGun:lockParent(self, false, gunLocations[i][1], gunLocations[i][2])
 		playerGun:setSound(LevelManager:getSound("laser"))
-		playerGun:start(false, 1, .12, -1)
+		playerGun:setCallback(self, PlayerShip.fireWeapon)
+		playerGun:start(false, 1, .15, -1)
 		playerGun:stop()
 		GameState.emitters:add(playerGun)
-		self:addWeapon(playerGun, 1)
+		self:addWeapon(playerGun, 1, nil, nil, 0)
 	end
 
-	--Weapon 2: Power		DPS:	5x2
-	for i=1, table.getn(gunLocations)do
-		local playerGun = Emitter:new(0,0)
-		for i=1, 10 do
-			local curParticle = Sprite:new(0,0,LevelManager:getParticle("laser"))
-			curParticle:setColor({255, 99, 71})
-			curParticle.attackPower = 1
-			playerGun:addParticle(curParticle)
-			GameState.playerBullets:add(curParticle)
-		end
-		playerGun:setSpeed(1000)
-		playerGun:setAngle(0,0)
-		playerGun:lockParent(self, false, gunLocations[i][1], gunLocations[i][2])
-		playerGun:setSound(LevelManager:getSound("laser"))
-		playerGun:start(false, 1, .2, -1)
-		playerGun:stop()
-		GameState.emitters:add(playerGun)
-		self:addWeapon(playerGun, 2)
+	--Weapon 2: Missile		DPS:	5
+	local gunRPG = Emitter:new(0,0)
+	local ROCKETLIFESPAN = 1.5
+	for j=1, 10 do
+		--Create rockets, and disable enemy-specific properties
+		local curRocket = HomingRocket:new(0,0)
+		curRocket:doConfig()
+		curRocket.attackPower = 1.5
+		curRocket.score = 0
+		curRocket.dropRate = 0
+		curRocket.lifeSpan = ROCKETLIFESPAN*2
+		curRocket:setThrust(1200, 1600)
+		gunRPG:addParticle(curRocket)
+		GameState.playerBullets:add(curRocket)
+		GameState.worldParticles:add(curRocket)
 	end
+	gunRPG:setSpeed(200)
+	gunRPG:setAngle(0, 1)
+	gunRPG:setRadial(true)
+	gunRPG:lockParent(self, false, gunLocations[1][1], gunLocations[1][2]+6)
+	gunRPG:setSound(LevelManager:getSound("cannon"))
+	gunRPG:setCallback(self, PlayerShip.fireWeapon)
+	gunRPG:start(false, ROCKETLIFESPAN, .3, -1)
+	gunRPG:stop()
+	GameState.emitters:add(gunRPG)
+	self:addWeapon(gunRPG, 2, nil, nil, .3)
 
-	--Weapon 3: Spread		DPS: 2.9x2 (laser) + 1.25x2 (spread)
+	--Weapon 3: Spread		DPS: 2.1x2 (laser) + 1.3x2 (spread) = 8.1
 	local gunLocations = {{self.width/2+32,10},{self.width/2, 20}}
+	local spreadAngles = {10,-10}
 	for i=1, table.getn(gunLocations)do
+		--Straight laser
 		local playerGun = Emitter:new(0,0)
 
 		for i=1, 10 do
@@ -92,12 +102,13 @@ function PlayerShip:doConfig()
 		playerGun:setAngle(0,0)
 		playerGun:lockParent(self, false, gunLocations[i][1], gunLocations[i][2])
 		playerGun:setSound(LevelManager:getSound("laser"))
-		playerGun:start(false, 1, .12, -1)
+		playerGun:setCallback(self, PlayerShip.fireWeapon)
+		playerGun:start(false, 1, .17, -1)
 		playerGun:stop()
 		GameState.emitters:add(playerGun)
-		self:addWeapon(playerGun, 3)
-	end
-	for j=1, 2 do
+		self:addWeapon(playerGun, 3, nil, nil)
+
+		--Spread shots
 		playerGun = Emitter:new(0,0)
 		for i=1, 7 do
 			local curParticle = Projectile:new(0,0)
@@ -107,18 +118,19 @@ function PlayerShip:doConfig()
 			curParticle:addAnimation("default", {1}, 0, false)
 			curParticle:addAnimation("kill", {2,3,4,5}, .02, false)
 			curParticle:playAnimation("default")
-			curParticle.attackPower = .35
+			curParticle.attackPower = .2
 			playerGun:addParticle(curParticle)
 			GameState.playerBullets:add(curParticle)
 			GameState.worldParticles:add(curParticle)
 		end
 		playerGun:setSpeed(800,825)
-		playerGun:setAngle(30 - 20 * j, 1)
-		playerGun:lockParent(self, false, gunLocations[j][1], gunLocations[j][2])
-		playerGun:start(false, 2, .28, -1)
+		playerGun:setAngle(spreadAngles[i], 1)
+		playerGun:lockParent(self, false, gunLocations[1][1], gunLocations[1][2])
+		playerGun:setSound(LevelManager:getSound("fire_2"))
+		playerGun:start(false, 2, .15, -1)
 		playerGun:stop()
 		GameState.emitters:add(playerGun)
-		self:addWeapon(playerGun, 3)
+		self:addWeapon(playerGun, 3, nil, nil, .1)
 	end
 
 	local jetLocations = {{-22, -16},{-26, 25}}
@@ -270,6 +282,10 @@ end
 function PlayerShip:attackStop()
 	self:stopWeapon()
 	self.isAttacking = false
+end
+
+function PlayerShip:fireWeapon()
+	Player.fireWeapon(self)
 end
 
 function PlayerShip:collideGround()
