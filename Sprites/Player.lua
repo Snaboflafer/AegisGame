@@ -30,10 +30,10 @@ function Player:new(X,Y)
 	s.maxHealth = 3
 	s.shield = 3
 	s.maxShield = 3
-	
+	self.invuln = false
 	self.enableControls = true
 	self.lockTransform = false
-	
+	self.alive = true
 	self.velocityX = 0
 	self.velocityY = 0
 	self.accelerationX = 0
@@ -151,6 +151,9 @@ end
 ]]
 function Player:hurt(Damage)
 	if self.invuln then
+		return
+	end
+	if not Player.alive then
 		return
 	end
 	local INVULNTIME = 1.0	--Time player is invulnerable after hit
