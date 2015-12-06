@@ -209,6 +209,12 @@
 					"type":1
 				},
 				{
+					"distance":1000,
+					"triggerType":"enemy",
+					"value":5,
+					"type":1
+				},
+				{
 					"distance":1500,
 					"triggerType":"enemy",
 					"value":5,
@@ -227,25 +233,37 @@
 					"type":1
 				},
 				{
+					"distance":3000,
+					"triggerType":"enemy",
+					"value":2,
+					"type":2
+				},
+				{
 					"distance":4000,
 					"triggerType":"enemy",
 					"value":5,
 					"type":1
 				},
 				{
-					"distance":5500,
+					"distance":5000,
+					"triggerType":"enemy",
+					"value":8,
+					"type":1
+				},
+				{
+					"distance":6500,
 					"triggerType":"script",
 					"value":"Watch out! Heavy gunship!",
 					"type":"Scripts/showAccentMessage.lua"
 				},
 				{
-					"distance":5700,
+					"distance":6700,
 					"triggerType":"enemy",
 					"value":1,
 					"type":-1
 				},
 				{
-					"distance":5700,
+					"distance":6700,
 					"triggerType":"waveClear",
 					"value":0,
 					"type":0
@@ -291,6 +309,12 @@
 					"type":3
 				},
 				{
+					"distance":1000,
+					"triggerType":"enemy",
+					"value":7,
+					"type":3
+				},
+				{
 					"distance":1500,
 					"triggerType":"enemy",
 					"value":5,
@@ -303,13 +327,61 @@
 					"type":3
 				},
 				{
+					"distance":2500,
+					"triggerType":"enemy",
+					"value":3,
+					"type":2
+				},
+				{
 					"distance":3000,
 					"triggerType":"enemy",
 					"value":15,
 					"type":3
 				},
 				{
-					"distance":3050,
+					"distance":3500,
+					"triggerType":"enemy",
+					"value":8,
+					"type":1
+				},
+				{
+					"distance":4000,
+					"triggerType":"enemy",
+					"value":12,
+					"type":3
+				},
+				{
+					"distance":4200,
+					"triggerType":"enemy",
+					"value":2,
+					"type":2
+				},
+				{
+					"distance":4500,
+					"triggerType":"enemy",
+					"value":6,
+					"type":3
+				},
+				{
+					"distance":5000,
+					"triggerType":"enemy",
+					"value":12,
+					"type":1
+				},
+				{
+					"distance":5500,
+					"triggerType":"enemy",
+					"value":6,
+					"type":3
+				},
+				{
+					"distance":6000,
+					"triggerType":"enemy",
+					"value":10,
+					"type":3
+				},
+				{
+					"distance":6000,
 					"triggerType":"waveClear",
 					"value":0,
 					"type":0
@@ -379,10 +451,28 @@
 					"type":3
 				},
 				{
+					"distance":2200,
+					"triggerType":"enemy",
+					"value":3,
+					"type":4
+				},
+				{
 					"distance":3000,
 					"triggerType":"enemy",
 					"value":4,
 					"type":3
+				},
+				{
+					"distance":3100,
+					"triggerType":"enemy",
+					"value":10,
+					"type":1
+				},
+				{
+					"distance":3500,
+					"triggerType":"enemy",
+					"value":3,
+					"type":4
 				},
 				{
 					"distance":4000,
@@ -391,14 +481,37 @@
 					"type":1
 				},
 				{
+					"distance":4500,
+					"triggerType":"enemy",
+					"value":3,
+					"type":4
+				},
+				{
+					"distance":5000,
+					"triggerType":"enemy",
+					"value":15,
+					"type":3
+				},
+				{
+					"distance":5500,
+					"triggerType":"enemy",
+					"value":3,
+					"type":4
+				},
+				{
 					"distance":6000,
 					"triggerType":"script",
-					"value":"Congratulations! You've completed the final demo level. The last level will be
-						included in the final release. Have a couple gunships as a prize.",
+					"value":"Our satellites are detecting a strange energy source ahead ...",
 					"type":"Scripts/showLockedMessage.lua"
 				},
 				{
-					"distance":6100,
+					"distance":6350,
+					"triggerType":"script",
+					"value":"It's a prototype Aegis! We thought we destroyed everything in the lab.",
+					"type":"Scripts/showLockedMessage.lua"
+				},
+				{
+					"distance":6400,
 					"triggerType":"enemy",
 					"value":3,
 					"type":-1
@@ -545,7 +658,7 @@
 		{
 			"title":"",
 			"text":
-				"Good job capturing that Aegis prototype. The Emprire won't be happy about
+				"Good job capturing that Aegis prototype. The Empire won't be happy about
 				losing their prize weapon, so get back to Resistance territory as soon
 				as possible. Our satellites show heavy enemy resistance blocking your escape.
 				Prevent the Imperial forces from retaking that Aegis unit at all costs!"
@@ -554,10 +667,11 @@
 			"title":"",
 			"text":
 				"Great work. We were able to destroy what was left of the weapons lab while
-				you escaped. This Aegis unit may be just what we need. The Empire's moonbase superweapon has
-				made it impossible to fight them directly. If you can take that out, we may have
-				a chance. Unfortunately, Aegis is incapable of space flight. Head to the Empire's
-				launch facility in the desert and commandeer a shuttle. Be careful, you're entering enemy territory."
+				you escaped. This Aegis unit may be just what we need. The Empire's missile launch base has
+				made it impossible to fight them directly. 
+				They can hit any target across the globe. If you can take that out, we may have
+				a chance. Head to the Empire's desert launch facility and destroy it. 
+				Be careful, you're entering enemy territory."
 		},
 		{
 			"title":"",
@@ -568,7 +682,7 @@
 		{
 			"title":"",
 			"text":
-				"You've made it inside the Imperial base. Force your way through, and find a shuttle!"
+				"You've made it inside the launch facility. Destroy everthing in your path!"
 		}
 	],
 	"font": "fonts/forgotten_futurist_bd.ttf"
