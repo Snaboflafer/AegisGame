@@ -441,7 +441,7 @@
 					"distance":100,
 					"triggerType":"enemy",
 					"value":1,
-					"type":-2
+					"type":1
 				},
 				{
 					"distance":500,
@@ -524,8 +524,14 @@
 				{
 					"distance":6400,
 					"triggerType":"enemy",
-					"value":3,
-					"type":-1
+					"value":1,
+					"type":1
+				},
+				{
+					"distance":6400,
+					"triggerType":"endGame",
+					"value":0,
+					"type":0
 				}
 			]
 		}

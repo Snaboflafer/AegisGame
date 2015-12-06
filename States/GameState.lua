@@ -422,6 +422,13 @@ function GameState:executeTrigger(Trigger)
 		else
 			self.lastTrigger = self.lastTrigger - 1
 		end
+	elseif triggerType == "endGame" then
+		if GameState:isWaveClear() then
+			GameState.messageBox:show("Well done! The war is ours.", "> Commander", true)
+			Timer:new(5, self, self.gameOver)
+		else
+			self.lastTrigger = self.lastTrigger - 1
+		end
 	end
 end
 
