@@ -12,17 +12,18 @@ function HighScoreState:load()
 	State.load(self)
 	
 	local txtHeader = "High Scores"
-	
+	local typeFace = LevelManager:getFont()
+
 	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
-						txtHeader, "fonts/Commodore.ttf", 64)
+						txtHeader, typeFace, 64)
 	headerText:setAlign(Text.CENTER)
-	headerText:setColor(240, 240, 240, 240, 255)
-	headerText:setShadow(180, 130, 0, 255)
+	headerText:setColor(255, 255, 255, 255)
+	headerText:setShadow(255, 90, 0, 255)
 	HighScoreState:add(headerText)
 	
 	local highScores = HighScoreState:readHighScores("highScores.json")
 	local scoresText = Text:new(General.screenW * .1, General.screenH * .5,
-						highScores, "fonts/Commodore.ttf", 32)
+						highScores, typeFace, 32)
 	scoresText:setAlign(Text.LEFT)
 	HighScoreState:add(scoresText)
 

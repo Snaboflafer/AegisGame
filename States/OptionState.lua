@@ -16,25 +16,24 @@ function OptionState:load()
 						txtTitle, typeFace, 64)
 
 	headerText:setAlign(Text.CENTER)
-	headerText:setColor(240, 240, 240, 255)
-	headerText:setShadow(0, 150, 150, 255)
+	headerText:setColor(255, 255, 255, 255)
+	headerText:setShadow(255, 90, 0, 255)
 	OptionState:add(headerText)
 
 	self.volumeText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (1-1),
 						volume, typeFace, 48)
-	self.volumeText:setColor(255,255,0,255)
-
+	self.volumeText:setColor(255, 201, 0, 255)
 	OptionState:add(self.volumeText)
 
 	self.volumeBox= Sprite:new()
-	self.volumeBox:createGraphic(117, 30, {255,255,0}, 65)
+	self.volumeBox:createGraphic(117, 30, {255, 201, 0}, 65)
 	self.volumeBox.x = self.volumeText.x + 200
 	self.volumeBox.y = self.volumeText.y + self.volumeText.height / 2
 
 	OptionState:add(self.volumeBox)
 
 	self.volumeBoxSlider = Sprite:new()
-	self.volumeBoxSlider:createGraphic(4, 45, {255,255,0}, 255)
+	self.volumeBoxSlider:createGraphic(4, 45, {255, 201, 0}, 255)
 	self.volumeBoxSlider.x = self.volumeBox.x
 	self.volumeBoxSlider.y = self.volumeBox.y - (self.volumeBoxSlider.height - self.volumeBox.height) / 2
 

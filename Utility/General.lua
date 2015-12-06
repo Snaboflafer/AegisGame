@@ -41,7 +41,7 @@ function General:init()
 	setmetatable(s, self)
 	self.__index = self
 	self.headerFont = love.graphics.newFont("fonts/Square.ttf", 96)
-	self.subFont = love.graphics.newFont("fonts/04b09.ttf", 32)
+	self.subFont = love.graphics.newFont("fonts/lucon.ttf", 32)
 	self.elapsed = 0
 	self.camera = Camera:new(0,0)
 	self.volume = 1

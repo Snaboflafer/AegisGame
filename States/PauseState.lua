@@ -17,8 +17,8 @@ function PauseState:load()
 	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
 						txtTitle, typeFace, 64)
 	headerText:setAlign(Text.CENTER)
-	headerText:setColor(240, 240, 240, 255)
-	headerText:setShadow(0, 150, 150, 255)
+	headerText:setColor(255, 255, 255, 255)
+	headerText:setShadow(255, 90, 0, 255)
 	PauseState:add(headerText)
 	
 	self.options = Group:new()
@@ -47,7 +47,7 @@ function PauseState:update()
 	for k, v in pairs(self.options.members) do
 		if k == self.selected then
 			v.x = General.screenW * .3 - 64
-			v:setColor(255,255,0,255)
+			v:setColor(255, 201, 0, 255)
 		else
 			v.x = General.screenW * .3
 			v:setColor(255,255,255,255)
