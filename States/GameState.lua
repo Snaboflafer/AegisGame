@@ -1,6 +1,6 @@
 GameState = {
 	ENEMYTYPES = 4,
-	BOSSTYPES = 1,
+	BOSSTYPES = 2,
 	loaded = false,
 	CAMERASCROLLSPEED = 200,
 	playerGroundMode = false,
@@ -302,6 +302,8 @@ function GameState:spawnEnemyGroup(NumEnemies, Type)
 		enemyClass = Enemy4
 	elseif Type == -1 then
 		enemyClass = Boss1
+	elseif Type == -2 then
+		enemyClass = Boss2
 	end
 
 	--Get image and size

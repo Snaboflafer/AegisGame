@@ -24,8 +24,6 @@ function Boss1:new(X,Y,ImageFile)
 	s.weapons = {}
 	
 	s.immovable = true
-	GameState.bossHpBar.visible = true
-	GameState.bossHpMask.visible = true
 	return s
 end
 
@@ -40,6 +38,8 @@ function Boss1:respawn(SpawnX, SpawnY)
 	else
 		Enemy.respawn(self, SpawnX, SpawnY)
 	end
+	GameState.bossHpBar.visible = true
+	GameState.bossHpMask.visible = true
 end
 
 --	function Boss1:hurt(Damage)

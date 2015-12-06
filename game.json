@@ -38,6 +38,11 @@
 			"image":"images/sprites/boss_3.png",
 			"height":320,
 			"width":160
+		},
+		{
+			"image":"images/sprites/boss_5.png",
+			"height":300,
+			"width":300
 		}
 	],
 	"levels":[
@@ -201,6 +206,12 @@
 					"triggerType":"script",
 					"value":2,
 					"type":"Scripts/showCutscene.lua"
+				},
+				{
+					"distance":100,
+					"triggerType":"enemy",
+					"value":1,
+					"type":-2
 				},
 				{
 					"distance":500,
