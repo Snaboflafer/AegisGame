@@ -97,14 +97,22 @@ function Enemy1:update()
 			self.accelerationY = -50
 		else
 			self.accelerationY = 15
-			self.accelerationX = -60
+			if self.velocityX > -50 then
+				self.accelerationX = -60
+			else
+				self.accelerationX = 0
+			end
 		end
 	elseif self.route == 3 then
 		if self.lifetime < 2 then
 			self.accelerationY = 50
 		else
 			self.accelerationY = -15
-			self.accelerationX = -60
+			if self.velocityX > -50 then
+				self.accelerationX = -60
+			else
+				self.accelerationX = 0
+			end
 		end
 	end
 	
