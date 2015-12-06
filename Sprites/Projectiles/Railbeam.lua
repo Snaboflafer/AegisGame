@@ -37,7 +37,7 @@ function Railbeam:doConfig()
 	self.attackPower = 1.9
 	self.visible = false
 	
-	GameState.playerBullets:add(self)
+	--GameState.playerBullets:add(self)
 	GameState.worldParticles:add(self)
 	
 	self.beamTrail = Emitter:new()

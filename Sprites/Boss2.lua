@@ -1,9 +1,11 @@
 --Class for sprites. Should extend Object
-Boss1 = {
+Boss2 = {
+	JUMPPOWER = 600,
+	GRAVITY = 1400,
 	weapons = {}
 }
 
-function Boss1:new(X,Y,ImageFile)
+function Boss2:new(X,Y,ImageFile)
 	s = Enemy:new(X,Y,ImageFile)
 	setmetatable(s, self)
 	setmetatable(self, Enemy)
@@ -11,189 +13,228 @@ function Boss1:new(X,Y,ImageFile)
 	
 	s.NUMROUTES = 0
 	s.route = 0
-	s.health = 20
-	s.maxHealth = 20
-	s.score = 1000
+	s.health = 200
+	s.maxHealth = 200
+	s.score = 10000
 	
-	s.immovable = true
+	s.accelerationY = self.GRAVITY
+	
+	s.weapons = {}
 	
 	return s
 end
 
-function Boss1:setAnimations()
-	self:addAnimation("idle", {1,2}, .1, true)
-	self:addAnimation("up", {3,4}, .1, true)
-	self:addAnimation("down", {5,6}, .1, true)
+function Boss2:setAnimations()
+	self:addAnimation("idle", {1}, 0, false)
+	self:addAnimation("walk_l", {2,3,4,5,6,7,8,1}, .2, true)
+	self:addAnimation("walk_r", {8,7,6,5,4,3,2,1}, .2, true)
+	self:addAnimation("jump_u", {10,11,12,13}, .2, false)
+	self:addAnimation("jump_d", {14,15,16,9}, .2, false)
+	self:addAnimation("attack_eye", {18,19,20,21,22,23,24,17}, .2, false)
+	self:addAnimation("attack_kick", {26,27,28,29,30,31,32,25}, .1, true)
+	self:addAnimation("attack_arm_aim", {33,34,35,36,37,38}, .2, false)
+	self:addAnimation("attack_arm_fire", {39,40,41}, .2, false)
+	self:addAnimation("attack_arm_recover", {42,43,44,32}, .2, false)
+	self:playAnimation("attack_kick")
 end
 
-function Boss1:respawn(SpawnX, SpawnY)
+function Boss2:respawn(SpawnX, SpawnY)
+	SoundManager:playBgm("sounds/music/Zenon.ogg")
 	if SpawnY == nil then
 		Enemy.respawn(self, SpawnX, General.screenH/2)
 	else
 		Enemy.respawn(self, SpawnX, SpawnY)
 	end
+	GameState.bossHpBar.visible = true
+	GameState.bossHpMask.visible = true
 end
 
---	function Boss1:hurt(Damage)
+--	function Boss2:hurt(Damage)
 --		Sprite.hurt(self, Damage)
 --		self:flicker(.1)
 --	end
 
-function Boss1:addWeapon(GunGroup, slot)
+function Boss2:addWeapon(GunGroup, slot)
 	self.weapons[slot] = GunGroup
 end
 
 
-function Boss1:doConfig()
+function Boss2:doConfig()
 	Enemy.doConfig(self)
-	self:setCollisionBox(7, 26, 44, 19)
+	self:setCollisionBox(124,28,136,240)
 	
-	self:setScale(5,5)
 
-	local bossGuns1 = Group:new()
-	--Create enemy gun
-	for i=1, 3 do
-		local enemyGun = Emitter:new(0,0)
-		for j=1, 10 do
-			--Create bullets
-			local curBullet = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
-			curBullet.attackPower = 1
-			enemyGun:addParticle(curBullet)
-			GameState.enemyBullets:add(curBullet)
-		end
-		enemyGun:setSpeed(100, 150)
-		enemyGun:lockParent(self, false, 0)
-		--enemyGun:lockTarget(self.player)		(Use this to target the player)
-		enemyGun:setAngle(140+20*i, 0)
-		enemyGun:start(false, 10, .8, -1)
-		GameState.emitters:add(enemyGun)
-		bossGuns1:add(enemyGun)
+	local gunRPG = Emitter:new(0,0)
+	local ROCKETLIFESPAN = 10
+	for j=1, 4 do
+		--Create rockets
+		local curRocket = HomingRocket:new(0,0)
+		curRocket:doConfig()
+		curRocket:lockTarget(GameState.playerShip)
+		--local curRocket = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
+		curRocket.attackPower = 1
+		curRocket.lifeSpan = ROCKETLIFESPAN
+		gunRPG:addParticle(curRocket)
+		curRocket.killOffScreen = false
+		GameState.enemyBullets:add(curRocket)
+		GameState.destructables:add(curRocket)
+		GameState.worldParticles:add(curRocket)
 	end
-	self:addWeapon(bossGuns1, 1)
-
-	local bossGuns2 = Group:new()
-	--Create enemy gun
-	for i=0, 3 do
-		local enemyGun = Emitter:new(0,0)
-		for j=1, 10 do
-			--Create bullets
-			local curBullet = Sprite:new(0,0, LevelManager:getParticle("bullet-red"))
-			curBullet.attackPower = 1
-			enemyGun:addParticle(curBullet)
-			GameState.enemyBullets:add(curBullet)
-		end
-		enemyGun:setSpeed(100, 150)
-		enemyGun:lockParent(self, false, i*20, 80)
-		--enemyGun:lockTarget(self.player)		(Use this to target the player)
-		enemyGun:setAngle(140+20*i, 0)
-		enemyGun:start(false, 10, .8, -1)
-		enemyGun:stop()
-		GameState.emitters:add(enemyGun)
-		bossGuns2:add(enemyGun)
-	end
-	self:addWeapon(bossGuns2, 2)
-
-	--Thruster particles
-	local enemyThruster = Emitter:new(0,0)
-	for j=1, 5 do
-		local curParticle = Sprite:new(0,0)
-		curParticle:loadSpriteSheet(LevelManager:getParticle("thruster"), 16, 8)
-		curParticle:addAnimation("default", {1,2,3,4}, .025, false)
+	gunRPG:setSound(LevelManager:getSound("fire_2"))
+	gunRPG:setSpeed(0, 10)
+	gunRPG:setAngle(-150, 20)
+	gunRPG:setRadial(true)
+	gunRPG:lockParent(self, false, 99, 13)
+	gunRPG:start(false, ROCKETLIFESPAN, 1, -1)
+	gunRPG:stop()
+	GameState.emitters:add(gunRPG)
+	self:addWeapon(gunRPG, 1)
+	
+	--Weapon 2: Flamethrower
+	local gunFlame = Emitter:new(0,0)
+	for i=1, 10 do
+		local curParticle = Projectile:new(0,0)
+		curParticle:loadSpriteSheet(LevelManager:getParticle("bullet-orange"), 20, 20)
+		curParticle:setCollisionBox(-4,-4,30,30)
+		curParticle:addAnimation("default", {1}, 0, false)
+		curParticle:addAnimation("kill", {2,3,4,5}, .02, false)
 		curParticle:playAnimation("default")
-		curParticle:setScale(5,5)
-		enemyThruster:addParticle(curParticle)
-	end
-	enemyThruster:setSpeed(50, 60)
-	enemyThruster:setAngle(0, 30)
-	enemyThruster:lockParent(self, true, self.width-20, self.height/2 - 3)
-	enemyThruster:start(false, .1, 0)
+		curParticle:setPersistance(true)
+		curParticle.attackPower = .5
+		curParticle.friction = .5
+		curParticle.visible = false
+		
+		local fireTrail = Emitter:new()
+		for i=1, 20 do
+			--Create the trail sprites
+			local curFlame = Sprite:new(0,0)
+			curFlame:loadSpriteSheet(LevelManager:getParticle("fireball"), 32, 32)
+			curFlame:addAnimation("default", {1,2,3,3,4,5,6,7,8,9,10}, .02, false)
+			curFlame:playAnimation("default")
+			fireTrail:addParticle(curFlame)
+		end
+		--Set fire trail parameters
+		fireTrail:setAngle(135)
+		fireTrail:setSpeed(20)
+		fireTrail:setGravity(-400)
+		fireTrail:setSize(16,16)
+		fireTrail:lockParent(curParticle, true)
+		fireTrail:start(false, .25, .01, -1)
+		fireTrail:stop()
+		GameState.emitters:add(fireTrail)
+		GameState.worldParticles:add(fireTrail)
 
-	--Register emitter, so that it will be updated
-	GameState.emitters:add(enemyThruster)
+		gunFlame:addParticle(curParticle)
+		GameState.enemyBullets:add(curParticle)
+		GameState.worldParticles:add(curParticle)
+	end
+	gunFlame:setSpeed(800)
+	gunFlame:setAngle(0,5)
+	gunFlame:setGravity(-200)
+	gunFlame:lockParent(self, false, 112, 26)
+	gunFlame:setSound(LevelManager:getSound("fire_1"))
+	--gunFlame:setCallback(self, PlayerMech.fireWeapon)
+	gunFlame:start(false, .4, .06, -1)
+	gunFlame:stop()
+	GameState.emitters:add(gunFlame)
+	self:addWeapon(gunFlame, 2)
+
+	--Weapon 3: Railgun
+	local gunLaser = Emitter:new(0,0)
+	for i=1, 4 do
+		local curRail = Railbeam:new(0,0)
+		curRail:doConfig()
+		curRail.color = {250,20,20}
+		GameState.enemyBullets:add(curRail)
+		gunLaser:addParticle(curRail)
+	end
+	gunLaser:setSpeed(1500)
+	gunLaser:setAngle(180,1)
+	gunLaser:setRadial(true)
+	gunLaser:lockParent(self, false, 112, 26)
+	gunLaser:setSound(LevelManager:getSound("railgun"))
+	--gunLaser:setCallback(self, PlayerMech.fireWeapon)
+	gunLaser:start(false, 2, .7, -1)
+	gunLaser:stop()
+	GameState.emitters:add(gunLaser)
+	self:addWeapon(gunLaser, 3)
+	
+	--Weapon 4: Foot. Yes, this is a gun.
+	local gunFoot = Emitter:new(0,0)
+	local kickHitbox = Sprite:new(0,0)
+	kickHitbox:createGraphic(130,64)
+	kickHitbox.attackPower = 1
+	kickHitbox.immovable = true
+	GameState.enemyBullets:add(kickHitbox)
+	gunFoot:setSound(LevelManager:getSound("hit_ground"))
+	gunFoot:setSpeed(200)
+	gunFoot:setAngle(180,0)
+	gunFoot:setDrag(200,0)
+	gunFoot:lockParent(self, false, 0,0)
+	gunFoot:start(true, .5)
+	GameState.emitters:add(gunFoot)
+	self:addWeapon(gunFoot, 4)
+		
+	self:nextRoute()
 end
 
-function Boss1:kill()
+function Boss2:kill()
 	Enemy.kill(self)
-	for k, v in pairs(self.weapons[1].members) do 
-		v:stop()
-	end
-	for k, v in pairs(self.weapons[2].members) do 
-		v:stop()
-	end
+	self.weapons[1]:stop()
+	self.weapons[2]:stop()
+	GameState.bossHpBar.visible = false
+	GameState.bossHpMask.visible = false
 end
 
-function Boss1:update()
-	local target = 0
+function Boss2:update()
+	self:updateHealth()
 
-	if self.route == 0 then 
-		target = General.screenW*3/4;
-		i = 0
-		for k, v in pairs(self.weapons[1].members) do 
-			v:setAngle(120+self.lifetime*15 + i*10, 0)
-		i = i + 1
-		end
-		if self.lifetime > 8 then
-			self.lifetime = 0
-			self.route = 1
-		end
-	elseif self.route == 1 then
-		target = General.screenW*3/4;
-		if self.lifetime < 4 then
-			i = 0
-			for k, v in pairs(self.weapons[1].members) do 
-				v:setAngle(100 + self.lifetime*12 + i*50, 0)
-				i = i + 1
-			end
-		elseif self.lifetime < 8 then
-			i = 0
-			for k, v in pairs(self.weapons[1].members) do 
-				v:setAngle(self.lifetime*40 + i*10 - 60, 0)
-				i = i + 1
-			end
-		else
-			self.lifetime = 0
-			self.route = 2
-			for k, v in pairs(self.weapons[1].members) do 
-				v:stop()
-			end
-			for k, v in pairs(self.weapons[2].members) do 
-				v:restart()
-				v:setAngle(270, 0)
-			end
-		end
+	if self.route == 1 then
+		--Move forwards
+		
 	elseif self.route == 2 then
-		target = General.screenW*1/4;
-		if self.lifetime > 8 then
-			self.lifetime = 0
-			self.route = 1
-			for k, v in pairs(self.weapons[2].members) do 
-				v:stop()
-			end
-			for k, v in pairs(self.weapons[1].members) do 
-				v:restart()
-			end
-		end
-	end
-
-	self.velocityX = 2*(General:getCamera().x + target - self.x)
-
-	if self.velocityY < 50 then
-		self:playAnimation("up")
-	elseif self.velocityY > 50 then
-		self:playAnimation("down")
-	else
-		self:playAnimation("idle")
+		--Move backwards
+		
+	elseif self.route == 3 then
+		--Attack (eye laser)
+		
+	elseif self.route == 4 then
+		--Attack (flamethrower)
+		
+	elseif self.route == 5 then
+		--Attack (missile)
+		
+	elseif self.route == 6 then
+		--Attack (summon)
+		
+	elseif self.route == 7 then
+		--Death
+	
 	end
 	
-	if self:getScreenX() + self.width < 0 then
-		self:setExists(false)
-	end
-
 	Sprite.update(self)
 end
 
-function Boss1:getType()
-	return "Boss1"
+function Boss2:updateHealth()
+	--Width is relative to size of health bar (value is defined in GameState, hardcoded here)
+	local hpWidth = (self.health/self.maxHealth) * 105
+	if hpWidth < 0 then
+		hpWidth = 0
+	end
+	GameState.bossHpBar.scaleX = self.health/self.maxHealth
+	if self.health <= 1 then
+		GameState.bossHpBar:flash({128,0,0}, 1, true)
+	end
+end
+function Boss2:nextRoute()
+	self.weapons[1]:stop()
+	self.weapons[2]:stop()
+	self.route = math.random(1, self.NUMROUTES)
+	self.aiStage = 1
 end
 
-return Boss1	
+function Boss2:getType()
+	return "Boss2"
+end
+
+return Boss2	

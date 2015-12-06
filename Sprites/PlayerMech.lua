@@ -193,6 +193,7 @@ function PlayerMech:doConfig()
 	for i=1, 4 do
 		local curRail = Railbeam:new(0,0)
 		curRail:doConfig()
+		GameState.playerBullets:add(curRail)
 		playerGun:addParticle(curRail)
 	end
 	playerGun:setSpeed(1500)
