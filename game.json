@@ -208,12 +208,6 @@
 					"type":"Scripts/showCutscene.lua"
 				},
 				{
-					"distance":100,
-					"triggerType":"enemy",
-					"value":1,
-					"type":-2
-				},
-				{
 					"distance":500,
 					"triggerType":"enemy",
 					"value":3,
@@ -370,6 +364,12 @@
 					"triggerType":"script",
 					"value":4,
 					"type":"Scripts/showCutscene.lua"
+				},
+				{
+					"distance":100,
+					"triggerType":"enemy",
+					"value":1,
+					"type":-2
 				},
 				{
 					"distance":500,

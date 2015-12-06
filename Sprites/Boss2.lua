@@ -189,6 +189,29 @@ end
 function Boss2:update()
 	self:updateHealth()
 
+	if self.route == 1 then
+		--Move forwards
+		
+	elseif self.route == 2 then
+		--Move backwards
+		
+	elseif self.route == 3 then
+		--Attack (eye laser)
+		
+	elseif self.route == 4 then
+		--Attack (flamethrower)
+		
+	elseif self.route == 5 then
+		--Attack (missile)
+		
+	elseif self.route == 6 then
+		--Attack (summon)
+		
+	elseif self.route == 7 then
+		--Death
+	
+	end
+	
 	Sprite.update(self)
 end
 
