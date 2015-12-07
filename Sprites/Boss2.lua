@@ -272,6 +272,7 @@ function Boss2:update()
 				local player = GameState.player
 				self.weapons[3]:setAngle(math.atan2((self.y+40) - (player.y + player.height/2),
 									(player.x + player.width/2) - (self.x+8)) * 180/math.pi, 0)
+				love.audio.newSource(LevelManager:getSound("charge")):play()
 				self.laserCharge:restart()
 				self:updateStage()
 			end

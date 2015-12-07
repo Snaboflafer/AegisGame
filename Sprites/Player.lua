@@ -114,7 +114,7 @@ function Player:kill()
 	Player.lockTransform = true
 	Player.accelerationY = self.accelerationY + 200
 	--Timer:new(1, Player, Player.playDeathSfx)
-	SoundManager:playBgm("sounds/handel.ogg")
+	--SoundManager:playBgm("sounds/handel.ogg")
 	GameState.explosion:play(self.x + self.width / 2, self.y + self.height / 2)
 	
 	self:playDeathSfx()
