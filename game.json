@@ -99,8 +99,8 @@
 				{
 					"distance":250,
 					"triggerType":"script",
-					"value":"Make sure you figure out how to pilot that thing before you try
-						fighting any enemies! The Aegis mech can jump with 'K', and your weapons are
+					"value":"Make sure you figure out how to pilot that thing before you advance!
+						The Aegis mech can jump by pressing 'K', and your weapons are
 						activated by holding 'SPACE'.",
 					"type":"Scripts/showLockedMessage.lua"
 				},
@@ -121,7 +121,7 @@
 					"distance":2000,
 					"triggerType":"script",
 					"value":"Good work with those. Be careful, the main enemy force is
-						ahead. If you're in danger or need additional mobility,
+						ahead. If you feel you're in danger or need additional mobility,
 						press 'LSHIFT' to transform your Aegis unit into flight mode.",
 					"type":"Scripts/showLockedMessage.lua"
 				},
@@ -322,7 +322,7 @@
 				{
 					"distance":1500,
 					"triggerType":"enemy",
-					"value":5,
+					"value":3,
 					"type":2
 				},
 				{
@@ -334,7 +334,7 @@
 				{
 					"distance":2500,
 					"triggerType":"enemy",
-					"value":3,
+					"value":2,
 					"type":2
 				},
 				{
@@ -362,31 +362,31 @@
 					"type":2
 				},
 				{
-					"distance":4500,
+					"distance":5000,
 					"triggerType":"enemy",
 					"value":6,
 					"type":3
 				},
 				{
-					"distance":5000,
+					"distance":6000,
 					"triggerType":"enemy",
 					"value":12,
 					"type":1
 				},
 				{
-					"distance":5500,
+					"distance":6500,
 					"triggerType":"enemy",
 					"value":6,
 					"type":3
 				},
 				{
-					"distance":6000,
+					"distance":7000,
 					"triggerType":"enemy",
 					"value":10,
 					"type":3
 				},
 				{
-					"distance":6000,
+					"distance":7000,
 					"triggerType":"waveClear",
 					"value":0,
 					"type":0
@@ -438,13 +438,7 @@
 					"type":"Scripts/showCutscene.lua"
 				},
 				{
-					"distance":100,
-					"triggerType":"enemy",
-					"value":1,
-					"type":1
-				},
-				{
-					"distance":500,
+					"distance":200,
 					"triggerType":"enemy",
 					"value":3,
 					"type":1
@@ -465,7 +459,7 @@
 					"distance":2200,
 					"triggerType":"enemy",
 					"value":3,
-					"type":4
+					"type":2
 				},
 				{
 					"distance":3000,
@@ -483,52 +477,61 @@
 					"distance":3500,
 					"triggerType":"enemy",
 					"value":3,
-					"type":4
+					"type":2
 				},
 				{
 					"distance":4000,
 					"triggerType":"enemy",
-					"value":15,
+					"value":10,
 					"type":1
 				},
 				{
 					"distance":4500,
 					"triggerType":"enemy",
-					"value":3,
-					"type":4
+					"value":5,
+					"type":3
 				},
 				{
 					"distance":5000,
-					"triggerType":"enemy",
-					"value":15,
-					"type":3
+					"triggerType":"script",
+					"value":"Be on your guard, we're detecting a massive energy source ahead. Whatever
+							the Empire has guarding this place, it's big.
+					",
+					"type":"Scripts/showLockedMessage.lua"
 				},
 				{
 					"distance":5500,
 					"triggerType":"enemy",
-					"value":3,
-					"type":4
+					"value":5,
+					"type":3
 				},
 				{
 					"distance":6000,
-					"triggerType":"script",
-					"value":"Our satellites are detecting a strange energy source ahead ...",
-					"type":"Scripts/showLockedMessage.lua"
-				},
-				{
-					"distance":6350,
-					"triggerType":"script",
-					"value":"It's a prototype Aegis! We thought we destroyed everything in the lab.",
-					"type":"Scripts/showLockedMessage.lua"
-				},
-				{
-					"distance":6400,
 					"triggerType":"enemy",
-					"value":1,
+					"value":3,
 					"type":1
 				},
 				{
-					"distance":6400,
+					"distance":7000,
+					"triggerType":"script",
+					"value":"It's a heavy prototype Aegis! Its power far exceeds yours. Use your unit's
+							mobility to your advantage!",
+					"type":"Scripts/showMessage.lua"
+				},
+				{
+					"distance":7000,
+					"triggerType":"script",
+					"value":"",
+					"type":"Scripts/spawnFinalBoss.lua"
+				},
+				{
+					"distance":7000,
+					"triggerType":"enemy",
+					"value":1,
+					"type":-2
+				},
+				{
+					"distance":7000,
 					"triggerType":"endGame",
 					"value":0,
 					"type":0

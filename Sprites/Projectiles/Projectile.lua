@@ -11,6 +11,7 @@ function Projectile:new(X, Y, Image)
 	
 	s.persists = false
 	s.friction = 1
+	s.massless = true
 	
 	return s
 end

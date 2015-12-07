@@ -6,7 +6,7 @@ Enemy = {
 	attackPower = 1,
 	score = 0,
 	aiStage = 1,
-	dropRate = .3
+	dropRate = .2
 }
 
 function Enemy:new(X,Y)

@@ -34,8 +34,9 @@ function Railbeam:doConfig()
 	self:addAnimation("default", {1}, 0, false)
 	self:addAnimation("kill", {2,3,4,5}, .02, false)
 	self:playAnimation("default")
-	self.attackPower = 1.9
+	self.attackPower = 1.7
 	self.visible = false
+	self.massless = true
 	
 	--GameState.playerBullets:add(self)
 	GameState.worldParticles:add(self)

@@ -424,7 +424,8 @@ function GameState:executeTrigger(Trigger)
 		end
 	elseif triggerType == "endGame" then
 		if GameState:isWaveClear() then
-			GameState.messageBox:show("Well done! The war is ours.", "> Commander", true)
+			GameState.messageBox:show("Well done! The war is ours!", "> Commander", true)
+			General:getCamera():fade({255,255,255}, 2)
 			Timer:new(5, self, self.gameOver)
 		else
 			self.lastTrigger = self.lastTrigger - 1

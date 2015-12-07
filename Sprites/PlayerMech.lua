@@ -149,7 +149,7 @@ function PlayerMech:doConfig()
 		curParticle:addAnimation("kill", {2,3,4,5}, .02, false)
 		curParticle:playAnimation("default")
 		curParticle:setPersistance(true)
-		curParticle.attackPower = .5
+		curParticle.attackPower = .4
 		curParticle.friction = .5
 		curParticle.visible = false
 		
@@ -186,9 +186,9 @@ function PlayerMech:doConfig()
 	playerGun:start(false, .4, .06, -1)
 	playerGun:stop()
 	GameState.emitters:add(playerGun)
-	self:addWeapon(playerGun, 2, nil, playerFlash, .1)
+	self:addWeapon(playerGun, 2, nil, playerFlash, .2)
 
-	--Weapon 3: Railgun		DPS:	2.7 (x2 => 5.4 on penetration)
+	--Weapon 3: Railgun		DPS:	2.4 (x2 => 4.8 on penetration)
 	local playerGun = Emitter:new(0,0)
 	for i=1, 4 do
 		local curRail = Railbeam:new(0,0)
