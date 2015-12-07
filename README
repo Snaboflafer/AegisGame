@@ -4,42 +4,27 @@ Jung Yang jyang99@jhu.edu
 Andrew Shiau ashiau1@jhu.edu
 Team: SOL
 
-Assignment 12
+Assignment 13
 
-Updated boss fight (improved ai, new graphic)
-Basic story cutscenes added (replaces static graphics before each level)
-Various juice added (particles, sfx, etc.)
-
-Changes after Demo feedback:
--Player will no longer collide with enemies during invuln time, preventing the player from being
-	trapped in a corner.
--Ship/Mech weapons and mobility rebalanced, to encourage players to use both
-	-Ship weapon damage reduced, but fires multiple shots per attack. Enemies are easier to hit,
-		with little change in DPS
-	-Mech damage reduced, and fire rate / shot speed increased. Mech still defeats weak enemies in a
-		a single hit, but has an easier time hitting them, while DPS against large enemies relatively
-		unchanged. Mech jetpack was buffed to be more responsive and have longer duration, allowing
-		players to more easily hit high up enemies.
--Fixed issue with collisions not being resolved when a large group is involved.
-	-As a result, more particles act dynamically with the world (smoke/dirt collide with stage,
-		bullets display animation on hit.
--Fixed bug with cutscenes that occured after a Game Over or when skipping a stage.
--Updated collision boxes on boss, so that is more appropriately damaged when shot.
-
+-Added powerups. Player can pick up weapons (two for each control mode)
+	and recovery pickups. Weapons are automaticaly equipped, and have
+	limited use per pickup, but increased damage / utility.
+-Added final boss at end of last stage. Boss uses custom graphics and ai.
+-Volume slider added to options menu
+-Various bugfixes, rebalances, and added juice
 
 Controls:
 WASD - movement
-K - Jump (ground only). Hold jump while in air to hover
+K - Jump (mech mode only). Hold jump while in air to hover
 Space - Shoot
-LShift - toggle mode
+LShift - Toggle player mode (mech/ship)
 
 Debug:
 ~	- Toggle debug information
-I	- toggle invincibility
-N	- Skip to start of next stage
+I	- Toggle invincibility
+N	- Skip to start of next stage (Do not use on last stage)
 B	- Toggle collision bounds visibility
 -/+	- Decrease/increase game speed
-
 
 Credits
 Music: 	Nighogg soundtrack by Daedelus,
