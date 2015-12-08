@@ -134,6 +134,22 @@ function Player:getScore()
 end
 
 function Player:update()
+	if Player.enableControls then
+		if Input:justPressed(Input.PRIMARY) then
+			self:attackStart()
+		end
+		if Input:justReleased(Input.PRIMARY) and self.activeMode == "ship" then
+			self:attackStop()
+		elseif Input:justReleased(Input.SECONDARY) and self.activeMode == "mech" then
+			self:jetOff()
+		end
+	end
+	if Player.enableTransform then
+		if Input:justPressed(Input.TERTIARY) then
+			GameState:togglePlayerMode()
+		end
+	end
+	
 	Sprite.update(self)
 	
 	--	local modeMaskWidth = GameState.modeMask.scaleX
@@ -262,31 +278,6 @@ function Player:enableTransform()
 end
 function Player:disableTransform()
 	Player.lockTransform = true
-end
-
-function Player:keypressed(Key)
-	if not Player.enableControls then
-		return
-	end
-	if Key == " " then
-		--self.weapons[self.activeWeapon]:restart()
-		self:attackStart()
-	end
-end
-
-function Player:keyreleased(Key)
-	if Key == " " and self.activeMode == "ship" then
-		self:attackStop()
-	elseif Key == "k" and self.activeMode == "mech" then
-		self:jetOff()
-	elseif Key == "i" then
-		self.invuln = not self.invuln
-		if self.invuln then
-			self.color = {50,50,128}
-		else
-			self.color = {255,255,255}
-		end
-	end
 end
 
 function Player:getType()

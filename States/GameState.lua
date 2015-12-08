@@ -340,6 +340,7 @@ function GameState:spawnEnemyGroup(NumEnemies, Type)
 end
 
 function GameState:start()
+	Input:gamepadBindGame()
 	State.start(self)
 	--self.bgmMusic:play()
 end
@@ -349,6 +350,11 @@ function GameState:stop()
 end
 
 function GameState:update()
+	if Input:justReleased(Input.MENU) then
+		General:setState(PauseState,false)
+		return
+	end
+
 	GameState:checkTriggers()
 
 	--Loop scenery groups
@@ -446,28 +452,6 @@ end
 
 function GameState:draw()
 	State.draw(self)
-end
-
-function GameState:keypressed(Key)
-	if self.messageBox.visible and (Key == "return" or Key == " ") then
-		self.messageBox:keypressed()
-	end
-	if Key == "lshift" then
-		self:togglePlayerMode()
-	end
-	--Temporary until input manager
-	self.player:keypressed(Key)
-end
-
-function GameState:keyreleased(Key)
-	if Key == "escape" then
-		General:setState(PauseState,false)
-	elseif Key == "end" or Key == "n" then
-		self:nextStage()
-	end
-
-	--Temporary until input manager
-	self.player:keyreleased(Key)
 end
 
 function GameState:togglePlayerMode(Force)

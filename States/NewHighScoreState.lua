@@ -38,6 +38,13 @@ function NewHighScoreState:load()
 end
 
 function NewHighScoreState:update()
+	if Input:justPressed(Input.SELECT) or (Input:justPressed(Input.PRIMARY) and Input.useGamepad)
+			and NewHighScoreState.hintCleared then
+		local score = General:getScore()
+		NewHighScoreState:updateHighScores(NewHighScoreState.name, score)
+		General:setState(HighScoreState)
+	end
+
 	State.update(self)
 	if NewHighScoreState:isHighScore() == false then
 		General:setState(HighScoreState)
@@ -54,29 +61,6 @@ end
 
 function NewHighScoreState:stop()
 	State.stop(self)
-end
-
-function NewHighScoreState:keypressed(key)
-	if key == "return" and NewHighScoreState.hintCleared == true then
-		local score = General:getScore()
-		NewHighScoreState:updateHighScores(NewHighScoreState.name, score)
-		General:setState(HighScoreState)
-	elseif key == "backspace" then
-		NewHighScoreState.name = string.sub(NewHighScoreState.name, 1, string.len(NewHighScoreState.name) - 1)
-	else
-
-		if NewHighScoreState.hintCleared == false then
-			NewHighScoreState.name = ""
-			NewHighScoreState.hintCleared = true
-		end
-
-		if Utility:isValidKey(key) == true then
-			NewHighScoreState.name = NewHighScoreState.name .. key
-		end
-	end
-
-	NewHighScoreState.name = string.upper(NewHighScoreState.name)
-	self.nameText:setLabel(NewHighScoreState.name)
 end
 
 function NewHighScoreState:isHighScore() 
@@ -96,7 +80,6 @@ function NewHighScoreState:isHighScore()
 
 	return isHighScore
 end
-
 
 function NewHighScoreState:updateHighScores(name, score)
 	local contents, size = love.filesystem.read("highScores.json", size)

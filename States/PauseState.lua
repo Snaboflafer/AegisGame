@@ -37,6 +37,7 @@ function PauseState:load()
 end
 
 function PauseState:start()
+	Input:gamepadBindMenu()
 	State.start(self)
 end
 function PauseState:stop()
@@ -44,6 +45,29 @@ function PauseState:stop()
 end
 
 function PauseState:update()
+	if Input:justPressed(Input.UP) then
+		self.optionSound:rewind() 
+		self.optionSound:play()
+		self.selected = (self.selected + self.options:getSize() - 2) % self.options:getSize() + 1
+	elseif Input:justPressed(Input.DOWN) then
+		self.optionSound:rewind() 
+		self.optionSound:play()
+		self.selected = (self.selected + self.options:getSize()) % self.options:getSize() + 1
+	elseif Input:justPressed(Input.SELECT) or Input:justPressed(Input.PRIMARY) then
+		if self.selected == 1 then
+			self.selectSound:rewind()
+			self.selectSound:play()
+			General:setState(GameState)
+		elseif self.selected == 2 then
+			self.exitSound:rewind()
+			self.exitSound:play()
+			General:closeState(GameState)
+			General:setState(MenuState)
+		end
+	elseif Input:justReleased(Input.MENU) then
+		General:setState(GameState)
+	end
+
 	for k, v in pairs(self.options.members) do
 		if k == self.selected then
 			v.x = General.screenW * .3 - 64
@@ -59,33 +83,4 @@ end
 
 function PauseState:draw()
 	State.draw(self)
-end
-
-function PauseState:keyreleased(key)
-	if key == "escape" then
-		General:setState(GameState)
-	end
-end
-function PauseState:keypressed(key)
-	if key == "w" or key == "up" then 
-		self.optionSound:rewind() 
-		self.optionSound:play()
-		self.selected = (self.selected + self.options:getSize() - 2) % self.options:getSize() + 1
-    elseif key == "s" or key == "down" then
-		self.optionSound:rewind() 
-		self.optionSound:play()
-		self.selected = (self.selected + self.options:getSize()) % self.options:getSize() + 1
-    elseif key == "return" or key == " " then
-		if self.selected == 1 then
-			self.selectSound:rewind()
-			self.selectSound:play()
-			General:setState(GameState)
-		elseif self.selected == 2 then
-	--DONT CLOSE GAMESTATE until state state closure is properly worked out
-			self.exitSound:rewind()
-			self.exitSound:play()
-			General:closeState(GameState)
-			General:setState(MenuState)
-		end
-    end
 end

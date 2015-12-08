@@ -51,11 +51,3 @@ end
 function GameEndedState:draw()
 	State.draw(self)
 end
-function GameEndedState:keypressed(key)
-	--patchwork fix for GameState improper closing bug
-	--love.event.push('quit')
-    --General:setState(HighScoreState)
-end
-
-
-

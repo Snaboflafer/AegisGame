@@ -141,18 +141,6 @@ function MessageBox:genComponents()
 	table.insert(self.members, self.titleText)
 end
 
-function MessageBox:keypressed()
-	if self.autoAdvance then
-		--Ignore input if box is auto-advancing
-		return
-	end
-	if self:allCharactersDisplayed() then
-		self:nextText()
-	else
-		self:displayAll()
-	end
-end
-
 function MessageBox:nextText()
 	if self.autoAdvance then
 		self.autoAdvanced = false
@@ -197,6 +185,21 @@ function MessageBox:destroy()
 end
 
 function MessageBox:update()
+	if self.visible then
+		if Input:justPressed(Input.SELECT) or Input:justPressed(Input.PRIMARY) then
+			-- Received advance input
+			if self.autoAdvance then
+				--Ignore if box is auto-advancing
+				return
+			end
+			if self:allCharactersDisplayed() then
+				self:nextText()
+			else
+				self:displayAll()
+			end
+		end
+	end
+	
 	if self.alive then
 		if self.box.scaleY < 1 then
 			self.box.scaleY = self.box.scaleY + General.elapsed / MessageBox.BOXEXPANDTIME

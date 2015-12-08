@@ -277,23 +277,23 @@ function PlayerMech:update()
 	local pressedDown
 	local pressedLeft
 	local pressedRight
-	local pressedJump
 	local pressedAttack
+	local pressedJump
 	
 	if Player.enableControls then
-		pressedUp = love.keyboard.isDown("w")
-		pressedDown = love.keyboard.isDown("s")
-		pressedLeft = love.keyboard.isDown("a")
-		pressedRight = love.keyboard.isDown("d")
-		pressedJump = love.keyboard.isDown("k")
-		pressedAttack = love.keyboard.isDown(" ")
+		pressedUp = Input:isPressed(Input.UP)
+		pressedDown = Input:isPressed(Input.DOWN)
+		pressedLeft = Input:isPressed(Input.LEFT)
+		pressedRight = Input:isPressed(Input.RIGHT)
+		pressedAttack = Input:isPressed(Input.PRIMARY)
+		pressedJump = Input:isPressed(Input.SECONDARY)
 	else
 		pressedUp = false
 		pressedDown = false
 		pressedLeft = false
 		pressedRight = false
-		pressedJump = false
 		pressedAttack = false
+		pressedJump = false
 	end
 	
 	--self.weapons[self.activeWeapon]:setPosition(self.x+66, self.y+12)
@@ -384,6 +384,8 @@ function PlayerMech:update()
 
 		if pressedJump then
 			self:jetOn()
+		else
+			self:jetOff()
 		end
 		
 		if self.isHovering then
@@ -395,7 +397,9 @@ function PlayerMech:update()
 			end
 			self.accelerationY = accY
 			self.fuel = self.fuel - General.elapsed
-			--animStr = "jump_f_d"
+			if self.fuel <= 0 then
+				self:jetOff()
+			end
 		else
 			local accY = self.accelerationY
 			local gravity = self.GRAVITY
@@ -537,7 +541,7 @@ function PlayerMech:attackStart()
 	self.attackCooldownTimer:restart(self.weapons[self.activeWeapon].members[1].emitDelay)
 end
 function PlayerMech:attackStop()
-	if love.keyboard.isDown(" ") then
+	if Input:isPressed(Input.PRIMARY) then
 		self.attackCooldownTimer:restart(self.weapons[self.activeWeapon].members[1].emitDelay)
 		return
 	end

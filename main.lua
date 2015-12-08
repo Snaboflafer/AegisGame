@@ -8,6 +8,8 @@
 
 time = 0
 
+love.audio.setVolume(.1)
+
 require("Utility/General")
 require("Utility/Utility")
 require("Utility/LevelManager")
@@ -16,6 +18,7 @@ require("Utility/Camera")
 require("Utility/Timer")
 require("Utility/Effect")
 require("Utility/Emitter")
+require("Utility/Input")
 require("Utility/MessageBox")
 require("Utility/SoundManager")
 require("Utility/Script")
@@ -48,11 +51,11 @@ require("Sprites/Projectiles/Railbeam")
 
 function love.load()
 	General:init()
+	Input:init()
 	--Camera:newCamera(General.screenW/2,General.screenH/2)
 
 	debugText = Text:new(0,0, "fonts/lucon.ttf", 12)
 	debugText.visible = false
-	
 	
 	frameTimes = {60}	--First value is average
 	frameStartTime = os.time()
@@ -66,6 +69,7 @@ end
 function love.update(dt)
 	General.elapsed = dt * General.timeScale
 	time = time + General.elapsed
+	Input:update()
 	General.activeState:update()
     SoundManager:update(dt)
 	--Update stored frame times
@@ -133,32 +137,14 @@ function love.draw()
 	Text.draw(debugText)
 end
 
-function love.keyreleased(key)
-	General.activeState:keyreleased(key)
-	
-	if key == "`" then
-		debugText.visible = not debugText.visible
-	elseif key == "p" then
-		General.timeScale = (General.timeScale + .2) % 2
-	end
+function love.keyreleased(Key)
+	Input:keyreleased(Key)
 end
 
-function love.keypressed(key)
-	General.activeState:keypressed(key)
-	
-	if key == "down" then
-		debugText.y = debugText.y - 140
-	end
-	if key == "up" then
-		debugText.y = debugText.y + 140
-	end
-	if key == "-" then
-		General.timeScale = General.timeScale - .5
-	end
-	if key == "=" then
-		General.timeScale = General.timeScale + .5
-	end
-	if key == "b" then
-		General.showBounds = not General.showBounds
-	end
+function love.keypressed(Key)
+	Input:keypressed(Key)
+end
+
+function love.joystickpressed(Joystick, Button)
+	Input:joystickpressed(Joystick, Button)
 end

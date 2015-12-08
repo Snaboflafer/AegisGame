@@ -41,6 +41,7 @@ function MenuState:load()
 end
 
 function MenuState:start()
+	Input:gamepadBindMenu()
 	State.start(self)
 	SoundManager:playBgm("sounds/blast_network.mp3")
 end
@@ -50,36 +51,15 @@ function MenuState:stop()
 end
 
 function MenuState:update()
-	for k, v in pairs(self.options.members) do
-		if k == self.selected then
-			v.x = General.screenW * .3 - 64
-			v:setColor(255, 201, 0, 255)
-		else
-			v.x = General.screenW * .3
-			v:setColor(255,255,255,255)
-		end
-	end
-	
-	State.update(self)
-end
-
-function MenuState:draw()
-	State.draw(self)
-end
-
-function MenuState:keypressed(key)
-	
-	if key == "escape" then
-		love.event.quit()
-	elseif key == "w" or key == "up" then 
+	if Input:justPressed(Input.UP) then
 		self.optionSound:rewind() 
 		self.optionSound:play()
 		self.selected = (self.selected + self.options:getSize() - 2) % self.options:getSize() + 1
-    elseif key == "s" or key == "down" then
+	elseif Input:justPressed(Input.DOWN) then
 		self.optionSound:rewind() 
 		self.optionSound:play()
 		self.selected = (self.selected + self.options:getSize()) % self.options:getSize() + 1
-    elseif key == "return" or key == " " then
+	elseif Input:justPressed(Input.SELECT) or Input:justPressed(Input.PRIMARY) then
 		if self.selected == 1 then
 			General:getCamera():fade({255,255,255}, .2)
 			SoundManager:stopBgm()
@@ -99,7 +79,23 @@ function MenuState:keypressed(key)
 			self.exitSound:play()
 			love.event.quit()
 		end
-    end
+	end
+
+	for k, v in pairs(self.options.members) do
+		if k == self.selected then
+			v.x = General.screenW * .3 - 64
+			v:setColor(255, 201, 0, 255)
+		else
+			v.x = General.screenW * .3
+			v:setColor(255,255,255,255)
+		end
+	end
+	
+	State.update(self)
+end
+
+function MenuState:draw()
+	State.draw(self)
 end
 
 function MenuState:loadGame()

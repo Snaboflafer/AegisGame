@@ -28,7 +28,6 @@ function HighScoreState:load()
 	HighScoreState:add(scoresText)
 
 	self.exitSound = love.audio.newSource("sounds/menu_sounds/cw_sound34.wav")
-
 end
 
 function HighScoreState:start()
@@ -39,6 +38,12 @@ function HighScoreState:stop()
 end
 
 function HighScoreState:update()
+	if Input:justPressed(Input.MENU) or Input:justPressed(Input.SECONDARY) then
+		self.exitSound:rewind()
+		self.exitSound:play()
+		General:setState(MenuState)
+	end
+	
 	State.update(self)
 end
 
@@ -57,10 +62,4 @@ function HighScoreState:readHighScores(path)
 		content = content .. scoreObject["name"] .. " " .. scoreObject["score"] .. "\n"
 	end
 	return content
-end
-
-function HighScoreState:keypressed(key)
-	self.exitSound:rewind()
-	self.exitSound:play()
-	General:setState(MenuState)
 end

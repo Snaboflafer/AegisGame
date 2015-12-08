@@ -34,6 +34,15 @@ function TitleState:load()
     SoundManager:playBgm("sounds/mission_ui.mp3")
 end
 
+function TitleState:update()
+	if Input:justPressed(Input.UP) or Input:justPressed(Input.DOWN) or Input:justPressed(Input.LEFT) or	Input:justPressed(Input.RIGHT)
+		or Input:justPressed(Input.PRIMARY) or Input:justPressed(Input.SECONDARY)
+		or Input:justPressed(Input.TERTIARY) or Input:justPressed(Input.QUATERNARY)
+		or Input:justPressed(Input.MENU) or Input:justPressed(Input.SELECT) then
+		General:setState(MenuState)
+	end
+end
+
 function TitleState:start()
     State.start(self)
 end
@@ -41,9 +50,3 @@ function TitleState:stop()
 	State.stop(self)
     SoundManager:stopBgm()
 end
-
-
-function TitleState:keyreleased(key)
-    General:setState(MenuState)
-end
-

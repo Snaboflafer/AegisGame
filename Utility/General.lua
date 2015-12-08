@@ -278,6 +278,7 @@ function General:collide(Object1, Object2, CallbackTarget, CallbackFunction, Pre
 end
 
 function General:setState(NewState, CloseOld)
+	Input:update()
 	if CloseOld == nil then
 		CloseOld = true
 	end
@@ -308,6 +309,7 @@ function General:setState(NewState, CloseOld)
 end
 
 function General:closeState(OldState, Force)
+	Input:update()
 	if Force == nil then
 		Force = true
 	end

@@ -162,28 +162,28 @@ end
 function PlayerShip:update()
     
 	if Player.enableControls then
-		if love.keyboard.isDown('w') and love.keyboard.isDown('d') then
+		if Input:isPressed(Input.UP) and Input:isPressed(Input.RIGHT) then
 			self.velocityX = self.momentArm
 			self.velocityY = -self.momentArm
-		elseif love.keyboard.isDown('d') and love.keyboard.isDown('s') then
+		elseif Input:isPressed(Input.RIGHT) and Input:isPressed(Input.DOWN) then
 			self.velocityX = self.momentArm
 			self.velocityY = self.momentArm
-		elseif love.keyboard.isDown('s') and love.keyboard.isDown('a') then
+		elseif Input:isPressed(Input.DOWN) and Input:isPressed(Input.LEFT) then
 			self.velocityX = -self.momentArm
 			self.velocityY = self.momentArm
-		elseif love.keyboard.isDown('a') and love.keyboard.isDown('w') then
+		elseif Input:isPressed(Input.LEFT) and Input:isPressed(Input.UP) then
 			self.velocityX = -self.momentArm
 			self.velocityY = -self.momentArm
-		elseif love.keyboard.isDown('w') then
+		elseif Input:isPressed(Input.UP) then
 			self.velocityX = 0
 			self.velocityY = -self.magnitude
-		elseif love.keyboard.isDown('s') then
+		elseif Input:isPressed(Input.DOWN) then
 			self.velocityX = 0
 			self.velocityY = self.magnitude
-		elseif love.keyboard.isDown('a') then
+		elseif Input:isPressed(Input.LEFT) then
 			self.velocityX = -self.magnitude
 			self.velocityY = 0
-		elseif love.keyboard.isDown('d') then
+		elseif Input:isPressed(Input.RIGHT) then
 			self.velocityX = self.magnitude
 			self.velocityY = 0
 		else

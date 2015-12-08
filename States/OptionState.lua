@@ -51,26 +51,24 @@ function OptionState:stop()
 	SoundManager:stopBgm()
 end
 
-function OptionState:update()	
+function OptionState:update()
+	if Input:justPressed(Input.MENU) or Input:justPressed(Input.SECONDARY) then
+		General:setState(MenuState)
+	elseif Input:justPressed(Input.LEFT) then
+		General:decrementVolume()
+		OptionState:setVolumeSlider()
+		OptionState:updateVolume()
+	elseif Input:justPressed(Input.RIGHT) then
+		General:incrementVolume()
+		OptionState:updateVolume()
+		OptionState:setVolumeSlider()
+	end
+
 	State.update(self)
 end
 
 function OptionState:draw()
 	State.draw(self)
-end
-
-function OptionState:keypressed(key)
-	if key == "escape" then
-		General:setState(MenuState)
-    elseif key == "d" or key == "right" then
-		General:incrementVolume()
-		OptionState:updateVolume()
-		OptionState:setVolumeSlider()
-	elseif key == "a" or key == "left" then
-		General:decrementVolume()
-		OptionState:setVolumeSlider()
-		OptionState:updateVolume()
-	end
 end
 
 function OptionState:setVolumeSlider()
