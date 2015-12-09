@@ -109,7 +109,7 @@ function Input:getBoundControl(Button)
 		end
 	else
 		if self.map_keyboard[Button] ~= nil then
-			return self.map_gamepad[Button]
+			return self.map_keyboard[Button]
 		end
 	end
 	return ""
