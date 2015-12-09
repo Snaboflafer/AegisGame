@@ -41,8 +41,8 @@ function Input:init()
 		[self.SECONDARY] = "b",
 		[self.TERTIARY] = "x",
 		[self.QUATERNARY] = "y",
-		[self.MENU] = "back",
-		[self.SELECT] = "start"
+		[self.MENU] = "start",
+		[self.SELECT] = "a"
 	}
 	self.gamepadBinds_Game = {
 		[self.UP] = "dpup",
@@ -98,6 +98,21 @@ end
 ]]
 function Input:gamepadBindGame()
 	self.map_gamepad = self.gamepadBinds_Game
+end
+
+--[[ Get the key/control assigned to an input Button
+]]
+function Input:getBoundControl(Button)
+	if self.useGamepad then
+		if self.map_gamepad[Button] ~= nil then
+			return self.map_gamepad[Button]
+		end
+	else
+		if self.map_keyboard[Button] ~= nil then
+			return self.map_gamepad[Button]
+		end
+	end
+	return ""
 end
 
 --[[ Returns true if the button is currently pressed

@@ -1,6 +1,6 @@
 --Class for sprites. Should extend Object
 Boss2 = {
-	JUMPPOWER = 600,
+	JUMPPOWER = 800,
 	GRAVITY = 1400,
 	WALKSPEED = 500,
 	weapons = {}
@@ -18,11 +18,15 @@ function Boss2:new(X,Y,ImageFile)
 	s.maxHealth = 200
 	s.score = 10000
 	
+	s.onFloor = true
+	
 	s.accelerationY = self.GRAVITY
 	s.maxVelocityX = self.WALKSPEED*.2
 	s.dragX = self.WALKSPEED*2
 	
 	s.weapons = {}
+
+	s.hitGround = love.audio.newSource(LevelManager:getSound("hit_ground"))
 	
 	return s
 end
@@ -221,7 +225,7 @@ function Boss2:update()
 	elseif self.route == 2 then
 		--Move forwards
 		if self.aiStage == 1 then
-			if math.random() < .3 then
+			if (math.random() < .3) or (GameState.player.y < self.y and math.random()<.8) then
 				self:jump()
 			end
 			self.accelerationX = -self.WALKSPEED
@@ -242,7 +246,7 @@ function Boss2:update()
 	elseif self.route == 3 then
 		--Move backwards
 		if self.aiStage == 1 then
-			if math.random() < .3 then
+			if (math.random() < .3) or (GameState.player.y < self.y and math.random()<.8)then
 				self:jump()
 			end
 			self.accelerationX = self.WALKSPEED
@@ -314,6 +318,7 @@ function Boss2:update()
 				self.weapons[1].members[i]:lockTarget(GameState.player)
 			end
 			self.weapons[1]:restart()
+			General.activeState.camera:screenShake(.005, .05)
 			self:playAnimation("attack_arm_fire", true)
 			Timer:new(1, self, Boss2.updateStage)
 			self:updateStage()
@@ -347,6 +352,7 @@ function Boss2:update()
 			self.weapons[2]:setAngle(180,5)
 			self.weapons[2]:restart()
 			self:playAnimation("attack_arm_fire")
+			General.activeState.camera:screenShake(.004, 4)
 			Timer:new(4, self, Boss2.updateStage)
 			self:updateStage()
 		elseif self.aiStage == 4 then
@@ -395,6 +401,7 @@ end
 
 function Boss2:jump()
 	self.velocityY = -self.JUMPPOWER
+	self.onFloor = false
 	--self.sfxJump:play()
 end
 
@@ -446,6 +453,16 @@ function Boss2:nextRoute()
 		end
 	end
 	self.aiStage = 1
+end
+
+function Boss2:collide(Object)
+	if self.touching == Sprite.DOWN and not self.onFloor then
+		self.onFloor = true
+		General.activeState.camera:screenShake(.02,.2)
+		self.hitGround:rewind()
+		self.hitGround:play()
+		GameState.groundParticle:play(self.x + self.width*.3, self.y+self.height-10)
+	end
 end
 
 function Boss2:getType()

@@ -319,7 +319,7 @@ function GameState:spawnEnemyGroup(NumEnemies, Type)
 	
 	for i=1, NumEnemies or 5 do
 		--Calculate location
-		local spawnX = cameraX + General.screenW + (i * 256)
+		local spawnX = cameraX + General.screenW + (i * 200)
 		--local spawnY = spawnY + 256 * (math.random()-.5)
 
 		--Attempt to recycle an enemy
@@ -440,14 +440,7 @@ function GameState:executeTrigger(Trigger)
 end
 
 function GameState:isWaveClear()
-	clear = true
-	if self.enemies:getFirstUnavailable(true) == nil then
-		return true
-	else
-		return false
-	end
-
-	return clear
+	return (self.enemies:getFirstUnavailable(true) == nil)
 end
 
 function GameState:draw()

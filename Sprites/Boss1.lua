@@ -16,8 +16,8 @@ function Boss1:new(X,Y,ImageFile)
 	
 	s.NUMROUTES = 3
 	s.route = 1
-	s.health = 50
-	s.maxHealth = 50
+	s.health = 100
+	s.maxHealth = 100
 	s.score = 1000
 	s.massless = false
 	

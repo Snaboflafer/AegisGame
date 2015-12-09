@@ -186,7 +186,7 @@ function PlayerMech:doConfig()
 	playerGun:start(false, .4, .06, -1)
 	playerGun:stop()
 	GameState.emitters:add(playerGun)
-	self:addWeapon(playerGun, 2, nil, playerFlash, .2)
+	self:addWeapon(playerGun, 2, nil, playerFlash, .15)
 
 	--Weapon 3: Railgun		DPS:	2.4 (x2 => 4.8 on penetration)
 	local playerGun = Emitter:new(0,0)

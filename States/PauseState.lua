@@ -14,6 +14,12 @@ function PauseState:load()
 	
 	local typeFace = LevelManager:getFont()
 
+	local bgLayer = Sprite:new(0,0)
+	bgLayer:createGraphic(General.screenW, General.screenW, {0,0,0}, 100)
+	bgLayer.scrollFactorX = 0
+	bgLayer.scrollFactorY = 0
+	PauseState:add(bgLayer)
+	
 	local headerText = Text:new(General.screenW * .5, General.screenH * .2,
 						txtTitle, typeFace, 64)
 	headerText:setAlign(Text.CENTER)
@@ -26,6 +32,7 @@ function PauseState:load()
 	for i=1, table.getn(txtOptions), 1 do
 		local curText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (i-1),
 						txtOptions[i], typeFace, 48)
+		curText:setShadow(50,50,50,255)
 		self.options:add(curText)
 	end
 	PauseState:add(self.options)
