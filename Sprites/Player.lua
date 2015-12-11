@@ -222,10 +222,6 @@ end
 ]]
 function Player:updateHealth()
 	--Width is relative to size of health bar (value is defined in GameState, hardcoded here)
-	local hpWidth = (self.health/self.maxHealth) * 105
-	if hpWidth < 0 then
-		hpWidth = 0
-	end
 	GameState.hpMask.scaleX = 1 - math.ceil(self.health)/self.maxHealth
 	
 	if self.health <= 1 then

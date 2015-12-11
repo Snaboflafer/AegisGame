@@ -41,15 +41,19 @@ function Pickup:doConfig()
 	local color =  {255, 255, 255}
 	if self.id == 1 then
 		self:playAnimation("health")
+		self.sfx = love.audio.newSource(LevelManager:getSound("powerup_health"))
 		color =  {243, 17, 17}
 	elseif self.id == 2 then
 		self:playAnimation("shield")
+		self.sfx = love.audio.newSource(LevelManager:getSound("powerup_shield"))
 		color =  {0, 174, 239}
 	elseif self.id == 3 then
 		self:playAnimation("power")
+		self.sfx = love.audio.newSource(LevelManager:getSound("powerup_power"))
 		color =  {255, 151, 35}
 	elseif self.id == 4 then
 		self:playAnimation("spread")
+		self.sfx = love.audio.newSource(LevelManager:getSound("powerup_alt"))
 		color =  {9, 251, 9}
 	else
 		self:playAnimation("OTHER")
@@ -110,6 +114,11 @@ function Pickup:apply(PlayerObject, PickupObject)
 		Player.specialAmmo = 10
 		Player.specialMaxAmmo = 10
 		Player:updateSpecial()
+	end
+	
+	if PickupObject.sfx ~= nil then
+		PickupObject.sfx:rewind()
+		PickupObject.sfx:play()
 	end
 	
 	GameState.score = GameState.score + PickupObject.score

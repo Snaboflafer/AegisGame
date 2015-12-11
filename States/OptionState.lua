@@ -20,6 +20,8 @@ function OptionState:load()
 	headerText:setShadow(255, 90, 0, 255)
 	OptionState:add(headerText)
 
+	self.optionSound = love.audio.newSource("sounds/menu_sounds/cw_sound27.wav")
+	
 	self.volumeText = Text:new(General.screenW * .3, General.screenH * .5 + 48 * (1-1),
 						volume, typeFace, 48)
 	self.volumeText:setColor(255, 201, 0, 255)
@@ -55,13 +57,15 @@ function OptionState:update()
 	if Input:justPressed(Input.MENU) or Input:justPressed(Input.SECONDARY) then
 		General:setState(MenuState)
 	elseif Input:justPressed(Input.LEFT) then
-		General:decrementVolume()
+		General:setVolume(General:getVolume()-.1)
 		OptionState:setVolumeSlider()
-		OptionState:updateVolume()
+		self.optionSound:rewind()
+		self.optionSound:play()
 	elseif Input:justPressed(Input.RIGHT) then
-		General:incrementVolume()
-		OptionState:updateVolume()
+		General:setVolume(General:getVolume()+.1)
 		OptionState:setVolumeSlider()
+		self.optionSound:rewind()
+		self.optionSound:play()
 	end
 
 	State.update(self)
@@ -72,7 +76,7 @@ function OptionState:draw()
 end
 
 function OptionState:setVolumeSlider()
-	local newSliderPos = General:getVolume() * 13
+	local newSliderPos = General:getVolume() * self.volumeBox.width
 	self.volumeBoxSlider.x = self.volumeBox.x + newSliderPos
 end
 

@@ -147,37 +147,39 @@ function GameState:load()
 
 	--Boss Hud
 
-	local bossHudX = General.screenW - 150
+	local bossHudX = General.screenW - 256
 	local bossHudY = 40
 	
 	--Create hp bar
 	local bossHpX = bossHudX
 	local bossHpY = bossHudY
-	local bossHpW = 105
+	local bossHpW = 210
 	local bossHpH = 16
 	--[[
 	self.hpBack = Sprite:new(bossHpX+28,bossHpY+8)
 	self.hpBack:createGraphic(bossHpW, bossHpH, {127,127,127}, 255)
 	GameState.hud:add(self.hpBack)--]]
 
-	self.bossHpMask = Sprite:new(bossHudX + bossHpW +28, bossHpY + 8)
+	self.bossHp = Group:new()
+	for i=0,1 do
+		local bossHpBar = Sprite:new(bossHpX+25 + 105*i,bossHpY+9)
+		bossHpBar:loadSpriteSheet("images/ui/hud_healthBar.png", 105, 16)
+		bossHpBar:addAnimation("default", {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, .05, true)
+		bossHpBar:playAnimation("default")
+		bossHpBar.scaleX = 1
+		self.bossHp:add(bossHpBar)
+	end
+	self.bossHpMask = Sprite:new(bossHudX + bossHpW +25, bossHpY + 9)
 	self.bossHpMask:createGraphic(bossHpW, bossHpH, {100,100,100}, 255)
 	self.bossHpMask.originX = bossHpW
 	self.bossHpMask.scaleX = 1
-	self.hud:add(self.bossHpMask)
-	self.bossHpBar = Sprite:new(bossHpX+28,bossHpY+8)
-	self.bossHpBar:loadSpriteSheet("images/ui/hud_healthBar.png", 105, 16)
-	self.bossHpBar:addAnimation("default", {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, .05, true)
-	self.bossHpBar:playAnimation("default")
-	self.bossHpBar.scaleX = 1
+	self.bossHp:add(self.bossHpMask)
 	--self.bossHpBar:createGraphic(bossHpW, bossHpH, {255,59,0}, 255)
-	self.hud:add(self.bossHpBar)
-	self.bossHpBar.visible = false
-	self.bossHpMask.visible = false
-	--[[
-	self.hpOverlay = Sprite:new(bossHpX, bossHpY, "images/ui/hud_health.png")
-	GameState.hud:add(self.hpOverlay)
-	--]]
+	local bossHpOverlay = Sprite:new(bossHpX, bossHpY, LevelManager:getImage("hudBossHpOverlay"))
+	self.bossHp:add(bossHpOverlay)
+
+	self.bossHp.visible = false
+	self.hud:add(self.bossHp)
 
 	--Player Hud
 	

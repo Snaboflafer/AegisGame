@@ -8,8 +8,6 @@
 
 time = 0
 
-love.audio.setVolume(.1)
-
 require("Utility/General")
 require("Utility/Utility")
 require("Utility/LevelManager")

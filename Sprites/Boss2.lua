@@ -14,8 +14,8 @@ function Boss2:new(X,Y,ImageFile)
 	
 	s.NUMROUTES = 6
 	s.route = 1
-	s.health = 200
-	s.maxHealth = 200
+	s.health = 150
+	s.maxHealth = 150
 	s.score = 10000
 	
 	s.onFloor = true
@@ -47,14 +47,13 @@ function Boss2:setAnimations()
 end
 
 function Boss2:respawn(SpawnX, SpawnY)
-	SoundManager:playBgm("sounds/music/Zenon.ogg")
+	SoundManager:playBgm("sounds/music/boss_2.ogg")
 	if SpawnY == nil then
 		Enemy.respawn(self, SpawnX, General.screenH/2)
 	else
 		Enemy.respawn(self, SpawnX, SpawnY)
 	end
-	GameState.bossHpBar.visible = true
-	GameState.bossHpMask.visible = true
+	GameState.bossHp.visible = true
 end
 
 function Boss2:addWeapon(GunGroup, slot)
@@ -204,8 +203,7 @@ function Boss2:kill()
 	Enemy.kill(self)
 	self.weapons[1]:stop()
 	self.weapons[2]:stop()
-	GameState.bossHpBar.visible = false
-	GameState.bossHpMask.visible = false
+	GameState.bossHp.visible = true
 end
 
 function Boss2:update()
@@ -219,7 +217,7 @@ function Boss2:update()
 			self:updateStage()
 		elseif self.aiStage == 2 then
 			--Idle
-		elseif self.aiStage == 3 then
+		else
 			self:nextRoute()
 		end
 	elseif self.route == 2 then
@@ -238,7 +236,7 @@ function Boss2:update()
 			else
 				self:playAnimation("jump")
 			end
-		elseif self.aiStage == 3 then
+		else
 			self.accelerationX = 0
 			self.route = 1
 			self.aiStage = 1
@@ -259,7 +257,7 @@ function Boss2:update()
 			else
 				self:playAnimation("jump")
 			end
-		elseif self.aiStage == 3 then
+		else
 			self.accelerationX = 0
 			self:idleRoute()
 		end
@@ -300,7 +298,7 @@ function Boss2:update()
 			self:updateStage()
 		elseif self.aiStage == 8 then
 			--Recovering
-		elseif self.aiStage == 9 then
+		else
 			self:idleRoute()
 		end
 	elseif self.route == 5 then
@@ -336,7 +334,7 @@ function Boss2:update()
 			end
 		elseif self.aiStage == 6 then
 			--Recovering
-		elseif self.aiStage == 7 then
+		else
 			self:idleRoute()
 		end
 	elseif self.route == 6 then
@@ -365,7 +363,7 @@ function Boss2:update()
 			self:updateStage()
 		elseif self.aiStage == 6 then
 			--Recovering
-		elseif self.aiStage == 7 then
+		else
 			self:idleRoute()
 		end
 	elseif self.route == 7 then
@@ -406,15 +404,7 @@ function Boss2:jump()
 end
 
 function Boss2:updateHealth()
-	--Width is relative to size of health bar (value is defined in GameState, hardcoded here)
-	local hpWidth = (self.health/self.maxHealth) * 105
-	if hpWidth < 0 then
-		hpWidth = 0
-	end
-	GameState.bossHpBar.scaleX = self.health/self.maxHealth
-	if self.health <= 1 then
-		GameState.bossHpBar:flash({128,0,0}, 1, true)
-	end
+	GameState.bossHpMask.scaleX = 1 - math.ceil(self.health)/self.maxHealth
 end
 
 function Boss2:idleRoute()
@@ -425,10 +415,11 @@ function Boss2:idleRoute()
 	self.aiStage = 1
 end
 function Boss2:nextRoute()
+	self:playAnimation("idle")
 	for i=1, table.getn(self.weapons) do
 		self.weapons[i]:stop()
 	end
-	if GameState.player.x > self.x or self:getScreenX() < General.screenW*.4 then
+	if GameState.player.x > self.x or self:getScreenX() < General.screenW*.45 then
 		--Move right if getting too close to left edge, or player gets past
 		self.route = 3
 	elseif self:getScreenX() > General.screenW*.8 then

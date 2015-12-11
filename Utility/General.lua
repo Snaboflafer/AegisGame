@@ -70,6 +70,15 @@ function General:getVolume()
 	return self.volume
 end
 
+function General:setVolume(Val)
+	if Val < 0 then
+		Val = 0
+	elseif Val > 1 then
+		Val = 1
+	end
+	self.volume = Val
+	love.audio.setVolume(Val)
+end
 function General:incrementVolume() 
 	if self.volume < 9 then
 		self.volume = self.volume + 1

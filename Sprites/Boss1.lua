@@ -38,8 +38,7 @@ function Boss1:respawn(SpawnX, SpawnY)
 	else
 		Enemy.respawn(self, SpawnX, SpawnY)
 	end
-	GameState.bossHpBar.visible = true
-	GameState.bossHpMask.visible = true
+	GameState.bossHp.visible = true
 end
 
 --	function Boss1:hurt(Damage)
@@ -133,8 +132,7 @@ function Boss1:kill()
 	Enemy.kill(self)
 	self.weapons[1]:stop()
 	self.weapons[2]:stop()
-	GameState.bossHpBar.visible = false
-	GameState.bossHpMask.visible = false
+	GameState.bossHp.visible = false
 end
 
 function Boss1:update()
@@ -235,15 +233,7 @@ function Boss1:update()
 end
 
 function Boss1:updateHealth()
-	--Width is relative to size of health bar (value is defined in GameState, hardcoded here)
-	local hpWidth = (self.health/self.maxHealth) * 105
-	if hpWidth < 0 then
-		hpWidth = 0
-	end
-	GameState.bossHpBar.scaleX = self.health/self.maxHealth
-	if self.health <= 1 then
-		GameState.bossHpBar:flash({128,0,0}, 1, true)
-	end
+	GameState.bossHpMask.scaleX = 1 - math.ceil(self.health)/self.maxHealth
 end
 function Boss1:nextRoute()
 	self.weapons[1]:stop()
