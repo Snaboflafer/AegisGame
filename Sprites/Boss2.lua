@@ -14,6 +14,7 @@ function Boss2:new(X,Y,ImageFile)
 	
 	s.NUMROUTES = 6
 	s.route = 1
+	s.aiStage = 1
 	s.health = 150
 	s.maxHealth = 150
 	s.score = 10000
@@ -196,7 +197,7 @@ function Boss2:doConfig()
 	GameState.emitters:add(gunFoot)
 	self:addWeapon(gunFoot, 4)
 		
-	self:nextRoute()
+	self:idleRoute()
 end
 
 function Boss2:kill()
@@ -266,7 +267,6 @@ function Boss2:update()
 		if self.aiStage == 1 then
 			self:flash({0,127,127}, .2, false)
 			self:playAnimation("attack_eye_charge")
-			Timer:new(1, self, Boss2.updateStage)
 			self:updateStage()
 		elseif self.aiStage == 2 then
 			--Charge (aiming)
@@ -276,6 +276,7 @@ function Boss2:update()
 									(player.x + player.width/2) - (self.x+8)) * 180/math.pi, 0)
 				love.audio.newSource(LevelManager:getSound("charge")):play()
 				self.laserCharge:restart()
+				Timer:new(.5, self, Boss2.updateStage)
 				self:updateStage()
 			end
 		elseif self.aiStage == 3 then
@@ -390,8 +391,10 @@ function Boss2:update()
 			self:idleRoute()
 		end
 	elseif self.route == 8 then
-		--Death
+		--Death (for death animation, unused)
 		self:kill()
+	else
+		self:nextRoute()
 	end
 	
 	Sprite.update(self)
@@ -419,15 +422,16 @@ function Boss2:nextRoute()
 	for i=1, table.getn(self.weapons) do
 		self.weapons[i]:stop()
 	end
-	if GameState.player.x > self.x or self:getScreenX() < General.screenW*.45 then
+	if self.x-GameState.player.x < 150 and self.x > GameState.player.x
+			and GameState.player.y - self.y > 100 and math.random()<.8 then
+		--Kick if player gets close
+		self.route = 7
+	elseif GameState.player.x > self.x or self:getScreenX() < General.screenW*.45 then
 		--Move right if getting too close to left edge, or player gets past
 		self.route = 3
 	elseif self:getScreenX() > General.screenW*.8 then
 		--Move left if getting too far offscreen
 		self.route = 2
-	elseif self.x-GameState.player.x < 150 and GameState.player.y - self.y > 100 and math.random()<.8 then
-		--Kick if player gets close
-		self.route = 7
 	elseif self.x-GameState.player.x > 400 then
 		--Don't use flamethrower if player is far away
 		if math.random()<.8 then
