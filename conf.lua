@@ -1,5 +1,6 @@
 function love.conf(t)
 	t.title = "Aegis"
+	t.identity = "Aegis"
 	
 	t.window.icon = "Aegis.png"
 	t.window.fsaa = 0
